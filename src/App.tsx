@@ -4,6 +4,7 @@ import { AdminLogin } from "./components/AdminLogin";
 import { AdminDashboard } from "./components/AdminDashboard";
 import { CustomerLiveCall } from "./components/CustomerLiveCall";
 import { VisitorLocationPrompt } from "./components/VisitorLocationPrompt";
+import { LiveChatWidget } from "./components/LiveChatWidget";
 import {
   Menu,
   X,
@@ -1279,6 +1280,7 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
         defaultName={formData.name}
         defaultEmail={formData.email}
       />
+      <LiveChatWidget />
 
       {/* Footer */}
       <footer className="py-8 border-t border-slate-800 relative overflow-hidden">

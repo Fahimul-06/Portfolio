@@ -50,6 +50,8 @@ const CALL_SMS_TEXT = process.env.CALL_SMS_TEXT || 'Please open this link to cal
 const VISITOR_TRACKING_ENABLED = String(process.env.VISITOR_TRACKING_ENABLED || 'true') === 'true';
 const VISITOR_IP_LOOKUP_ENABLED = String(process.env.VISITOR_IP_LOOKUP_ENABLED || 'true') === 'true';
 const VISITOR_IP_LOOKUP_PROVIDER = process.env.VISITOR_IP_LOOKUP_PROVIDER || 'ipapi';
+const CHAT_ENABLED = String(process.env.CHAT_ENABLED || 'true') === 'true';
+const CHAT_MAX_UPLOAD_MB = Number(process.env.CHAT_MAX_UPLOAD_MB || '50');
 
 
 app.use(cors({ origin: CLIENT_URL === '*' ? true : CLIENT_URL, credentials: true }));
@@ -189,6 +191,31 @@ const VisitorSession = mongoose.model('VisitorSession', new mongoose.Schema({
     lookup_at: { type: Date, default: null },
   },
 }, commonOptions), 'visitor_sessions');
+
+const ChatSession = mongoose.model('ChatSession', new mongoose.Schema({
+  visitor_id: { type: String, default: '', index: true },
+  visitor_name: { type: String, default: 'Website visitor' },
+  visitor_email: { type: String, default: '' },
+  visitor_phone: { type: String, default: '' },
+  status: { type: String, enum: ['open', 'closed'], default: 'open', index: true },
+  last_message: { type: String, default: '' },
+  last_message_at: { type: Date, default: Date.now, index: true },
+  unread_admin_count: { type: Number, default: 0 },
+  unread_visitor_count: { type: Number, default: 0 },
+  ip_address: { type: String, default: '' },
+  user_agent: { type: String, default: '' },
+}, commonOptions), 'chat_sessions');
+
+const ChatMessage = mongoose.model('ChatMessage', new mongoose.Schema({
+  session_id: { type: mongoose.Schema.Types.ObjectId, ref: 'ChatSession', required: true, index: true },
+  sender: { type: String, enum: ['visitor', 'admin'], required: true },
+  message_type: { type: String, enum: ['text', 'file', 'image', 'video'], default: 'text' },
+  text: { type: String, default: '' },
+  file_url: { type: String, default: '' },
+  file_name: { type: String, default: '' },
+  file_size: { type: Number, default: 0 },
+  mime_type: { type: String, default: '' },
+}, commonOptions), 'chat_messages');
 
 const modelMap = {
   about_info: AboutInfo,
@@ -751,6 +778,23 @@ app.get('/api/call/config', (_req, res) => {
   });
 });
 
+
+function classifyChatAttachment(file = {}) {
+  const mime = String(file.mimetype || '').toLowerCase();
+  if (mime.startsWith('image/')) return 'image';
+  if (mime.startsWith('video/')) return 'video';
+  return 'file';
+}
+
+function sanitizeChatMessage(text = '') {
+  return String(text || '').replace(/ /g, '').trim().slice(0, 3000);
+}
+
+async function publicChatSession(session) {
+  if (!session) return null;
+  return typeof session.toJSON === 'function' ? session.toJSON() : session;
+}
+
 const storage = multer.diskStorage({
   destination: (_req, _file, cb) => cb(null, uploadsDir),
   filename: (req, file, cb) => {
@@ -760,7 +804,57 @@ const storage = multer.diskStorage({
     cb(null, base);
   },
 });
-const upload = multer({ storage, limits: { fileSize: 100 * 1024 * 1024 } });
+const upload = multer({ storage, limits: { fileSize: Math.max(100, CHAT_MAX_UPLOAD_MB) * 1024 * 1024 } });
+
+app.post('/api/chat/upload', upload.single('file'), (req, res) => {
+  if (!CHAT_ENABLED) return res.status(503).json({ message: 'Live chat is disabled.' });
+  if (!req.file) return res.status(400).json({ message: 'No file uploaded.' });
+
+  const allowed = [
+    'image/jpeg', 'image/png', 'image/webp', 'image/gif',
+    'video/mp4', 'video/webm', 'video/ogg', 'video/quicktime',
+    'application/pdf', 'text/plain',
+    'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/zip', 'application/x-zip-compressed'
+  ];
+
+  if (!allowed.includes(req.file.mimetype)) {
+    try { fs.unlinkSync(req.file.path); } catch {}
+    return res.status(400).json({ message: 'This file type is not allowed for chat.' });
+  }
+
+  res.json({
+    url: `/uploads/${req.file.filename}`,
+    fileName: req.file.originalname,
+    fileSize: req.file.size,
+    mimeType: req.file.mimetype,
+    messageType: classifyChatAttachment(req.file),
+  });
+});
+
+app.get('/api/chat/sessions', requireAuth, async (req, res) => {
+  const limit = Math.min(Number(req.query.limit || 100), 300);
+  const docs = await ChatSession.find().sort({ last_message_at: -1 }).limit(limit).exec();
+  res.json(docs);
+});
+
+app.get('/api/chat/sessions/:id/messages', requireAuth, async (req, res) => {
+  const docs = await ChatMessage.find({ session_id: req.params.id }).sort({ created_at: 1 }).limit(500).exec();
+  await ChatSession.findByIdAndUpdate(req.params.id, { unread_admin_count: 0 });
+  res.json(docs);
+});
+
+app.patch('/api/chat/sessions/:id', requireAuth, async (req, res) => {
+  const updates = {};
+  if (typeof req.body?.status === 'string') updates.status = req.body.status === 'closed' ? 'closed' : 'open';
+  if (req.body?.markAdminRead) updates.unread_admin_count = 0;
+  const doc = await ChatSession.findByIdAndUpdate(req.params.id, updates, { new: true });
+  if (!doc) return res.status(404).json({ message: 'Chat session not found.' });
+  io.to(`chat:${doc.id}`).emit('chat:session-updated', await publicChatSession(doc));
+  io.to('chat:admins').emit('chat:session-updated', await publicChatSession(doc));
+  res.json(doc);
+});
 
 app.post('/api/upload', requireAuth, upload.single('file'), (req, res) => {
   if (!req.file) return res.status(400).json({ message: 'No file uploaded.' });
@@ -845,8 +939,6 @@ function broadcastAdminCalls() {
 }
 
 io.use((socket, next) => {
-  if (!CALL_ENABLED) return next(new Error('Live calling is disabled.'));
-
   const role = socket.handshake.auth?.role || 'customer';
   if (role === 'admin') {
     const token = socket.handshake.auth?.token;
@@ -867,10 +959,15 @@ io.on('connection', (socket) => {
   if (socket.role === 'admin') {
     admins.add(socket.id);
     socket.join('admins');
+    socket.join('chat:admins');
     socket.emit('admin:calls', [...activeCalls.values()].map(publicCall));
+    ChatSession.find().sort({ last_message_at: -1 }).limit(100).then((sessions) => {
+      socket.emit('chat:sessions', sessions.map((doc) => doc.toJSON()));
+    }).catch(() => {});
   }
 
   socket.on('customer:start-call', (payload = {}, callback) => {
+    if (!CALL_ENABLED) return callback?.({ ok: false, message: 'Live calling is disabled.' });
     if (socket.role !== 'customer') return;
 
     const callId = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
@@ -905,6 +1002,108 @@ io.on('connection', (socket) => {
     callback?.({ ok: true, call: publicCall(call), iceServers: buildIceServers() });
     io.to(call.customerSocketId).emit('customer:call-accepted', publicCall(call));
     broadcastAdminCalls();
+  });
+
+
+  socket.on('visitor:chat-start', async (payload = {}, callback) => {
+    if (!CHAT_ENABLED) return callback?.({ ok: false, message: 'Live chat is disabled.' });
+    if (socket.role !== 'customer') return;
+
+    try {
+      const visitorId = String(payload.visitorId || socket.id).slice(0, 120);
+      const sessionId = String(payload.sessionId || '').trim();
+      let session = null;
+
+      if (sessionId && mongoose.isValidObjectId(sessionId)) {
+        session = await ChatSession.findById(sessionId);
+      }
+
+      if (!session) {
+        session = await ChatSession.create({
+          visitor_id: visitorId,
+          visitor_name: String(payload.name || 'Website visitor').slice(0, 80),
+          visitor_email: String(payload.email || '').slice(0, 120),
+          visitor_phone: String(payload.phone || '').slice(0, 40),
+          ip_address: getClientIp({ ...socket.request, headers: socket.handshake.headers }),
+          user_agent: String(socket.handshake.headers?.['user-agent'] || '').slice(0, 600),
+          status: 'open',
+          last_message: 'Chat started',
+          last_message_at: new Date(),
+        });
+      } else if (session.status === 'closed') {
+        session.status = 'open';
+        session.last_message_at = new Date();
+        await session.save();
+      }
+
+      socket.join(`chat:${session.id}`);
+      socket.data.chatSessionId = session.id;
+      const messages = await ChatMessage.find({ session_id: session.id }).sort({ created_at: 1 }).limit(200);
+      callback?.({ ok: true, session: await publicChatSession(session), messages: messages.map((doc) => doc.toJSON()) });
+      io.to('chat:admins').emit('chat:session-updated', await publicChatSession(session));
+    } catch (error) {
+      callback?.({ ok: false, message: error instanceof Error ? error.message : 'Could not start chat.' });
+    }
+  });
+
+  socket.on('chat:join-session', async ({ sessionId } = {}, callback) => {
+    if (!CHAT_ENABLED) return callback?.({ ok: false, message: 'Live chat is disabled.' });
+    if (!sessionId || !mongoose.isValidObjectId(sessionId)) return callback?.({ ok: false, message: 'Invalid chat session.' });
+    if (socket.role !== 'admin' && socket.data.chatSessionId !== sessionId) return callback?.({ ok: false, message: 'Not allowed for this chat session.' });
+
+    socket.join(`chat:${sessionId}`);
+    const messages = await ChatMessage.find({ session_id: sessionId }).sort({ created_at: 1 }).limit(500);
+    if (socket.role === 'admin') await ChatSession.findByIdAndUpdate(sessionId, { unread_admin_count: 0 });
+    if (socket.role !== 'admin') await ChatSession.findByIdAndUpdate(sessionId, { unread_visitor_count: 0 });
+    callback?.({ ok: true, messages: messages.map((doc) => doc.toJSON()) });
+  });
+
+  socket.on('chat:message', async (payload = {}, callback) => {
+    if (!CHAT_ENABLED) return callback?.({ ok: false, message: 'Live chat is disabled.' });
+
+    try {
+      const sessionId = String(payload.sessionId || socket.data.chatSessionId || '').trim();
+      if (!sessionId || !mongoose.isValidObjectId(sessionId)) return callback?.({ ok: false, message: 'Invalid chat session.' });
+
+      const session = await ChatSession.findById(sessionId);
+      if (!session) return callback?.({ ok: false, message: 'Chat session not found.' });
+      if (socket.role !== 'admin' && socket.data.chatSessionId !== sessionId) return callback?.({ ok: false, message: 'Not allowed for this chat session.' });
+
+      const attachment = payload.attachment || null;
+      const text = sanitizeChatMessage(payload.text || '');
+      const messageType = attachment?.messageType || (attachment?.mimeType?.startsWith?.('image/') ? 'image' : attachment?.mimeType?.startsWith?.('video/') ? 'video' : attachment?.url ? 'file' : 'text');
+
+      if (!text && !attachment?.url) {
+        return callback?.({ ok: false, message: 'Message text or attachment is required.' });
+      }
+
+      const message = await ChatMessage.create({
+        session_id: sessionId,
+        sender: socket.role === 'admin' ? 'admin' : 'visitor',
+        message_type: messageType,
+        text,
+        file_url: String(attachment?.url || ''),
+        file_name: String(attachment?.fileName || ''),
+        file_size: Number(attachment?.fileSize || 0),
+        mime_type: String(attachment?.mimeType || ''),
+      });
+
+      session.last_message = text || (messageType === 'image' ? 'Photo sent' : messageType === 'video' ? 'Video sent' : 'File sent');
+      session.last_message_at = new Date();
+      session.status = 'open';
+      if (socket.role === 'admin') session.unread_visitor_count += 1;
+      else session.unread_admin_count += 1;
+      await session.save();
+
+      const messageJson = message.toJSON();
+      const sessionJson = await publicChatSession(session);
+      io.to(`chat:${sessionId}`).emit('chat:message', messageJson);
+      io.to('chat:admins').emit('chat:session-updated', sessionJson);
+      if (socket.role !== 'admin') io.to('chat:admins').emit('chat:incoming-message', { session: sessionJson, message: messageJson });
+      callback?.({ ok: true, message: messageJson, session: sessionJson });
+    } catch (error) {
+      callback?.({ ok: false, message: error instanceof Error ? error.message : 'Could not send message.' });
+    }
   });
 
   socket.on('webrtc:offer', ({ callId, offer } = {}) => {

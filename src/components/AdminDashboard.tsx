@@ -12,6 +12,7 @@ import {
   X,
   ChevronRight,
   MessageSquare,
+  MessageCircle,
   Award,
   PhoneCall,
   UsersRound,
@@ -28,8 +29,9 @@ import { LiveCallManager } from './LiveCallManager';
 import { AdminGlobalCallRinger } from './AdminGlobalCallRinger';
 import { VisitorsManager } from './VisitorsManager';
 import { HeroMediaManager } from './HeroMediaManager';
+import { AdminChatManager } from './AdminChatManager';
 
-type Section = 'about' | 'hero' | 'skills' | 'projects' | 'experience' | 'contact' | 'messages' | 'certificates' | 'calls' | 'visitors';
+type Section = 'about' | 'hero' | 'skills' | 'projects' | 'experience' | 'contact' | 'messages' | 'chat' | 'certificates' | 'calls' | 'visitors';
 
 interface AdminDashboardProps {
   onLogout: () => void;
@@ -44,6 +46,7 @@ const navItems: { id: Section; label: string; icon: React.ElementType }[] = [
   { id: 'certificates', label: 'Certificates', icon: Award },
   { id: 'contact', label: 'Contact', icon: Mail },
   { id: 'messages', label: 'Messages', icon: MessageSquare },
+  { id: 'chat', label: 'Live Chat', icon: MessageCircle },
   { id: 'calls', label: 'Live Calls', icon: PhoneCall },
   { id: 'visitors', label: 'Visitors', icon: UsersRound },
 ];
@@ -111,6 +114,8 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
         return <ContactManager />;
       case 'messages':
         return <MessagesManager />;
+      case 'chat':
+        return <AdminChatManager />;
       case 'calls':
         return <LiveCallManager />;
       case 'visitors':
