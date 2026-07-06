@@ -34,6 +34,7 @@ import type {
   Skill,
   Project,
   Experience,
+  Education,
   ContactInfo,
   Certificate,
   HeroMedia,
@@ -313,6 +314,7 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
   const [skills, setSkills] = useState<Skill[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [experiences, setExperiences] = useState<Experience[]>([]);
+  const [education, setEducation] = useState<Education[]>([]);
   const [certificates, setCertificates] = useState<Certificate[]>([]);
   const [contact, setContact] = useState<ContactInfo | null>(null);
   const [dataLoading, setDataLoading] = useState(true);
@@ -327,6 +329,7 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
       const sections = [
         "home",
         "about",
+        "education",
         "skills",
         "projects",
         "experience",
@@ -356,6 +359,7 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
       skillsRes,
       projectsRes,
       experienceRes,
+      educationRes,
       certificatesRes,
       contactRes,
     ] = await Promise.all([
@@ -377,6 +381,10 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
         .select("*")
         .order("display_order", { ascending: true }),
       supabase
+        .from("education")
+        .select("*")
+        .order("display_order", { ascending: true }),
+      supabase
         .from("certificates")
         .select("*")
         .order("display_order", { ascending: true }),
@@ -391,6 +399,7 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
     if (skillsRes.data) setSkills(skillsRes.data);
     if (projectsRes.data) setProjects(projectsRes.data);
     if (experienceRes.data) setExperiences(experienceRes.data);
+    if (educationRes.data) setEducation(educationRes.data);
     if (certificatesRes.data) setCertificates(certificatesRes.data);
     if (contactRes.data) setContact(contactRes.data);
     setDataLoading(false);
@@ -502,6 +511,7 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
               {[
                 "Home",
                 "About",
+                "Education",
                 "Skills",
                 "Projects",
                 "Experience",
@@ -545,6 +555,7 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
                 {[
                   "Home",
                   "About",
+                  "Education",
                   "Skills",
                   "Projects",
                   "Experience",
@@ -661,7 +672,7 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Profile Image */}
             <div className="relative order-1 lg:order-none">
-              <div className="relative max-w-sm mx-auto">
+              <div className="relative max-w-md mx-auto lg:max-w-lg">
                 <img
                   src={
                     about?.profile_image_url ||
@@ -731,6 +742,77 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Education Section */}
+      <section id="education" className="py-24 lg:py-32 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950" />
+        <div className="absolute top-20 right-0 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 left-0 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
+              <span className="text-gray-100">My </span>
+              <span className="text-gradient">Education</span>
+            </h2>
+            <div className="w-20 h-1 bg-gradient-to-r from-cyan-500 to-teal-600 mx-auto rounded-full animate-scale-up" />
+            <p className="mt-4 text-gray-400 max-w-2xl mx-auto">
+              Academic background, degrees, training, and learning milestones.
+            </p>
+          </div>
+
+          {education.length > 0 ? (
+            <div className="grid md:grid-cols-2 gap-6">
+              {education.map((item, index) => (
+                <div
+                  key={item.id}
+                  className="card-hover glass rounded-2xl p-6 border border-slate-700/50 hover:border-cyan-500/30 transition-all duration-300 animate-fade-in-up"
+                  style={{ animationDelay: `${index * 0.12}s` }}
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500 to-teal-600 shadow-lg shadow-cyan-500/20">
+                      <GraduationCap className="text-white" size={28} />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2 mb-2">
+                        <span className="px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 text-sm font-medium">
+                          {item.period}
+                        </span>
+                        {item.result && (
+                          <span className="px-3 py-1 rounded-full bg-slate-800/80 text-gray-300 border border-slate-700/60 text-sm">
+                            {item.result}
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="text-xl font-semibold text-gray-100 leading-snug">
+                        {item.degree}
+                      </h3>
+                      <p className="mt-2 text-cyan-400 font-medium">
+                        {item.institution}
+                      </p>
+                      {item.location && (
+                        <p className="mt-2 flex items-center gap-2 text-sm text-gray-500">
+                          <MapPin size={16} />
+                          {item.location}
+                        </p>
+                      )}
+                      {item.description && (
+                        <p className="mt-4 text-gray-400 leading-relaxed whitespace-pre-line">
+                          {item.description}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-slate-700/50 bg-slate-900/60 p-10 text-center text-gray-500">
+              Education information will appear here after admin adds records.
+            </div>
+          )}
         </div>
       </section>
 

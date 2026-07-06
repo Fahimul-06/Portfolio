@@ -270,6 +270,19 @@ export type Experience = {
   updated_at: string;
 };
 
+export type Education = {
+  id: string;
+  degree: string;
+  institution: string;
+  period: string;
+  location: string;
+  result: string;
+  description: string;
+  display_order: number;
+  created_at: string;
+  updated_at: string;
+};
+
 export type ContactInfo = {
   id: string;
   email: string;

@@ -124,6 +124,16 @@ const Experience = mongoose.model('Experience', new mongoose.Schema({
   display_order: { type: Number, default: 0 },
 }, commonOptions), 'experience');
 
+const Education = mongoose.model('Education', new mongoose.Schema({
+  degree: { type: String, required: true },
+  institution: { type: String, required: true },
+  period: { type: String, required: true },
+  location: { type: String, default: '' },
+  result: { type: String, default: '' },
+  description: { type: String, default: '' },
+  display_order: { type: Number, default: 0 },
+}, commonOptions), 'education');
+
 const ContactInfo = mongoose.model('ContactInfo', new mongoose.Schema({
   email: { type: String, default: 'fahimul.arefin@email.com' },
   phone: { type: String, default: '' },
@@ -223,6 +233,7 @@ const modelMap = {
   skills: Skill,
   projects: Project,
   experience: Experience,
+  education: Education,
   contact_info: ContactInfo,
   messages: Message,
   certificates: Certificate,
@@ -335,6 +346,13 @@ async function seedDatabase() {
       { title: 'Senior Full Stack Developer', company: 'TechCorp Solutions', period: '2022 - Present', description: 'Leading development of enterprise web applications. Architected microservices infrastructure serving 1M+ users. Mentoring junior developers and conducting code reviews.', display_order: 1 },
       { title: 'Full Stack Developer', company: 'Digital Innovations Inc.', period: '2020 - 2022', description: 'Developed and maintained multiple client projects using React, Node.js, and MongoDB. Implemented CI/CD pipelines and improved deployment efficiency by 40%.', display_order: 2 },
       { title: 'Junior Software Engineer', company: 'StartUp Hub', period: '2019 - 2020', description: 'Built RESTful APIs and frontend interfaces. Collaborated with cross-functional teams to deliver features on tight deadlines.', display_order: 3 },
+    ]);
+  }
+
+  if ((await Education.countDocuments()) === 0) {
+    await Education.insertMany([
+      { degree: 'B.Sc. in Computer Science & Engineering', institution: 'Your University Name', period: '2018 - 2022', location: 'Dhaka, Bangladesh', result: 'CGPA: 3.80/4.00', description: 'Focused on software engineering, database systems, web development, algorithms, and full-stack application development.', display_order: 1 },
+      { degree: 'Higher Secondary Certificate', institution: 'Your College Name', period: '2016 - 2018', location: 'Dhaka, Bangladesh', result: 'GPA: 5.00/5.00', description: 'Science group with emphasis on mathematics, physics, and information technology.', display_order: 2 },
     ]);
   }
 

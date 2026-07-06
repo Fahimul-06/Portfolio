@@ -17,6 +17,7 @@ import {
   PhoneCall,
   UsersRound,
   Images,
+  GraduationCap,
 } from 'lucide-react';
 import { AboutManager } from './AboutManager';
 import { SkillsManager } from './SkillsManager';
@@ -30,8 +31,9 @@ import { AdminGlobalCallRinger } from './AdminGlobalCallRinger';
 import { VisitorsManager } from './VisitorsManager';
 import { HeroMediaManager } from './HeroMediaManager';
 import { AdminChatManager } from './AdminChatManager';
+import { EducationManager } from './EducationManager';
 
-type Section = 'about' | 'hero' | 'skills' | 'projects' | 'experience' | 'contact' | 'messages' | 'chat' | 'certificates' | 'calls' | 'visitors';
+type Section = 'about' | 'hero' | 'education' | 'skills' | 'projects' | 'experience' | 'contact' | 'messages' | 'chat' | 'certificates' | 'calls' | 'visitors';
 
 interface AdminDashboardProps {
   onLogout: () => void;
@@ -40,6 +42,7 @@ interface AdminDashboardProps {
 const navItems: { id: Section; label: string; icon: React.ElementType }[] = [
   { id: 'about', label: 'About', icon: User },
   { id: 'hero', label: 'Hero Media', icon: Images },
+  { id: 'education', label: 'Education', icon: GraduationCap },
   { id: 'skills', label: 'Skills', icon: Code2 },
   { id: 'projects', label: 'Projects', icon: Briefcase },
   { id: 'experience', label: 'Experience', icon: Clock },
@@ -102,6 +105,8 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
         return <AboutManager />;
       case 'hero':
         return <HeroMediaManager />;
+      case 'education':
+        return <EducationManager />;
       case 'skills':
         return <SkillsManager />;
       case 'projects':
