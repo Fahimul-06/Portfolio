@@ -13,6 +13,9 @@ type Whale = {
   slapCooldown: number;
   waterCooldown: number;
   hitFlash: number;
+  tailSwing: number;
+  stun: number;
+  spin: number;
 };
 
 type Projectile = {
@@ -78,7 +81,7 @@ function drawWaterBackground(ctx: CanvasRenderingContext2D, width: number, heigh
 function drawWhale(ctx: CanvasRenderingContext2D, whale: Whale, color: string, accent: string, time: number, isEnemy = false) {
   const { x, y, size, facing } = whale;
   const bob = Math.sin(time / 250 + x / 90) * 2.5;
-  const tilt = clamp(whale.vy / 18, -0.24, 0.24);
+  const tilt = clamp(whale.vy / 18, -0.24, 0.24) + whale.spin;
 
   ctx.save();
   ctx.translate(x, y + bob);
@@ -112,7 +115,19 @@ function drawWhale(ctx: CanvasRenderingContext2D, whale: Whale, color: string, a
   ctx.fill();
   ctx.globalAlpha = 1;
 
-  // Tail stem and flukes
+  // Tail stem and flukes. During tail slap, the tail swings with a large arc.
+  const swingProgress = clamp(whale.tailSwing / 22, 0, 1);
+  const slapWave = swingProgress > 0 ? Math.sin((1 - swingProgress) * Math.PI) : 0;
+  const slapDir = isEnemy ? -1 : 1;
+  const tailAngle = Math.sin(time / 130) * 0.08 + slapWave * slapDir * 0.95;
+  const tailBaseX = -size * 1.05;
+  const tailBaseY = size * 0.02;
+
+  ctx.save();
+  ctx.translate(tailBaseX, tailBaseY);
+  ctx.rotate(tailAngle);
+  ctx.translate(-tailBaseX, -tailBaseY);
+
   ctx.fillStyle = whale.hitFlash > 0 ? '#fecaca' : color;
   ctx.beginPath();
   ctx.moveTo(-size * 1.05, -size * 0.05);
@@ -121,13 +136,26 @@ function drawWhale(ctx: CanvasRenderingContext2D, whale: Whale, color: string, a
   ctx.closePath();
   ctx.fill();
 
-  const flap = Math.sin(time / 130) * size * 0.08;
+  const flap = Math.sin(time / 130) * size * 0.08 + slapWave * size * 0.34;
   ctx.beginPath();
   ctx.moveTo(-size * 1.55, -size * 0.22);
-  ctx.quadraticCurveTo(-size * 2.02, -size * 0.88 + flap, -size * 1.82, -size * 0.05);
-  ctx.quadraticCurveTo(-size * 2.10, size * 0.62 - flap, -size * 1.45, size * 0.22);
+  ctx.quadraticCurveTo(-size * 2.18, -size * 0.96 + flap, -size * 1.82, -size * 0.05);
+  ctx.quadraticCurveTo(-size * 2.22, size * 0.72 - flap, -size * 1.45, size * 0.22);
   ctx.quadraticCurveTo(-size * 1.58, 0, -size * 1.55, -size * 0.22);
   ctx.fill();
+
+  if (slapWave > 0.45) {
+    ctx.save();
+    ctx.globalAlpha = 0.42 * slapWave;
+    ctx.strokeStyle = '#e0f2fe';
+    ctx.lineWidth = Math.max(3, size * 0.07);
+    ctx.beginPath();
+    ctx.arc(-size * 1.85, 0, size * (0.55 + slapWave * 0.35), -1.0, 1.0);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  ctx.restore();
 
   // Fin
   ctx.fillStyle = accent;
@@ -199,6 +227,9 @@ function createInitialGame(width: number, height: number) {
       slapCooldown: 0,
       waterCooldown: 0,
       hitFlash: 0,
+      tailSwing: 0,
+      stun: 0,
+      spin: 0,
     },
     enemy: {
       x: width * 0.72,
@@ -206,12 +237,15 @@ function createInitialGame(width: number, height: number) {
       vx: 0,
       vy: 0,
       size: 40,
-      health: 100,
-      maxHealth: 100,
+      health: 130,
+      maxHealth: 130,
       facing: -1 as 1 | -1,
       slapCooldown: 0,
       waterCooldown: 80,
       hitFlash: 0,
+      tailSwing: 0,
+      stun: 0,
+      spin: 0,
     },
     projectiles: [] as Projectile[],
     splashes: [] as Splash[],
@@ -225,7 +259,7 @@ export function WhaleBattleGame() {
   const gameRef = useRef(createInitialGame(760, 360));
   const pointerRef = useRef({ x: 190, y: 180, active: false });
   const [status, setStatus] = useState<GameStatus>('playing');
-  const [health, setHealth] = useState({ player: 100, enemy: 100 });
+  const [health, setHealth] = useState({ player: 100, enemy: 130, enemyMax: 130 });
   const [hint, setHint] = useState('Move mouse/finger to swim. Click/tap to shoot water. Press Space for tail slap.');
 
   const resetGame = () => {
@@ -235,7 +269,7 @@ export function WhaleBattleGame() {
     gameRef.current = createInitialGame(width, height);
     pointerRef.current = { x: width * 0.25, y: height * 0.56, active: false };
     setStatus('playing');
-    setHealth({ player: 100, enemy: 100 });
+    setHealth({ player: 100, enemy: 130, enemyMax: 130 });
     setHint('Move mouse/finger to swim. Click/tap to shoot water. Press Space for tail slap.');
   };
 
@@ -277,25 +311,30 @@ export function WhaleBattleGame() {
       const game = gameRef.current;
       if (game.status !== 'playing' || game.player.slapCooldown > 0) return;
       const d = distance(game.player, game.enemy);
-      game.player.slapCooldown = 46;
-      for (let i = 0; i < 18; i++) {
+      game.player.slapCooldown = 58;
+      game.player.tailSwing = 24;
+      for (let i = 0; i < 34; i++) {
+        const burst = 2 + Math.random() * 9;
         game.splashes.push({
-          x: game.player.x - game.player.facing * game.player.size * 1.3,
-          y: game.player.y + (Math.random() - 0.5) * 35,
-          vx: (Math.random() - 0.5) * 5,
-          vy: (Math.random() - 0.5) * 5,
-          life: 26,
-          radius: 2 + Math.random() * 5,
+          x: game.player.x - game.player.facing * game.player.size * 1.6,
+          y: game.player.y + (Math.random() - 0.5) * 54,
+          vx: -game.player.facing * burst + (Math.random() - 0.5) * 5,
+          vy: (Math.random() - 0.5) * 8,
+          life: 30 + Math.random() * 14,
+          radius: 2 + Math.random() * 7,
         });
       }
-      if (d < game.player.size * 2.7) {
-        game.enemy.health = clamp(game.enemy.health - 18, 0, game.enemy.maxHealth);
-        game.enemy.hitFlash = 12;
-        game.enemy.vx += game.player.facing * 8;
-        game.enemy.vy -= 3;
-        setHint('Tail slap hit! Enemy whale lost health.');
+      if (d < game.player.size * 3.05) {
+        const knockDirection = game.enemy.x >= game.player.x ? 1 : -1;
+        game.enemy.health = clamp(game.enemy.health - 20, 0, game.enemy.maxHealth);
+        game.enemy.hitFlash = 18;
+        game.enemy.stun = 28;
+        game.enemy.spin = -knockDirection * 0.65;
+        game.enemy.vx = knockDirection * 23;
+        game.enemy.vy = -9 - Math.random() * 5;
+        setHint('Power tail slap! Enemy whale flies across the water. Finish it with water blasts.');
       } else {
-        setHint('Tail slap missed. Move closer before slapping.');
+        setHint('Tail slap missed. Get very close first — this fight is tougher now.');
       }
     };
 
@@ -348,35 +387,61 @@ export function WhaleBattleGame() {
         game.player.y = clamp(game.player.y, game.player.size * 1.3, height - game.player.size * 1.3);
         game.player.facing = game.enemy.x >= game.player.x ? 1 : -1;
 
-        const preferredDistance = 210 + Math.sin(time / 900) * 34;
+        const preferredDistance = 185 + Math.sin(time / 900) * 44;
         const angleToPlayer = Math.atan2(game.player.y - game.enemy.y, game.player.x - game.enemy.x);
         const enemyTargetX = game.player.x - Math.cos(angleToPlayer) * preferredDistance;
-        const enemyTargetY = game.player.y - Math.sin(angleToPlayer) * preferredDistance + Math.sin(time / 450) * 42;
-        game.enemy.vx += (enemyTargetX - game.enemy.x) * 0.012 * delta;
-        game.enemy.vy += (enemyTargetY - game.enemy.y) * 0.012 * delta;
-        game.enemy.vx *= 0.90;
-        game.enemy.vy *= 0.90;
+        const enemyTargetY = game.player.y - Math.sin(angleToPlayer) * preferredDistance + Math.sin(time / 380) * 52;
+        if (game.enemy.stun <= 0) {
+          game.enemy.vx += (enemyTargetX - game.enemy.x) * 0.016 * delta;
+          game.enemy.vy += (enemyTargetY - game.enemy.y) * 0.016 * delta;
+          game.enemy.vx *= 0.90;
+          game.enemy.vy *= 0.90;
+        } else {
+          game.enemy.vx *= 0.965;
+          game.enemy.vy *= 0.965;
+          game.enemy.vy += 0.24 * delta;
+        }
         game.enemy.x += game.enemy.vx * delta;
         game.enemy.y += game.enemy.vy * delta;
-        game.enemy.x = clamp(game.enemy.x, game.enemy.size * 1.8, width - game.enemy.size * 1.8);
-        game.enemy.y = clamp(game.enemy.y, game.enemy.size * 1.4, height - game.enemy.size * 1.3);
+        const enemyMinX = game.enemy.size * 1.8;
+        const enemyMaxX = width - game.enemy.size * 1.8;
+        const enemyMinY = game.enemy.size * 1.4;
+        const enemyMaxY = height - game.enemy.size * 1.3;
+        if (game.enemy.x < enemyMinX || game.enemy.x > enemyMaxX) {
+          game.enemy.x = clamp(game.enemy.x, enemyMinX, enemyMaxX);
+          game.enemy.vx *= -0.72;
+          game.enemy.spin *= -0.55;
+        }
+        if (game.enemy.y < enemyMinY || game.enemy.y > enemyMaxY) {
+          game.enemy.y = clamp(game.enemy.y, enemyMinY, enemyMaxY);
+          game.enemy.vy *= -0.62;
+        }
         game.enemy.facing = game.player.x >= game.enemy.x ? 1 : -1;
 
-        if (game.enemy.waterCooldown <= 0 && distance(game.enemy, game.player) < 390) {
+        if (game.enemy.waterCooldown <= 0 && distance(game.enemy, game.player) < 430 && game.enemy.stun <= 0) {
           fireWater('enemy');
         }
-        if (game.enemy.slapCooldown <= 0 && distance(game.enemy, game.player) < game.enemy.size * 2.25) {
-          game.player.health = clamp(game.player.health - 12, 0, game.player.maxHealth);
-          game.player.hitFlash = 12;
-          game.player.vx += game.enemy.facing * 6;
-          game.enemy.slapCooldown = 75;
-          setHint('Enemy tail slapped you! Move away and fire water.');
+        if (game.enemy.slapCooldown <= 0 && distance(game.enemy, game.player) < game.enemy.size * 2.45 && game.enemy.stun <= 0) {
+          game.enemy.tailSwing = 22;
+          game.player.health = clamp(game.player.health - 15, 0, game.player.maxHealth);
+          game.player.hitFlash = 14;
+          game.player.stun = 10;
+          game.player.vx += game.enemy.facing * 10;
+          game.player.vy -= 3;
+          game.enemy.slapCooldown = 54;
+          setHint('Enemy tail slapped you hard! Dodge, then counter-slap when very close.');
         }
 
         game.player.waterCooldown = Math.max(0, game.player.waterCooldown - delta);
         game.enemy.waterCooldown = Math.max(0, game.enemy.waterCooldown - delta);
         game.player.slapCooldown = Math.max(0, game.player.slapCooldown - delta);
         game.enemy.slapCooldown = Math.max(0, game.enemy.slapCooldown - delta);
+        game.player.tailSwing = Math.max(0, game.player.tailSwing - delta);
+        game.enemy.tailSwing = Math.max(0, game.enemy.tailSwing - delta);
+        game.player.stun = Math.max(0, game.player.stun - delta);
+        game.enemy.stun = Math.max(0, game.enemy.stun - delta);
+        game.player.spin *= 0.88;
+        game.enemy.spin *= 0.90;
         game.player.hitFlash = Math.max(0, game.player.hitFlash - delta);
         game.enemy.hitFlash = Math.max(0, game.enemy.hitFlash - delta);
 
@@ -386,10 +451,10 @@ export function WhaleBattleGame() {
           projectile.life -= delta;
           const target = projectile.owner === 'player' ? game.enemy : game.player;
           if (distance(projectile, target) < target.size * 0.72) {
-            target.health = clamp(target.health - (projectile.owner === 'player' ? 9 : 7), 0, target.maxHealth);
+            target.health = clamp(target.health - (projectile.owner === 'player' ? 7 : 9), 0, target.maxHealth);
             target.hitFlash = 10;
-            target.vx += projectile.vx * 0.38;
-            target.vy += projectile.vy * 0.28;
+            target.vx += projectile.vx * 0.42;
+            target.vy += projectile.vy * 0.32;
             for (let i = 0; i < 9; i++) {
               game.splashes.push({
                 x: projectile.x,
@@ -422,7 +487,7 @@ export function WhaleBattleGame() {
           setStatus('enemyWon');
           setHint('Enemy whale won this round. Press Restart and fight again.');
         }
-        setHealth({ player: Math.round(game.player.health), enemy: Math.round(game.enemy.health) });
+        setHealth({ player: Math.round(game.player.health), enemy: Math.round(game.enemy.health), enemyMax: game.enemy.maxHealth });
       }
 
       drawWaterBackground(ctx, width, height, time);
@@ -468,7 +533,7 @@ export function WhaleBattleGame() {
   }, []);
 
   const playerPercent = clamp(health.player, 0, 100);
-  const enemyPercent = clamp(health.enemy, 0, 100);
+  const enemyPercent = clamp((health.enemy / health.enemyMax) * 100, 0, 100);
 
   return (
     <div className="mb-16 overflow-hidden rounded-3xl border border-cyan-400/20 bg-slate-950/80 shadow-2xl shadow-cyan-950/40 backdrop-blur-xl">
@@ -480,7 +545,7 @@ export function WhaleBattleGame() {
             </div>
             <h3 className="text-2xl font-bold text-gray-100 lg:text-3xl">3D Whale Water Battle</h3>
             <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-400">
-              Move with your mouse or finger, tap/click to fire water, and press Space for a tail slap when close.
+              Move with your mouse or finger, tap/click to fire water, and press Space for a heavy tail slap. A clean slap knocks the enemy whale across the arena — but the enemy is tougher now.
             </p>
           </div>
           <button
@@ -523,7 +588,7 @@ export function WhaleBattleGame() {
           <div>
             <div className="mb-2 flex items-center justify-between text-sm">
               <span className="font-semibold text-fuchsia-200">Enemy Whale</span>
-              <span className="text-fuchsia-300">{enemyPercent}%</span>
+              <span className="text-fuchsia-300">{health.enemy}/{health.enemyMax}</span>
             </div>
             <div className="h-3 overflow-hidden rounded-full bg-slate-800">
               <div className="h-full rounded-full bg-gradient-to-r from-fuchsia-400 to-violet-400 transition-all" style={{ width: `${enemyPercent}%` }} />
@@ -543,7 +608,7 @@ export function WhaleBattleGame() {
             </div>
             <div className="rounded-xl bg-slate-950/50 p-3">
               <Waves className="mb-2 text-teal-300" size={18} />
-              Space = tail slap
+              Space = power tail slap
             </div>
           </div>
         </div>
