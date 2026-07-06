@@ -206,9 +206,11 @@ function drawWhaleSprite(
 
   const { x, y, size, facing } = whale;
   const swimPulse = Math.sin(time / 260 + x / 80);
-  const bodyBob = swimPulse * 3.2;
-  const bodyStretch = 1 + Math.sin(time / 330 + y / 70) * 0.025;
-  const tilt = clamp(whale.vy / 18, -0.24, 0.24) + whale.spin + Math.sin(time / 410) * 0.025;
+  const bodyBob = swimPulse * 2.1;
+  const bodyStretch = 1 + Math.sin(time / 330 + y / 70) * 0.012;
+  // Keep the body stable during tail slap. The slap animation is isolated to the tail slices below.
+  const stableSpin = whale.tailSwing > 0 ? whale.spin * 0.16 : whale.spin;
+  const tilt = clamp(whale.vy / 34, -0.14, 0.14) + stableSpin + Math.sin(time / 410) * 0.012;
   const swingProgress = clamp(whale.tailSwing / 24, 0, 1);
   const slapWave = swingProgress > 0 ? Math.sin((1 - swingProgress) * Math.PI) : 0;
 
@@ -238,12 +240,12 @@ function drawWhaleSprite(
 
     // Source tail is on the right side of the uploaded image. Because the canvas is flipped
     // for facing, this still creates a convincing flexible tail/tail-slap motion.
-    const tailInfluence = Math.pow(clamp((t - 0.58) / 0.42, 0, 1), 1.8);
+    const tailInfluence = Math.pow(clamp((t - 0.76) / 0.24, 0, 1), 2.35);
     const bellyInfluence = Math.sin(t * Math.PI);
-    const swimOffset = Math.sin(time / 135 + t * 5.8) * size * 0.055 * bellyInfluence;
-    const tailKick = Math.sin(time / 105 + t * 9.5) * size * 0.14 * tailInfluence;
-    const slapOffset = slapWave * size * (isEnemy ? -0.74 : 0.84) * tailInfluence;
-    const slapSnap = slapWave * size * 0.12 * tailInfluence;
+    const swimOffset = Math.sin(time / 150 + t * 5.0) * size * 0.032 * bellyInfluence;
+    const tailKick = Math.sin(time / 105 + t * 10.5) * size * 0.18 * tailInfluence;
+    const slapOffset = slapWave * size * (isEnemy ? -0.62 : 0.68) * tailInfluence;
+    const slapSnap = slapWave * size * 0.06 * tailInfluence;
     const dy = -drawH / 2 + swimOffset + tailKick + slapOffset;
 
     ctx.drawImage(image, sx, 0, sw, sourceH, dx + slapSnap, dy, dw, drawH);
@@ -388,24 +390,41 @@ export function WhaleBattleGame() {
       ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
     };
 
-    const fireWater = (owner: 'player' | 'enemy') => {
+    const fireWater = (owner: 'player' | 'enemy', aimPoint?: { x: number; y: number }) => {
       const game = gameRef.current;
       const whale = owner === 'player' ? game.player : game.enemy;
       const target = owner === 'player' ? game.enemy : game.player;
       if (whale.waterCooldown > 0 || game.status !== 'playing') return;
-      const angle = Math.atan2(target.y - whale.y, target.x - whale.x);
-      const speed = owner === 'player' ? 9.5 : 7.4;
+
+      const aimTarget = aimPoint && distance(aimPoint, whale) > whale.size * 0.65 ? aimPoint : target;
+      const angle = Math.atan2(aimTarget.y - whale.y, aimTarget.x - whale.x);
+      const speed = owner === 'player' ? 10.8 : 7.2;
+      const startX = whale.x + Math.cos(angle) * whale.size * 1.65;
+      const startY = whale.y + Math.sin(angle) * whale.size * 0.62;
+
       game.projectiles.push({
-        x: whale.x + Math.cos(angle) * whale.size * 0.95,
-        y: whale.y + Math.sin(angle) * whale.size * 0.45,
+        x: startX,
+        y: startY,
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed,
         owner,
-        life: owner === 'player' ? 58 : 80,
-        radius: owner === 'player' ? 9 : 8,
+        life: owner === 'player' ? 64 : 82,
+        radius: owner === 'player' ? 8.5 : 8,
       });
-      whale.waterCooldown = owner === 'player' ? 18 : 68;
-      setHint(owner === 'player' ? 'Water blast launched! Use Space when close for tail slap.' : 'Enemy whale fired water! Dodge it.');
+
+      for (let i = 0; i < 5; i++) {
+        game.splashes.push({
+          x: startX - Math.cos(angle) * i * 6,
+          y: startY - Math.sin(angle) * i * 5,
+          vx: -Math.cos(angle) * (0.5 + Math.random() * 1.4) + (Math.random() - 0.5) * 1.8,
+          vy: -Math.sin(angle) * (0.5 + Math.random() * 1.4) + (Math.random() - 0.5) * 1.8,
+          life: 10 + Math.random() * 8,
+          radius: 1.5 + Math.random() * 3,
+        });
+      }
+
+      whale.waterCooldown = owner === 'player' ? 14 : 70;
+      setHint(owner === 'player' ? 'Water blast launched straight from the whale mouth.' : 'Enemy whale fired water! Dodge it.');
     };
 
     const tailSlap = () => {
@@ -429,11 +448,11 @@ export function WhaleBattleGame() {
         const knockDirection = game.enemy.x >= game.player.x ? 1 : -1;
         game.enemy.health = clamp(game.enemy.health - 20, 0, game.enemy.maxHealth);
         game.enemy.hitFlash = 18;
-        game.enemy.stun = 28;
-        game.enemy.spin = -knockDirection * 0.65;
-        game.enemy.vx = knockDirection * 23;
-        game.enemy.vy = -9 - Math.random() * 5;
-        setHint('Power tail slap! Enemy whale flies across the water. Finish it with water blasts.');
+        game.enemy.stun = 18;
+        game.enemy.spin = -knockDirection * 0.28;
+        game.enemy.vx = knockDirection * 11.5;
+        game.enemy.vy = -4.5 - Math.random() * 2.5;
+        setHint('Tail slap hit! Enemy whale is knocked back, but not out of the arena.');
       } else {
         setHint('Tail slap missed. Get very close first — this fight is tougher now.');
       }
@@ -449,7 +468,7 @@ export function WhaleBattleGame() {
     };
     const handlePointerDown = (event: PointerEvent) => {
       handlePointerMove(event);
-      fireWater('player');
+      fireWater('player', pointerRef.current);
     };
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.code === 'Space') {
@@ -478,10 +497,12 @@ export function WhaleBattleGame() {
         const pointer = pointerRef.current;
         const playerTargetX = pointer.active ? pointer.x : game.player.x;
         const playerTargetY = pointer.active ? pointer.y : game.player.y;
-        game.player.vx += (playerTargetX - game.player.x) * 0.018 * delta;
-        game.player.vy += (playerTargetY - game.player.y) * 0.018 * delta;
-        game.player.vx *= 0.86;
-        game.player.vy *= 0.86;
+        const playerDx = playerTargetX - game.player.x;
+        const playerDy = playerTargetY - game.player.y;
+        game.player.vx += playerDx * 0.034 * delta;
+        game.player.vy += playerDy * 0.034 * delta;
+        game.player.vx = clamp(game.player.vx * 0.76, -14, 14);
+        game.player.vy = clamp(game.player.vy * 0.76, -14, 14);
         game.player.x += game.player.vx * delta;
         game.player.y += game.player.vy * delta;
         game.player.x = clamp(game.player.x, game.player.size * 1.8, width - game.player.size * 1.8);
@@ -498,9 +519,9 @@ export function WhaleBattleGame() {
           game.enemy.vx *= 0.90;
           game.enemy.vy *= 0.90;
         } else {
-          game.enemy.vx *= 0.965;
-          game.enemy.vy *= 0.965;
-          game.enemy.vy += 0.24 * delta;
+          game.enemy.vx *= 0.88;
+          game.enemy.vy *= 0.88;
+          game.enemy.vy += 0.16 * delta;
         }
         game.enemy.x += game.enemy.vx * delta;
         game.enemy.y += game.enemy.vy * delta;
@@ -510,12 +531,12 @@ export function WhaleBattleGame() {
         const enemyMaxY = height - game.enemy.size * 1.3;
         if (game.enemy.x < enemyMinX || game.enemy.x > enemyMaxX) {
           game.enemy.x = clamp(game.enemy.x, enemyMinX, enemyMaxX);
-          game.enemy.vx *= -0.72;
+          game.enemy.vx *= -0.45;
           game.enemy.spin *= -0.55;
         }
         if (game.enemy.y < enemyMinY || game.enemy.y > enemyMaxY) {
           game.enemy.y = clamp(game.enemy.y, enemyMinY, enemyMaxY);
-          game.enemy.vy *= -0.62;
+          game.enemy.vy *= -0.42;
         }
         game.enemy.facing = game.player.x >= game.enemy.x ? 1 : -1;
 
@@ -554,8 +575,8 @@ export function WhaleBattleGame() {
           if (distance(projectile, target) < target.size * 0.72) {
             target.health = clamp(target.health - (projectile.owner === 'player' ? 7 : 9), 0, target.maxHealth);
             target.hitFlash = 10;
-            target.vx += projectile.vx * 0.42;
-            target.vy += projectile.vy * 0.32;
+            target.vx += projectile.vx * 0.24;
+            target.vy += projectile.vy * 0.18;
             for (let i = 0; i < 9; i++) {
               game.splashes.push({
                 x: projectile.x,
