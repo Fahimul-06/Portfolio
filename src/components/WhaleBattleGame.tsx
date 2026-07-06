@@ -645,9 +645,6 @@ export function WhaleBattleGame() {
               <Waves size={14} /> Interactive skill arena
             </div>
             <h3 className="text-2xl font-bold text-gray-100 lg:text-3xl">Real Whale Water Battle</h3>
-            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-400">
-              Move with your mouse or finger, tap/click to fire water, and press Space for a heavy tail slap. The uploaded whale sprite now swims with body waves, tail motion, and knockback physics.
-            </p>
           </div>
           <button
             onClick={resetGame}
