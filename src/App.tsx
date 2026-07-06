@@ -273,11 +273,19 @@ function HeroMediaSlide({
   }
 
   return (
-    <img
-      src={item.media_url}
-      alt={item.title || "Hero media"}
-      className="h-full w-full object-cover"
-    />
+    <div className="relative h-full w-full overflow-hidden bg-slate-950">
+      <img
+        src={item.media_url}
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 h-full w-full scale-110 object-cover opacity-40 blur-2xl"
+      />
+      <img
+        src={item.media_url}
+        alt={item.title || "Hero media"}
+        className="relative z-10 h-full w-full object-contain object-center"
+      />
+    </div>
   );
 }
 
@@ -611,11 +619,19 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
                 )}
               </>
             ) : about?.hero_background_url ? (
-              <img
-                src={about.hero_background_url}
-                alt="Hero"
-                className="h-full w-full object-cover"
-              />
+              <div className="relative h-full w-full overflow-hidden bg-slate-950">
+                <img
+                  src={about.hero_background_url}
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 h-full w-full scale-110 object-cover opacity-40 blur-2xl"
+                />
+                <img
+                  src={about.hero_background_url}
+                  alt="Hero"
+                  className="relative z-10 h-full w-full object-contain object-center"
+                />
+              </div>
             ) : (
               <div className="flex h-full items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 px-4 text-center">
                 <p className="text-lg text-gray-500">No hero media added yet.</p>

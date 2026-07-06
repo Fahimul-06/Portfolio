@@ -32,6 +32,68 @@ const emptyForm: FormState = {
   is_active: true,
 };
 
+
+const HERO_IMAGE_MAX_WIDTH = 1920;
+const HERO_IMAGE_MAX_HEIGHT = 1080;
+const HERO_IMAGE_QUALITY = 0.9;
+
+async function resizeHeroImageForUpload(file: File): Promise<File> {
+  // Keep animated GIFs untouched so animation is not lost.
+  if (file.type === "image/gif") return file;
+
+  const imageBitmap = await createImageBitmap(file);
+  const scale = Math.min(
+    1,
+    HERO_IMAGE_MAX_WIDTH / imageBitmap.width,
+    HERO_IMAGE_MAX_HEIGHT / imageBitmap.height,
+  );
+
+  const targetWidth = Math.max(1, Math.round(imageBitmap.width * scale));
+  const targetHeight = Math.max(1, Math.round(imageBitmap.height * scale));
+
+  const canvas = document.createElement("canvas");
+  canvas.width = targetWidth;
+  canvas.height = targetHeight;
+
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return file;
+
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(imageBitmap, 0, 0, targetWidth, targetHeight);
+  imageBitmap.close?.();
+
+  const blob = await new Promise<Blob | null>((resolve) =>
+    canvas.toBlob(resolve, "image/webp", HERO_IMAGE_QUALITY),
+  );
+
+  if (!blob) return file;
+
+  const originalName = file.name.replace(/\.[^/.]+$/, "");
+  return new File([blob], `${originalName}-hero.webp`, {
+    type: "image/webp",
+    lastModified: Date.now(),
+  });
+}
+
+function fittedHeroImage(src: string, alt: string, className = "h-48") {
+  return (
+    <div className={`relative w-full overflow-hidden rounded-xl border border-slate-700 bg-slate-950 ${className}`}>
+      <img
+        src={src}
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 h-full w-full scale-110 object-cover opacity-35 blur-xl"
+      />
+      <img
+        src={src}
+        alt={alt}
+        className="relative z-10 h-full w-full object-contain object-center"
+      />
+    </div>
+  );
+}
+
 function isVideoUrl(url: string) {
   return (
     /\.(mp4|webm|ogg|mov|m4v)(\?|#|$)/i.test(url) ||
@@ -135,13 +197,7 @@ function mediaPreview(item: {
     );
   }
 
-  return (
-    <img
-      src={item.media_url}
-      alt={item.title || "Hero media"}
-      className="h-48 w-full rounded-xl border border-slate-700 bg-slate-800 object-cover"
-    />
-  );
+  return fittedHeroImage(item.media_url, item.title || "Hero media");
 }
 
 export function HeroMediaManager() {
@@ -197,7 +253,16 @@ export function HeroMediaManager() {
       await deleteFile(form.media_url);
     }
 
-    const url = await uploadFile(file, "hero-media");
+    let uploadTarget = file;
+    if (isImage) {
+      try {
+        uploadTarget = await resizeHeroImageForUpload(file);
+      } catch {
+        uploadTarget = file;
+      }
+    }
+
+    const url = await uploadFile(uploadTarget, "hero-media");
     setUploading(false);
 
     if (!url) {
@@ -305,7 +370,7 @@ export function HeroMediaManager() {
               {editingId ? "Edit Hero Media" : "Add Hero Media"}
             </h2>
             <p className="text-sm text-gray-500">
-              Images: JPG, PNG, WebP, GIF. Videos: MP4, WebM, OGG. Max 100MB.
+              Images are automatically resized and fitted to the hero box. Videos: MP4, WebM, OGG. Max 100MB.
             </p>
           </div>
           {editingId && (
@@ -435,7 +500,7 @@ export function HeroMediaManager() {
                 ) : (
                   <Upload size={18} />
                 )}
-                {uploading ? "Uploading..." : "Upload Photo/Video"}
+                {uploading ? "Resizing & Uploading..." : "Upload Photo/Video"}
               </button>
               <button
                 type="submit"
@@ -499,11 +564,19 @@ export function HeroMediaManager() {
                       controls
                     />
                   ) : (
-                    <img
-                      src={item.media_url}
-                      alt={item.title || "Hero media"}
-                      className="h-48 w-full bg-slate-800 object-cover"
-                    />
+                    <div className="relative h-48 w-full overflow-hidden bg-slate-950">
+                      <img
+                        src={item.media_url}
+                        alt=""
+                        aria-hidden="true"
+                        className="absolute inset-0 h-full w-full scale-110 object-cover opacity-35 blur-xl"
+                      />
+                      <img
+                        src={item.media_url}
+                        alt={item.title || "Hero media"}
+                        className="relative z-10 h-full w-full object-contain object-center"
+                      />
+                    </div>
                   )}
                   <div className="absolute left-3 top-3 flex items-center gap-2 rounded-full bg-black/60 px-3 py-1 text-xs font-medium text-white backdrop-blur">
                     {item.media_type === "video" ? (
