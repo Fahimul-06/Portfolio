@@ -5,6 +5,7 @@ import { AdminDashboard } from "./components/AdminDashboard";
 import { CustomerLiveCall } from "./components/CustomerLiveCall";
 import { VisitorLocationPrompt } from "./components/VisitorLocationPrompt";
 import { LiveChatWidget } from "./components/LiveChatWidget";
+import { WhaleBattleGame } from "./components/WhaleBattleGame";
 import {
   Menu,
   X,
@@ -41,124 +42,6 @@ import type {
 } from "./lib/supabase";
 
 type View = "portfolio" | "admin";
-
-
-type InteractiveSkillWhaleProps = {
-  onEat: (skillId: string, skillName: string) => void;
-};
-
-function InteractiveSkillWhale({ onEat }: InteractiveSkillWhaleProps) {
-  const whaleRef = useRef<HTMLDivElement | null>(null);
-  const lastEatRef = useRef<Record<string, number>>({});
-  const [position, setPosition] = useState({ x: 80, y: 140 });
-  const [facingLeft, setFacingLeft] = useState(false);
-  const [message, setMessage] = useState("Move me with your cursor 🐳");
-  const [isEating, setIsEating] = useState(false);
-
-  useEffect(() => {
-    let raf = 0;
-    let lastX = position.x;
-
-    const moveWhale = (clientX: number, clientY: number) => {
-      const section = document.getElementById("skills");
-      if (!section) return;
-      const rect = section.getBoundingClientRect();
-      const x = clientX - rect.left;
-      const y = clientY - rect.top;
-
-      if (x < -80 || y < -80 || x > rect.width + 80 || y > rect.height + 80) {
-        return;
-      }
-
-      cancelAnimationFrame(raf);
-      raf = window.requestAnimationFrame(() => {
-        setFacingLeft(x < lastX);
-        lastX = x;
-        setPosition({
-          x: Math.max(44, Math.min(rect.width - 44, x)),
-          y: Math.max(60, Math.min(rect.height - 60, y)),
-        });
-
-        const target = document
-          .elementsFromPoint(clientX, clientY)
-          .find((el) => el instanceof HTMLElement && el.dataset.whaleSkillId) as
-          | HTMLElement
-          | undefined;
-
-        if (!target) return;
-
-        const skillId = target.dataset.whaleSkillId;
-        const skillName = target.dataset.whaleSkillName || "skill";
-        if (!skillId) return;
-
-        const now = Date.now();
-        if (lastEatRef.current[skillId] && now - lastEatRef.current[skillId] < 2500) {
-          return;
-        }
-
-        lastEatRef.current[skillId] = now;
-        setIsEating(true);
-        setMessage(`Yummy, but tough to eat! ${skillName}`);
-        onEat(skillId, skillName);
-        window.setTimeout(() => setIsEating(false), 650);
-        window.setTimeout(() => setMessage("Move me to another skill box 🐳"), 1900);
-      });
-    };
-
-    const handlePointerMove = (event: PointerEvent) => {
-      moveWhale(event.clientX, event.clientY);
-    };
-
-    const handleTouchMove = (event: TouchEvent) => {
-      const touch = event.touches[0];
-      if (touch) moveWhale(touch.clientX, touch.clientY);
-    };
-
-    window.addEventListener("pointermove", handlePointerMove);
-    window.addEventListener("touchmove", handleTouchMove, { passive: true });
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("pointermove", handlePointerMove);
-      window.removeEventListener("touchmove", handleTouchMove);
-    };
-  }, [onEat, position.x, position.y]);
-
-  return (
-    <div
-      className="pointer-events-none absolute inset-0 z-30 hidden sm:block"
-      aria-hidden="true"
-    >
-      <div
-        ref={whaleRef}
-        className="absolute transition-transform duration-300 ease-out will-change-transform"
-        style={{
-          transform: `translate3d(${position.x - 72}px, ${position.y - 48}px, 0) ${facingLeft ? "scaleX(-1)" : "scaleX(1)"}`,
-        }}
-      >
-        <div className={`relative whale-3d ${isEating ? "whale-3d-eating" : ""}`}>
-          <div className="absolute -top-12 left-1/2 min-w-[210px] -translate-x-1/2 rounded-2xl border border-cyan-300/30 bg-slate-950/90 px-4 py-2 text-center text-xs font-semibold text-cyan-100 shadow-2xl shadow-cyan-500/20 backdrop-blur-xl">
-            {message}
-            <span className="absolute -bottom-2 left-1/2 h-4 w-4 -translate-x-1/2 rotate-45 border-b border-r border-cyan-300/30 bg-slate-950/90" />
-          </div>
-          <div className="whale-tail" />
-          <div className="whale-body">
-            <div className="whale-shine" />
-            <div className="whale-eye" />
-            <div className="whale-mouth" />
-            <div className="whale-belly" />
-            <div className="whale-fin" />
-            <div className="whale-spout">
-              <span />
-              <span />
-              <span />
-            </div>
-          </div>
-          <div className="whale-shadow" />
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function App() {
   const [view, setView] = useState<View>(() =>
@@ -430,8 +313,6 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
   const [heroMedia, setHeroMedia] = useState<HeroMedia[]>([]);
   const [activeHeroIndex, setActiveHeroIndex] = useState(0);
   const [skills, setSkills] = useState<Skill[]>([]);
-  const [eatenSkillIds, setEatenSkillIds] = useState<Set<string>>(() => new Set());
-  const eatTimersRef = useRef<Record<string, number>>({});
   const [projects, setProjects] = useState<Project[]>([]);
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [education, setEducation] = useState<Education[]>([]);
@@ -441,14 +322,6 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
 
   useEffect(() => {
     fetchAllData();
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      Object.values(eatTimersRef.current).forEach((timerId) => {
-        window.clearTimeout(timerId);
-      });
-    };
   }, []);
 
   useEffect(() => {
@@ -479,30 +352,6 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const handleWhaleEatSkill = (skillId: string) => {
-    if (!skills.some((skill) => skill.id === skillId)) return;
-
-    setEatenSkillIds((previous) => {
-      if (previous.has(skillId)) return previous;
-      const next = new Set(previous);
-      next.add(skillId);
-      return next;
-    });
-
-    if (eatTimersRef.current[skillId]) {
-      window.clearTimeout(eatTimersRef.current[skillId]);
-    }
-
-    eatTimersRef.current[skillId] = window.setTimeout(() => {
-      setEatenSkillIds((previous) => {
-        const next = new Set(previous);
-        next.delete(skillId);
-        return next;
-      });
-      delete eatTimersRef.current[skillId];
-    }, 3600);
-  };
 
   const fetchAllData = async () => {
     const [
@@ -1001,15 +850,14 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
             </p>
           </div>
 
+          <WhaleBattleGame />
+
           {/* Skills Categories */}
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16 stagger-children">
             {skillCategories.map((cat) => {
               const Icon = cat.icon;
               const categorySkills = skills.filter(
                 (s) => s.category === cat.key,
-              );
-              const visibleCategorySkills = categorySkills.filter(
-                (skill) => !eatenSkillIds.has(skill.id),
               );
               return (
                 <div
@@ -1025,18 +873,8 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
                     </h3>
                   </div>
                   <div className="space-y-4">
-                    {visibleCategorySkills.length === 0 && categorySkills.length > 0 && (
-                      <div className="rounded-xl border border-cyan-400/20 bg-cyan-400/10 px-4 py-3 text-sm text-cyan-100 animate-bounce-in">
-                        The whale ate these skills. They will swim back soon.
-                      </div>
-                    )}
-                    {visibleCategorySkills.map((skill, skillIndex) => (
-                      <div
-                        key={skill.id}
-                        data-whale-skill-id={skill.id}
-                        data-whale-skill-name={skill.name}
-                        className="rounded-xl p-2 transition-all duration-300 hover:bg-slate-800/40"
-                      >
+                    {categorySkills.map((skill, skillIndex) => (
+                      <div key={skill.id}>
                         <div className="flex justify-between text-sm mb-1">
                           <span className="text-gray-300">{skill.name}</span>
                           <span className="text-cyan-400 font-medium">
@@ -1060,15 +898,11 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
             })}
           </div>
 
-          <InteractiveSkillWhale onEat={handleWhaleEatSkill} />
-
           {/* Skill Tags */}
-          <div className="relative z-20 flex flex-wrap justify-center gap-3">
-            {skills.filter((skill) => !eatenSkillIds.has(skill.id)).map((skill, index) => (
+          <div className="flex flex-wrap justify-center gap-3">
+            {skills.map((skill, index) => (
               <span
                 key={skill.id}
-                data-whale-skill-id={skill.id}
-                data-whale-skill-name={skill.name}
                 className="px-4 py-2 glass rounded-full text-sm text-gray-300 hover:text-cyan-400 transition-all duration-300 cursor-default border border-slate-700/50 hover:border-cyan-500/50 hover:scale-105 animate-float"
                 style={{
                   animationDelay: `${index * 0.1}s`,
