@@ -191,6 +191,97 @@ function drawWhale(ctx: CanvasRenderingContext2D, whale: Whale, color: string, a
   ctx.restore();
 }
 
+
+function drawWhaleSprite(
+  ctx: CanvasRenderingContext2D,
+  whale: Whale,
+  image: HTMLImageElement | null,
+  time: number,
+  isEnemy = false,
+) {
+  if (!image || !image.complete || image.naturalWidth === 0) {
+    drawWhale(ctx, whale, isEnemy ? '#7c3aed' : '#0891b2', isEnemy ? '#f0abfc' : '#67e8f9', time, isEnemy);
+    return;
+  }
+
+  const { x, y, size, facing } = whale;
+  const swimPulse = Math.sin(time / 260 + x / 80);
+  const bodyBob = swimPulse * 3.2;
+  const bodyStretch = 1 + Math.sin(time / 330 + y / 70) * 0.025;
+  const tilt = clamp(whale.vy / 18, -0.24, 0.24) + whale.spin + Math.sin(time / 410) * 0.025;
+  const swingProgress = clamp(whale.tailSwing / 24, 0, 1);
+  const slapWave = swingProgress > 0 ? Math.sin((1 - swingProgress) * Math.PI) : 0;
+
+  const drawW = size * 4.7;
+  const drawH = size * 2.28;
+  const sourceW = image.naturalWidth;
+  const sourceH = image.naturalHeight;
+  const slices = 36;
+
+  ctx.save();
+  ctx.translate(x, y + bodyBob);
+  // Uploaded whale faces left. This transform makes the head face the target direction.
+  ctx.scale(-facing * bodyStretch, 1);
+  ctx.rotate(tilt);
+
+  ctx.shadowColor = whale.hitFlash > 0 ? '#fecaca' : isEnemy ? '#c084fc' : '#22d3ee';
+  ctx.shadowBlur = whale.hitFlash > 0 ? 30 : 18;
+  ctx.globalAlpha = whale.hitFlash > 0 ? 0.86 : 1;
+  ctx.filter = isEnemy ? 'hue-rotate(65deg) saturate(1.25) contrast(1.04)' : 'saturate(1.08) contrast(1.04)';
+
+  for (let i = 0; i < slices; i++) {
+    const t = i / (slices - 1);
+    const sx = Math.floor(t * sourceW);
+    const sw = Math.ceil(sourceW / slices) + 1;
+    const dx = -drawW / 2 + t * drawW;
+    const dw = drawW / slices + 1.6;
+
+    // Source tail is on the right side of the uploaded image. Because the canvas is flipped
+    // for facing, this still creates a convincing flexible tail/tail-slap motion.
+    const tailInfluence = Math.pow(clamp((t - 0.58) / 0.42, 0, 1), 1.8);
+    const bellyInfluence = Math.sin(t * Math.PI);
+    const swimOffset = Math.sin(time / 135 + t * 5.8) * size * 0.055 * bellyInfluence;
+    const tailKick = Math.sin(time / 105 + t * 9.5) * size * 0.14 * tailInfluence;
+    const slapOffset = slapWave * size * (isEnemy ? -0.74 : 0.84) * tailInfluence;
+    const slapSnap = slapWave * size * 0.12 * tailInfluence;
+    const dy = -drawH / 2 + swimOffset + tailKick + slapOffset;
+
+    ctx.drawImage(image, sx, 0, sw, sourceH, dx + slapSnap, dy, dw, drawH);
+  }
+
+  ctx.filter = 'none';
+  ctx.globalAlpha = 1;
+
+  if (slapWave > 0.1) {
+    const tailX = drawW / 2 - size * 0.22;
+    const tailY = slapWave * size * (isEnemy ? -0.35 : 0.35);
+    ctx.save();
+    ctx.globalAlpha = 0.34 + slapWave * 0.38;
+    ctx.strokeStyle = '#e0f2fe';
+    ctx.lineWidth = Math.max(3, size * 0.07);
+    ctx.beginPath();
+    ctx.arc(tailX, tailY, size * (0.62 + slapWave * 0.52), -1.2, 1.2);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // Water speed lines around the moving body to make swimming feel alive.
+  ctx.save();
+  ctx.globalAlpha = 0.18;
+  ctx.strokeStyle = '#cffafe';
+  ctx.lineWidth = 1.4;
+  for (let i = 0; i < 4; i++) {
+    const lineY = -size * 0.48 + i * size * 0.28 + Math.sin(time / 180 + i) * 2;
+    ctx.beginPath();
+    ctx.moveTo(-drawW * 0.35, lineY);
+    ctx.quadraticCurveTo(-drawW * 0.05, lineY + swimPulse * 5, drawW * 0.28, lineY + Math.cos(time / 210 + i) * 5);
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  ctx.restore();
+}
+
 function drawProjectile(ctx: CanvasRenderingContext2D, projectile: Projectile) {
   const gradient = ctx.createRadialGradient(
     projectile.x - projectile.radius * 0.35,
@@ -256,11 +347,21 @@ function createInitialGame(width: number, height: number) {
 export function WhaleBattleGame() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const rafRef = useRef<number | null>(null);
+  const whaleImageRef = useRef<HTMLImageElement | null>(null);
   const gameRef = useRef(createInitialGame(760, 360));
   const pointerRef = useRef({ x: 190, y: 180, active: false });
   const [status, setStatus] = useState<GameStatus>('playing');
   const [health, setHealth] = useState({ player: 100, enemy: 130, enemyMax: 130 });
   const [hint, setHint] = useState('Move mouse/finger to swim. Click/tap to shoot water. Press Space for tail slap.');
+
+  useEffect(() => {
+    const img = new Image();
+    img.src = '/assets/whale-sprite.png';
+    img.onload = () => {
+      whaleImageRef.current = img;
+    };
+    whaleImageRef.current = img;
+  }, []);
 
   const resetGame = () => {
     const canvas = canvasRef.current;
@@ -501,8 +602,8 @@ export function WhaleBattleGame() {
         ctx.fill();
         ctx.restore();
       });
-      drawWhale(ctx, game.player, '#0891b2', '#67e8f9', time, false);
-      drawWhale(ctx, game.enemy, '#7c3aed', '#f0abfc', time, true);
+      drawWhaleSprite(ctx, game.player, whaleImageRef.current, time, false);
+      drawWhaleSprite(ctx, game.enemy, whaleImageRef.current, time, true);
 
       if (game.status !== 'playing') {
         ctx.save();
@@ -543,9 +644,9 @@ export function WhaleBattleGame() {
             <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-cyan-200">
               <Waves size={14} /> Interactive skill arena
             </div>
-            <h3 className="text-2xl font-bold text-gray-100 lg:text-3xl">3D Whale Water Battle</h3>
+            <h3 className="text-2xl font-bold text-gray-100 lg:text-3xl">Real Whale Water Battle</h3>
             <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-400">
-              Move with your mouse or finger, tap/click to fire water, and press Space for a heavy tail slap. A clean slap knocks the enemy whale across the arena — but the enemy is tougher now.
+              Move with your mouse or finger, tap/click to fire water, and press Space for a heavy tail slap. The uploaded whale sprite now swims with body waves, tail motion, and knockback physics.
             </p>
           </div>
           <button
