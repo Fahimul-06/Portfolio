@@ -583,10 +583,10 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
       {/* Hero Section */}
       <section
         id="home"
-        className="relative bg-slate-950 px-4 pb-8 pt-24 sm:px-6 sm:pb-10 sm:pt-28 lg:px-8"
+        className="relative bg-slate-950 pb-8 pt-24 sm:pb-10 sm:pt-28"
       >
-        <div className="mx-auto max-w-7xl">
-          <div className="relative h-[260px] overflow-hidden rounded-3xl border border-cyan-400/20 bg-slate-900 shadow-2xl shadow-cyan-950/30 ring-1 ring-white/10 sm:h-[340px] lg:h-[420px]">
+        <div className="w-screen max-w-none">
+          <div className="relative aspect-square w-screen overflow-hidden rounded-none border-y border-cyan-400/30 bg-slate-900 shadow-2xl shadow-cyan-950/30 ring-1 ring-white/10">
             {heroMedia.length > 0 ? (
               <>
                 {heroMedia.map((item, index) => {
@@ -609,8 +609,8 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
                   );
                 })}
 
-                <div className="pointer-events-none absolute inset-0 z-20 rounded-3xl bg-gradient-to-t from-slate-950/55 via-transparent to-black/20" />
-                <div className="pointer-events-none absolute inset-0 z-20 rounded-3xl border border-white/10" />
+                <div className="pointer-events-none absolute inset-0 z-20 rounded-none bg-gradient-to-t from-slate-950/55 via-transparent to-black/20" />
+                <div className="pointer-events-none absolute inset-0 z-20 rounded-none border-y border-white/10" />
 
                 {heroMedia.length > 1 && (
                   <div className="absolute bottom-5 left-1/2 z-30 flex -translate-x-1/2 items-center gap-3 rounded-full bg-black/40 px-4 py-3 backdrop-blur-md">
