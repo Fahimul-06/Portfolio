@@ -17,13 +17,13 @@ export function FileUpload({ value, onChange, accept, label, folder }: FileUploa
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const acceptTypes = {
-    image: 'image/jpeg,image/png,image/gif,image/webp',
+    image: 'image/jpeg,image/png,image/gif,image/webp,image/avif',
     pdf: 'application/pdf',
-    all: 'image/jpeg,image/png,image/gif,image/webp,application/pdf',
+    all: 'image/jpeg,image/png,image/gif,image/webp,image/avif,application/pdf',
   };
 
   const isImage = (url: string) => {
-    return /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
+    return /\.(jpg|jpeg|png|gif|webp|avif)$/i.test(url);
   };
 
   const handleUpload = async (file: File) => {
@@ -201,7 +201,7 @@ export function FileUpload({ value, onChange, accept, label, folder }: FileUploa
                 </p>
                 <p className="text-sm text-gray-500 mt-1">
                   {accept === 'image'
-                    ? 'PNG, JPG, GIF, WebP (max 5MB)'
+                    ? 'PNG, JPG, GIF, WebP, AVIF (max 5MB)'
                     : accept === 'pdf'
                     ? 'PDF files only (max 5MB)'
                     : 'Images or PDF (max 5MB)'}

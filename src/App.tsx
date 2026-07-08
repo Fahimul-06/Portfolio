@@ -672,42 +672,15 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Profile Image */}
             <div className="relative order-1 lg:order-none">
-              <div className="robot-profile-frame group relative mx-auto max-w-md lg:max-w-lg">
-                <div className="robot-orbit robot-orbit-one" />
-                <div className="robot-orbit robot-orbit-two" />
-
-                <div className="robot-frame-panel relative overflow-hidden rounded-[2rem] border border-cyan-300/40 bg-slate-950 p-3 shadow-2xl shadow-cyan-950/60">
-                  <div className="robot-corner robot-corner-tl" />
-                  <div className="robot-corner robot-corner-tr" />
-                  <div className="robot-corner robot-corner-bl" />
-                  <div className="robot-corner robot-corner-br" />
-
-                  <div className="pointer-events-none absolute inset-3 rounded-[1.5rem] border border-white/10" />
-                  <div className="pointer-events-none absolute inset-0 robot-circuit-grid opacity-70" />
-
-                  <div className="relative overflow-hidden rounded-[1.5rem] bg-slate-900">
-                    <img
-                      src={
-                        about?.profile_image_url ||
-                        "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=800"
-                      }
-                      alt={about?.name || "Profile"}
-                      className="relative z-10 w-full aspect-square object-cover grayscale-[15%] contrast-110 transition duration-700 group-hover:scale-105 group-hover:grayscale-0"
-                    />
-                    <div className="pointer-events-none absolute inset-0 z-20 bg-gradient-to-tr from-cyan-500/20 via-transparent to-teal-400/15 mix-blend-screen" />
-                    <div className="pointer-events-none absolute inset-0 z-30 robot-scan-lines" />
-                    <div className="pointer-events-none absolute inset-x-0 top-0 z-40 h-1/3 bg-gradient-to-b from-white/10 to-transparent" />
-                    <div className="pointer-events-none absolute left-0 right-0 top-0 z-50 h-1 bg-cyan-300/80 shadow-[0_0_24px_rgba(34,211,238,0.95)] animate-robot-scan" />
-                  </div>
-
-                  <div className="mt-3 flex items-center justify-between rounded-2xl border border-cyan-400/20 bg-slate-900/80 px-4 py-3 text-[11px] uppercase tracking-[0.28em] text-cyan-200">
-                    <span className="flex items-center gap-2">
-                      <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_14px_rgba(52,211,153,0.95)] animate-pulse" />
-                      Profile Online
-                    </span>
-                    <span className="text-teal-300">AI FRAME</span>
-                  </div>
-                </div>
+              <div className="relative max-w-xs sm:max-w-sm lg:max-w-md mx-auto">
+                <img
+                  src={
+                    about?.profile_image_url ||
+                    "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=800"
+                  }
+                  alt={about?.name || "Profile"}
+                  className="w-full aspect-square object-cover rounded-2xl shadow-2xl border border-slate-700/70 bg-slate-900"
+                />
               </div>
             </div>
 

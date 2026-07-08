@@ -190,9 +190,12 @@ export function AboutManager() {
             value={about.profile_image_url}
             onChange={(url) => setAbout({ ...about, profile_image_url: url })}
             accept="image"
-            label="Profile Image"
+            label="Profile Image / GIF"
             folder="profile"
           />
+          <p className="text-xs text-gray-500 mt-2">
+            Supports JPG, PNG, WebP, and animated GIF. Recommended: square image or GIF for best fit.
+          </p>
         </div>
 
         <div>
