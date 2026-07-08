@@ -586,7 +586,7 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
         className="relative bg-slate-950 pb-8 pt-24 sm:pb-10 sm:pt-28"
       >
         <div className="w-screen max-w-none">
-          <div className="relative aspect-square w-screen overflow-hidden rounded-none border-y border-cyan-400/30 bg-slate-900 shadow-2xl shadow-cyan-950/30 ring-1 ring-white/10">
+          <div className="relative h-[320px] w-screen overflow-hidden rounded-none border-y border-cyan-400/30 bg-slate-900 shadow-2xl shadow-cyan-950/30 ring-1 ring-white/10 sm:h-[420px] lg:h-[520px] xl:h-[560px]">
             {heroMedia.length > 0 ? (
               <>
                 {heroMedia.map((item, index) => {
