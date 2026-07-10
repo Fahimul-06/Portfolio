@@ -9,6 +9,7 @@ import jwt from 'jsonwebtoken';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 
 dotenv.config();
@@ -52,6 +53,12 @@ const VISITOR_IP_LOOKUP_ENABLED = String(process.env.VISITOR_IP_LOOKUP_ENABLED |
 const VISITOR_IP_LOOKUP_PROVIDER = process.env.VISITOR_IP_LOOKUP_PROVIDER || 'ipapi';
 const CHAT_ENABLED = String(process.env.CHAT_ENABLED || 'true') === 'true';
 const CHAT_MAX_UPLOAD_MB = Number(process.env.CHAT_MAX_UPLOAD_MB || '50');
+const UPLOAD_STORAGE = (process.env.UPLOAD_STORAGE || 'local').toLowerCase();
+const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME || '';
+const CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY || '';
+const CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET || '';
+const CLOUDINARY_FOLDER = (process.env.CLOUDINARY_FOLDER || 'portfolio').replace(/^\/+|\/+$/g, '');
+const USE_CLOUDINARY = UPLOAD_STORAGE === 'cloudinary' && CLOUDINARY_CLOUD_NAME && CLOUDINARY_API_KEY && CLOUDINARY_API_SECRET;
 
 
 app.use(cors({ origin: CLIENT_URL === '*' ? true : CLIENT_URL, credentials: true }));
@@ -805,7 +812,7 @@ function classifyChatAttachment(file = {}) {
 }
 
 function sanitizeChatMessage(text = '') {
-  return String(text || '').replace(/ /g, '').trim().slice(0, 3000);
+  return String(text || '').replace(/[\u0000]/g, '').trim().slice(0, 3000);
 }
 
 async function publicChatSession(session) {
@@ -813,42 +820,142 @@ async function publicChatSession(session) {
   return typeof session.toJSON === 'function' ? session.toJSON() : session;
 }
 
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, uploadsDir),
-  filename: (req, file, cb) => {
-    const folder = String(req.body.folder || 'general').replace(/[^a-zA-Z0-9-_]/g, '');
-    const ext = path.extname(file.originalname);
-    const base = `${folder}-${Date.now()}-${Math.random().toString(36).slice(2)}${ext}`;
-    cb(null, base);
-  },
-});
-const upload = multer({ storage, limits: { fileSize: Math.max(100, CHAT_MAX_UPLOAD_MB) * 1024 * 1024 } });
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: Math.max(100, CHAT_MAX_UPLOAD_MB) * 1024 * 1024 } });
 
-app.post('/api/chat/upload', upload.single('file'), (req, res) => {
-  if (!CHAT_ENABLED) return res.status(503).json({ message: 'Live chat is disabled.' });
-  if (!req.file) return res.status(400).json({ message: 'No file uploaded.' });
+function safeUploadFolder(folder = 'general') {
+  return String(folder || 'general').replace(/[^a-zA-Z0-9-_]/g, '') || 'general';
+}
 
-  const allowed = [
-    'image/jpeg', 'image/png', 'image/webp', 'image/gif',
-    'video/mp4', 'video/webm', 'video/ogg', 'video/quicktime',
-    'application/pdf', 'text/plain',
-    'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    'application/zip', 'application/x-zip-compressed'
-  ];
+function sanitizeFileName(name = 'file') {
+  return String(name || 'file').replace(/[^a-zA-Z0-9._-]/g, '-').slice(-120);
+}
 
-  if (!allowed.includes(req.file.mimetype)) {
-    try { fs.unlinkSync(req.file.path); } catch {}
-    return res.status(400).json({ message: 'This file type is not allowed for chat.' });
+async function saveLocalUpload(file, folder = 'general') {
+  const safeFolder = safeUploadFolder(folder);
+  const ext = path.extname(file.originalname || '');
+  const base = `${safeFolder}-${Date.now()}-${Math.random().toString(36).slice(2)}${ext}`;
+  const filePath = path.join(uploadsDir, base);
+  await fs.promises.writeFile(filePath, file.buffer);
+  return { url: `/uploads/${base}`, provider: 'local', fileName: file.originalname, fileSize: file.size, mimeType: file.mimetype };
+}
+
+function cloudinarySignature(params) {
+  const raw = Object.keys(params)
+    .filter((key) => params[key] !== undefined && params[key] !== null && params[key] !== '')
+    .sort()
+    .map((key) => `${key}=${params[key]}`)
+    .join('&');
+  return crypto.createHash('sha1').update(raw + CLOUDINARY_API_SECRET).digest('hex');
+}
+
+async function uploadToCloudinary(file, folder = 'general') {
+  if (!USE_CLOUDINARY) return saveLocalUpload(file, folder);
+
+  const safeFolder = safeUploadFolder(folder);
+  const timestamp = Math.floor(Date.now() / 1000);
+  const uploadFolder = `${CLOUDINARY_FOLDER}/${safeFolder}`.replace(/^\/+|\/+$/g, '');
+  const params = { folder: uploadFolder, timestamp };
+  const signature = cloudinarySignature(params);
+  const endpoint = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`;
+
+  const form = new FormData();
+  form.append('file', new Blob([file.buffer], { type: file.mimetype || 'application/octet-stream' }), sanitizeFileName(file.originalname));
+  form.append('api_key', CLOUDINARY_API_KEY);
+  form.append('timestamp', String(timestamp));
+  form.append('folder', uploadFolder);
+  form.append('signature', signature);
+
+  const response = await fetch(endpoint, { method: 'POST', body: form });
+  const payload = await response.json().catch(() => null);
+  if (!response.ok) {
+    const message = payload?.error?.message || payload?.message || `Cloudinary upload failed with status ${response.status}`;
+    throw new Error(message);
   }
 
-  res.json({
-    url: `/uploads/${req.file.filename}`,
-    fileName: req.file.originalname,
-    fileSize: req.file.size,
-    mimeType: req.file.mimetype,
-    messageType: classifyChatAttachment(req.file),
-  });
+  return {
+    url: payload.secure_url || payload.url,
+    provider: 'cloudinary',
+    publicId: payload.public_id,
+    resourceType: payload.resource_type,
+    fileName: file.originalname,
+    fileSize: file.size,
+    mimeType: file.mimetype,
+  };
+}
+
+function inferCloudinaryPublicId(fileUrl = '') {
+  try {
+    const parsed = new URL(fileUrl);
+    if (!parsed.hostname.includes('cloudinary.com')) return '';
+    const marker = '/upload/';
+    const idx = parsed.pathname.indexOf(marker);
+    if (idx < 0) return '';
+    let publicPath = parsed.pathname.slice(idx + marker.length);
+    publicPath = publicPath.replace(/^v\d+\//, '');
+    publicPath = decodeURIComponent(publicPath);
+    return publicPath.replace(/\.[a-zA-Z0-9]+$/, '');
+  } catch {
+    return '';
+  }
+}
+
+async function deleteFromCloudinary(fileUrl = '') {
+  if (!USE_CLOUDINARY) return false;
+  const publicId = inferCloudinaryPublicId(fileUrl);
+  if (!publicId) return false;
+
+  const auth = Buffer.from(`${CLOUDINARY_API_KEY}:${CLOUDINARY_API_SECRET}`).toString('base64');
+  for (const resourceType of ['image', 'video', 'raw']) {
+    const endpoint = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/resources/${resourceType}/upload/${encodeURIComponent(publicId)}`;
+    const response = await fetch(endpoint, { method: 'DELETE', headers: { Authorization: `Basic ${auth}` } });
+    if (response.ok) return true;
+  }
+  return false;
+}
+
+async function deleteStoredFile(fileUrl = '') {
+  if (!fileUrl) return false;
+  if (fileUrl.startsWith('/uploads/')) {
+    const filePath = path.join(uploadsDir, path.basename(fileUrl));
+    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    return true;
+  }
+  if (fileUrl.includes('cloudinary.com')) {
+    return deleteFromCloudinary(fileUrl);
+  }
+  return false;
+}
+
+app.post('/api/chat/upload', upload.single('file'), async (req, res) => {
+  try {
+    if (!CHAT_ENABLED) return res.status(503).json({ message: 'Live chat is disabled.' });
+    if (!req.file) return res.status(400).json({ message: 'No file uploaded.' });
+
+    const allowed = [
+      'image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif',
+      'video/mp4', 'video/webm', 'video/ogg', 'video/quicktime',
+      'application/pdf', 'text/plain',
+      'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/zip', 'application/x-zip-compressed'
+    ];
+
+    if (!allowed.includes(req.file.mimetype)) {
+      return res.status(400).json({ message: 'This file type is not allowed for chat.' });
+    }
+
+    const saved = await uploadToCloudinary(req.file, 'chat');
+    res.json({
+      url: saved.url,
+      fileName: req.file.originalname,
+      fileSize: req.file.size,
+      mimeType: req.file.mimetype,
+      messageType: classifyChatAttachment(req.file),
+      provider: saved.provider,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message || 'File upload failed.' });
+  }
 });
 
 app.get('/api/chat/sessions', requireAuth, async (req, res) => {
@@ -874,18 +981,22 @@ app.patch('/api/chat/sessions/:id', requireAuth, async (req, res) => {
   res.json(doc);
 });
 
-app.post('/api/upload', requireAuth, upload.single('file'), (req, res) => {
-  if (!req.file) return res.status(400).json({ message: 'No file uploaded.' });
-  res.json({ url: `/uploads/${req.file.filename}` });
+app.post('/api/upload', requireAuth, upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ message: 'No file uploaded.' });
+    const folder = req.body.folder || 'general';
+    const saved = await uploadToCloudinary(req.file, folder);
+    res.json(saved);
+  } catch (error) {
+    res.status(500).json({ message: error.message || 'File upload failed.' });
+  }
 });
 
-app.delete('/api/upload', requireAuth, (req, res) => {
+app.delete('/api/upload', requireAuth, async (req, res) => {
   try {
     const fileUrl = String(req.body.url || '');
-    if (!fileUrl.startsWith('/uploads/')) return res.json({ success: false });
-    const filePath = path.join(uploadsDir, path.basename(fileUrl));
-    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-    res.json({ success: true });
+    const success = await deleteStoredFile(fileUrl);
+    res.json({ success });
   } catch {
     res.json({ success: false });
   }
