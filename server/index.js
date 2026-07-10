@@ -234,6 +234,41 @@ const ChatMessage = mongoose.model('ChatMessage', new mongoose.Schema({
   mime_type: { type: String, default: '' },
 }, commonOptions), 'chat_messages');
 
+const CallHistory = mongoose.model('CallHistory', new mongoose.Schema({
+  call_id: { type: String, required: true, unique: true, index: true },
+  customer_name: { type: String, default: 'Website visitor' },
+  customer_email: { type: String, default: '' },
+  customer_phone: { type: String, default: '' },
+  status: { type: String, enum: ['ringing', 'accepted', 'rejected', 'cancelled', 'ended', 'missed', 'disconnected'], default: 'ringing', index: true },
+  ip_address: { type: String, default: '', index: true },
+  user_agent: { type: String, default: '' },
+  device: {
+    type: { type: String, default: 'Unknown' },
+    vendor: { type: String, default: '' },
+    model: { type: String, default: '' },
+    browser: { type: String, default: 'Unknown' },
+    os: { type: String, default: 'Unknown' },
+    is_mobile: { type: Boolean, default: false },
+  },
+  ip_location: {
+    city: { type: String, default: '' },
+    region: { type: String, default: '' },
+    country: { type: String, default: '' },
+    country_code: { type: String, default: '' },
+    lat: { type: Number, default: null },
+    lng: { type: Number, default: null },
+    isp: { type: String, default: '' },
+    provider: { type: String, default: '' },
+    lookup_at: { type: Date, default: null },
+  },
+  started_at: { type: Date, default: Date.now, index: true },
+  accepted_at: { type: Date, default: null },
+  ended_at: { type: Date, default: null },
+  duration_seconds: { type: Number, default: 0 },
+  end_reason: { type: String, default: '' },
+  admin_email: { type: String, default: '' },
+}, commonOptions), 'call_history');
+
 const modelMap = {
   about_info: AboutInfo,
   hero_media: HeroMedia,
@@ -554,6 +589,40 @@ function getClientIp(req) {
   return raw.replace(/^::ffff:/, '').replace(/^::1$/, '127.0.0.1');
 }
 
+function getSocketIp(socket) {
+  const headers = socket.handshake?.headers || {};
+  const forwarded = String(headers['x-forwarded-for'] || '').split(',')[0].trim();
+  const raw = forwarded || socket.request?.socket?.remoteAddress || '';
+  return raw.replace(/^::ffff:/, '').replace(/^::1$/, '127.0.0.1');
+}
+
+function normalizeCallHistory(doc) {
+  if (!doc) return null;
+  return typeof doc.toJSON === 'function' ? doc.toJSON() : doc;
+}
+
+async function markCallHistory(call, status, reason = '', adminSocket = null) {
+  if (!call?.callId) return null;
+  const now = new Date();
+  const startedAt = call.startedAtDate || (call.createdAt ? new Date(call.createdAt) : now);
+  const acceptedAt = call.acceptedAt ? new Date(call.acceptedAt) : null;
+  const durationBase = acceptedAt || startedAt;
+  const durationSeconds = Math.max(0, Math.round((now.getTime() - durationBase.getTime()) / 1000));
+  return CallHistory.findOneAndUpdate(
+    { call_id: call.callId },
+    {
+      $set: {
+        status,
+        ended_at: now,
+        duration_seconds: durationSeconds,
+        end_reason: reason,
+        ...(adminSocket?.user?.email ? { admin_email: adminSocket.user.email } : {}),
+      },
+    },
+    { new: true }
+  ).exec();
+}
+
 function parseUserAgent(userAgent = '') {
   const ua = String(userAgent || '');
   const lower = ua.toLowerCase();
@@ -789,6 +858,26 @@ app.post('/api/sms/send', requireAuth, async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error instanceof Error ? error.message : 'Could not send SMS.' });
   }
+});
+
+app.get('/api/call/history', requireAuth, async (req, res) => {
+  const limit = Math.min(Number(req.query.limit || 100), 500);
+  const status = String(req.query.status || '').trim();
+  const filter = status ? { status } : {};
+  const docs = await CallHistory.find(filter).sort({ started_at: -1 }).limit(limit).exec();
+  res.json(docs.map(normalizeCallHistory));
+});
+
+app.get('/api/call/history/:id', requireAuth, async (req, res) => {
+  const doc = await CallHistory.findById(req.params.id).exec();
+  if (!doc) return res.status(404).json({ message: 'Call history not found.' });
+  res.json(normalizeCallHistory(doc));
+});
+
+app.delete('/api/call/history/:id', requireAuth, async (req, res) => {
+  const doc = await CallHistory.findByIdAndDelete(req.params.id).exec();
+  if (!doc) return res.status(404).json({ message: 'Call history not found.' });
+  res.json({ success: true });
 });
 
 app.get('/api/call/config', (_req, res) => {
@@ -1056,9 +1145,13 @@ function publicCall(call) {
     callId: call.callId,
     customerName: call.customerName,
     customerEmail: call.customerEmail,
+    customerPhone: call.customerPhone || '',
     status: call.status,
     createdAt: call.createdAt,
     acceptedAt: call.acceptedAt || null,
+    ipAddress: call.ipAddress || '',
+    device: call.device || null,
+    ipLocation: call.ipLocation || null,
   };
 }
 
@@ -1095,27 +1188,59 @@ io.on('connection', (socket) => {
     }).catch(() => {});
   }
 
-  socket.on('customer:start-call', (payload = {}, callback) => {
+  socket.on('customer:start-call', async (payload = {}, callback) => {
     if (!CALL_ENABLED) return callback?.({ ok: false, message: 'Live calling is disabled.' });
     if (socket.role !== 'customer') return;
 
-    const callId = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-    const call = {
-      callId,
-      customerSocketId: socket.id,
-      adminSocketId: null,
-      customerName: String(payload.customerName || 'Website visitor').slice(0, 80),
-      customerEmail: String(payload.customerEmail || '').slice(0, 120),
-      status: 'ringing',
-      createdAt: new Date().toISOString(),
-    };
+    try {
+      const callId = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+      const ipAddress = getSocketIp(socket);
+      const userAgent = String(socket.handshake.headers?.['user-agent'] || '').slice(0, 1200);
+      const device = parseUserAgent(userAgent);
+      const ipLocation = await lookupIpLocation(ipAddress);
+      const now = new Date();
+      const customerPhone = normalizeBangladeshPhone(payload.customerPhone || payload.phone || '');
 
-    activeCalls.set(callId, call);
-    socket.join(callId);
-    socket.data.callId = callId;
-    callback?.({ ok: true, callId, iceServers: buildIceServers() });
-    io.to('admins').emit('admin:incoming-call', publicCall(call));
-    broadcastAdminCalls();
+      const history = await CallHistory.create({
+        call_id: callId,
+        customer_name: String(payload.customerName || 'Website visitor').slice(0, 80),
+        customer_email: String(payload.customerEmail || '').slice(0, 120),
+        customer_phone: customerPhone,
+        status: 'ringing',
+        ip_address: ipAddress,
+        user_agent: userAgent,
+        device,
+        ...(ipLocation ? { ip_location: ipLocation } : {}),
+        started_at: now,
+      });
+
+      const call = {
+        callId,
+        historyId: history.id,
+        customerSocketId: socket.id,
+        adminSocketId: null,
+        customerName: history.customer_name,
+        customerEmail: history.customer_email,
+        customerPhone,
+        status: 'ringing',
+        createdAt: now.toISOString(),
+        startedAtDate: now,
+        ipAddress,
+        userAgent,
+        device,
+        ipLocation,
+      };
+
+      activeCalls.set(callId, call);
+      socket.join(callId);
+      socket.data.callId = callId;
+      callback?.({ ok: true, callId, iceServers: buildIceServers() });
+      io.to('admins').emit('admin:incoming-call', publicCall(call));
+      io.to('admins').emit('admin:call-history-updated', normalizeCallHistory(history));
+      broadcastAdminCalls();
+    } catch (error) {
+      callback?.({ ok: false, message: error instanceof Error ? error.message : 'Could not start call.' });
+    }
   });
 
   socket.on('admin:accept-call', ({ callId } = {}, callback) => {
@@ -1127,6 +1252,11 @@ io.on('connection', (socket) => {
     call.status = 'accepted';
     call.adminSocketId = socket.id;
     call.acceptedAt = new Date().toISOString();
+    CallHistory.findOneAndUpdate(
+      { call_id: call.callId },
+      { $set: { status: 'accepted', accepted_at: new Date(call.acceptedAt), admin_email: socket.user?.email || '' } },
+      { new: true }
+    ).then((history) => { if (history) io.to('admins').emit('admin:call-history-updated', normalizeCallHistory(history)); }).catch(() => {});
     socket.join(callId);
     callback?.({ ok: true, call: publicCall(call), iceServers: buildIceServers() });
     io.to(call.customerSocketId).emit('customer:call-accepted', publicCall(call));
@@ -1262,6 +1392,10 @@ io.on('connection', (socket) => {
     if (!call) return;
     if (socket.id !== call.customerSocketId && socket.id !== call.adminSocketId && socket.role !== 'admin') return;
 
+    const nextStatus = call.status === 'accepted' ? 'ended' : socket.role === 'admin' ? 'rejected' : 'cancelled';
+    markCallHistory(call, nextStatus, socket.role === 'admin' ? 'Ended by admin' : 'Ended by caller', socket)
+      .then((history) => { if (history) io.to('admins').emit('admin:call-history-updated', normalizeCallHistory(history)); })
+      .catch(() => {});
     activeCalls.delete(call.callId);
     io.to(call.callId).emit('call:ended', { callId: call.callId });
     broadcastAdminCalls();
@@ -1272,6 +1406,10 @@ io.on('connection', (socket) => {
 
     for (const call of activeCalls.values()) {
       if (call.customerSocketId === socket.id || call.adminSocketId === socket.id) {
+        const nextStatus = call.status === 'accepted' ? 'disconnected' : 'missed';
+        markCallHistory(call, nextStatus, socket.role === 'admin' ? 'Admin disconnected' : 'Caller disconnected', socket)
+          .then((history) => { if (history) io.to('admins').emit('admin:call-history-updated', normalizeCallHistory(history)); })
+          .catch(() => {});
         activeCalls.delete(call.callId);
         io.to(call.callId).emit('call:ended', { callId: call.callId });
       }

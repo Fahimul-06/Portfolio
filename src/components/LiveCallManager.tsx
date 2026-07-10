@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Bell, BellRing, Check, Copy, Headphones, Link, Loader2, Mic, MicOff, Phone, PhoneOff, Send, Share2, Volume2, WifiOff } from 'lucide-react';
+import { Bell, BellRing, Check, Copy, Headphones, Link, Loader2, MapPin, Mic, MicOff, Phone, PhoneOff, RefreshCw, Send, Share2, Smartphone, Trash2, Volume2, WifiOff } from 'lucide-react';
 import type { Socket } from 'socket.io-client';
-import { createAdminSocket, getCallConfig, sendAdminSms, type LiveCall, type RingConfig } from '../lib/callClient';
+import { createAdminSocket, deleteCallHistoryItem, getCallConfig, getCallHistory, sendAdminSms, type CallHistoryItem, type LiveCall, type RingConfig } from '../lib/callClient';
 
 type ManagerStatus = 'connecting' | 'ready' | 'in-call' | 'error';
 
@@ -29,6 +29,9 @@ export function LiveCallManager() {
   const [smsIncludeCallUrl, setSmsIncludeCallUrl] = useState(true);
   const [smsSending, setSmsSending] = useState(false);
   const [smsStatus, setSmsStatus] = useState('');
+  const [callHistory, setCallHistory] = useState<CallHistoryItem[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [historyError, setHistoryError] = useState('');
 
   const socketRef = useRef<Socket | null>(null);
   const peerRef = useRef<RTCPeerConnection | null>(null);
@@ -44,6 +47,53 @@ export function LiveCallManager() {
 
 
   const callUrl = `${window.location.origin}/call`;
+
+  const formatLocation = (location?: CallHistoryItem['ip_location'] | LiveCall['ipLocation']) => {
+    if (!location) return 'Location unavailable';
+    return [location.city, location.region, location.country].filter(Boolean).join(', ') || 'Location unavailable';
+  };
+
+  const formatDevice = (device?: CallHistoryItem['device'] | LiveCall['device'] | null) => {
+    if (!device) return 'Unknown device';
+    return [device.vendor, device.model, device.type, device.browser, device.os].filter(Boolean).join(' · ') || 'Unknown device';
+  };
+
+  const formatDuration = (seconds = 0) => {
+    const total = Math.max(0, Math.floor(seconds || 0));
+    const minutes = Math.floor(total / 60);
+    const rest = total % 60;
+    return minutes > 0 ? `${minutes}m ${rest}s` : `${rest}s`;
+  };
+
+  const loadCallHistory = useCallback(async () => {
+    try {
+      setHistoryLoading(true);
+      setHistoryError('');
+      setCallHistory(await getCallHistory(150));
+    } catch (historyLoadError) {
+      setHistoryError(historyLoadError instanceof Error ? historyLoadError.message : 'Could not load call history.');
+    } finally {
+      setHistoryLoading(false);
+    }
+  }, []);
+
+  const removeHistoryItem = async (id: string) => {
+    try {
+      await deleteCallHistoryItem(id);
+      setCallHistory((current) => current.filter((item) => item.id !== id));
+    } catch (deleteError) {
+      setHistoryError(deleteError instanceof Error ? deleteError.message : 'Could not delete call history.');
+    }
+  };
+
+  const copyCallIp = async (ip = '') => {
+    if (!ip) return;
+    try {
+      await navigator.clipboard.writeText(ip);
+    } catch {
+      setError('Could not copy caller IP.');
+    }
+  };
 
   const copyCallUrl = async () => {
     try {
@@ -172,6 +222,10 @@ export function LiveCallManager() {
   }, [ringConfig]);
 
   useEffect(() => {
+    void loadCallHistory();
+  }, [loadCallHistory]);
+
+  useEffect(() => {
     getCallConfig()
       .then((config) => {
         if (config.ring) setRingConfig({ ...DEFAULT_RING_CONFIG, ...config.ring });
@@ -224,6 +278,14 @@ export function LiveCallManager() {
 
     socket.on('admin:incoming-call', (call: LiveCall) => {
       setCalls((current) => (current.some((item) => item.callId === call.callId) ? current : [call, ...current]));
+    });
+
+    socket.on('admin:call-history-updated', (item: CallHistoryItem) => {
+      setCallHistory((current) => {
+        const exists = current.some((entry) => entry.id === item.id);
+        const next = exists ? current.map((entry) => (entry.id === item.id ? item : entry)) : [item, ...current];
+        return next.sort((a, b) => new Date(b.started_at).getTime() - new Date(a.started_at).getTime()).slice(0, 150);
+      });
     });
 
     socket.on('webrtc:offer', async ({ callId, offer }) => {
@@ -540,6 +602,11 @@ export function LiveCallManager() {
             <p className="text-sm uppercase tracking-wide text-green-300">Active call</p>
             <h3 className="mt-1 text-2xl font-bold text-gray-100">{activeCall.customerName}</h3>
             {activeCall.customerEmail && <p className="text-gray-400">{activeCall.customerEmail}</p>}
+            <div className="mt-4 grid gap-3 rounded-xl border border-green-500/20 bg-slate-950/30 p-4 text-sm text-green-100 sm:grid-cols-2">
+              <p><span className="text-green-300">Caller IP:</span> {activeCall.ipAddress || 'Unknown'}</p>
+              <p><span className="text-green-300">Device:</span> {formatDevice(activeCall.device)}</p>
+              <p className="sm:col-span-2"><span className="text-green-300">Approx. location:</span> {formatLocation(activeCall.ipLocation)}</p>
+            </div>
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               <button
                 type="button"
@@ -573,6 +640,11 @@ export function LiveCallManager() {
                     <h3 className="text-xl font-bold text-gray-100">{call.customerName}</h3>
                     {call.customerEmail && <p className="text-sm text-gray-400">{call.customerEmail}</p>}
                     <p className="mt-1 text-xs text-gray-500">Started {new Date(call.createdAt).toLocaleString()}</p>
+                    <div className="mt-3 grid gap-2 rounded-xl border border-amber-500/20 bg-slate-950/30 p-3 text-xs text-amber-100 sm:grid-cols-2">
+                      <p><span className="text-amber-300">IP:</span> {call.ipAddress || 'Unknown'}</p>
+                      <p><span className="text-amber-300">Device:</span> {formatDevice(call.device)}</p>
+                      <p className="sm:col-span-2"><span className="text-amber-300">Location:</span> {formatLocation(call.ipLocation)}</p>
+                    </div>
                     {!soundUnlocked && <p className="mt-2 text-sm font-semibold text-amber-200">If your phone blocks automatic sound, tap once anywhere or press “Unlock Ring Sound”.</p>}
                   </div>
                   <div className="grid gap-3 sm:grid-cols-2">
@@ -596,6 +668,67 @@ export function LiveCallManager() {
                 </div>
               ))
             )}
+          </div>
+        )}
+      </div>
+
+
+      <div className="rounded-2xl border border-slate-700/50 bg-slate-900/70 p-6">
+        <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-100">Caller IP & Call History</h2>
+            <p className="text-sm text-gray-400">See every caller IP, phone/browser, approximate IP location, status, and call duration.</p>
+          </div>
+          <button
+            type="button"
+            onClick={loadCallHistory}
+            disabled={historyLoading}
+            className="flex items-center justify-center gap-2 rounded-xl border border-slate-600 px-4 py-3 font-bold text-gray-100 hover:bg-slate-800 disabled:opacity-60"
+          >
+            <RefreshCw className={historyLoading ? 'animate-spin' : ''} size={18} />
+            Refresh
+          </button>
+        </div>
+
+        {historyError && (
+          <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-300">{historyError}</div>
+        )}
+
+        {callHistory.length === 0 ? (
+          <div className="rounded-xl border border-slate-700/50 bg-slate-800/50 p-8 text-center text-gray-400">
+            No call history yet. After a visitor starts a live call, caller details will appear here.
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {callHistory.map((item) => (
+              <div key={item.id} className="rounded-xl border border-slate-700/50 bg-slate-950/40 p-4">
+                <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                  <div className="space-y-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-cyan-200">{item.status}</span>
+                      <span className="text-sm text-gray-400">{new Date(item.started_at).toLocaleString()}</span>
+                      {item.duration_seconds ? <span className="text-sm text-gray-500">Duration: {formatDuration(item.duration_seconds)}</span> : null}
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-100">{item.customer_name || 'Website visitor'}</h3>
+                    <div className="grid gap-2 text-sm text-gray-300 md:grid-cols-2">
+                      <p className="flex items-center gap-2"><Phone size={15} className="text-emerald-300" /> {item.customer_phone || 'No phone from link'}</p>
+                      <button type="button" onClick={() => copyCallIp(item.ip_address)} className="flex items-center gap-2 text-left text-cyan-200 hover:text-cyan-100"><Copy size={15} /> IP: {item.ip_address || 'Unknown'}</button>
+                      <p className="flex items-center gap-2 md:col-span-2"><Smartphone size={15} className="text-amber-300" /> {formatDevice(item.device)}</p>
+                      <p className="flex items-center gap-2 md:col-span-2"><MapPin size={15} className="text-pink-300" /> {formatLocation(item.ip_location)}{item.ip_location?.isp ? ` · ${item.ip_location.isp}` : ''}</p>
+                    </div>
+                    {item.end_reason && <p className="text-xs text-gray-500">Reason: {item.end_reason}</p>}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeHistoryItem(item.id)}
+                    className="flex items-center justify-center gap-2 rounded-xl border border-red-500/30 px-3 py-2 text-sm font-bold text-red-300 hover:bg-red-500/10"
+                  >
+                    <Trash2 size={16} />
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>

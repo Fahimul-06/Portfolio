@@ -24,13 +24,56 @@ export type CallConfig = {
   };
 };
 
+export type CallerDevice = {
+  type?: string;
+  vendor?: string;
+  model?: string;
+  browser?: string;
+  os?: string;
+  is_mobile?: boolean;
+};
+
+export type CallerIpLocation = {
+  city?: string;
+  region?: string;
+  country?: string;
+  country_code?: string;
+  lat?: number | null;
+  lng?: number | null;
+  isp?: string;
+  provider?: string;
+};
+
 export type LiveCall = {
   callId: string;
   customerName: string;
   customerEmail?: string;
+  customerPhone?: string;
   status: 'ringing' | 'accepted';
   createdAt: string;
   acceptedAt?: string | null;
+  ipAddress?: string;
+  device?: CallerDevice | null;
+  ipLocation?: CallerIpLocation | null;
+};
+
+export type CallHistoryItem = {
+  id: string;
+  call_id: string;
+  customer_name: string;
+  customer_email?: string;
+  customer_phone?: string;
+  status: 'ringing' | 'accepted' | 'rejected' | 'cancelled' | 'ended' | 'missed' | 'disconnected';
+  ip_address?: string;
+  user_agent?: string;
+  device?: CallerDevice;
+  ip_location?: CallerIpLocation;
+  started_at: string;
+  accepted_at?: string | null;
+  ended_at?: string | null;
+  duration_seconds?: number;
+  end_reason?: string;
+  admin_email?: string;
 };
 
 export async function getCallConfig(): Promise<CallConfig> {
@@ -94,6 +137,25 @@ export async function sendAdminSms(phone: string, message: string, includeCallUr
   const payload = await response.json();
   if (!response.ok) throw new Error(payload?.message || 'Could not send SMS.');
   return payload;
+}
+
+
+export async function getCallHistory(limit = 100): Promise<CallHistoryItem[]> {
+  const response = await fetch(`${API_BASE}/call/history?limit=${encodeURIComponent(String(limit))}`, {
+    headers: { Authorization: `Bearer ${getAdminToken()}` },
+  });
+  const payload = await response.json();
+  if (!response.ok) throw new Error(payload?.message || 'Could not load call history.');
+  return payload;
+}
+
+export async function deleteCallHistoryItem(id: string): Promise<void> {
+  const response = await fetch(`${API_BASE}/call/history/${encodeURIComponent(id)}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${getAdminToken()}` },
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(payload?.message || 'Could not delete call history.');
 }
 
 export function createCustomerSocket(): Socket {
