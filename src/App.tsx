@@ -26,6 +26,7 @@ import {
   GraduationCap,
   Loader2,
   ArrowRight,
+  ArrowLeft,
   Star,
   Heart,
 } from "lucide-react";
@@ -318,9 +319,16 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
   const [certificates, setCertificates] = useState<Certificate[]>([]);
   const [contact, setContact] = useState<ContactInfo | null>(null);
   const [dataLoading, setDataLoading] = useState(true);
+  const [currentPath, setCurrentPath] = useState(() => window.location.pathname);
 
   useEffect(() => {
     fetchAllData();
+  }, []);
+
+  useEffect(() => {
+    const handlePopState = () => setCurrentPath(window.location.pathname);
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
   }, []);
 
   useEffect(() => {
@@ -421,6 +429,22 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
     return () => window.clearTimeout(timer);
   }, [heroMedia, activeHeroIndex]);
 
+  const navigateToPortfolioSection = (id: string) => {
+    if (currentPath.startsWith("/projects/")) {
+      window.history.pushState({}, "", `/#${id}`);
+      setCurrentPath(window.location.pathname);
+      window.setTimeout(() => scrollToSection(id), 50);
+      return;
+    }
+    scrollToSection(id);
+  };
+
+  const openProjectPage = (projectId: string) => {
+    window.history.pushState({}, "", `/projects/${projectId}`);
+    setCurrentPath(window.location.pathname);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
@@ -460,6 +484,11 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
   const filteredProjects =
     filter === "all" ? projects : projects.filter((p) => p.category === filter);
 
+  const projectPageMatch = currentPath.match(/^\/projects\/([^/]+)$/);
+  const selectedProject = projectPageMatch
+    ? projects.find((project) => project.id === projectPageMatch[1]) || null
+    : null;
+
   const skillCategories = [
     { key: "frontend", label: "Frontend", icon: Code2 },
     { key: "backend", label: "Backend", icon: Server },
@@ -478,6 +507,24 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
     );
   }
 
+  if (projectPageMatch) {
+    return (
+      <ProjectDetailsPage
+        project={selectedProject}
+        projects={projects}
+        about={about}
+        contact={contact}
+        onAdminClick={onAdminClick}
+        onBack={() => {
+          window.history.pushState({}, "", "/#projects");
+          setCurrentPath(window.location.pathname);
+          window.setTimeout(() => scrollToSection("projects"), 50);
+        }}
+        onOpenProject={openProjectPage}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-slate-950 text-gray-100 overflow-x-hidden">
       {/* Navigation */}
@@ -491,7 +538,7 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 lg:h-20">
             <button
-              onClick={() => scrollToSection("home")}
+              onClick={() => navigateToPortfolioSection("home")}
               className="text-xl lg:text-2xl font-bold relative group"
             >
               {about?.logo_url ? (
@@ -968,7 +1015,7 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
                 className="card-hover group glass rounded-2xl overflow-hidden border border-slate-700/50 hover:border-cyan-500/30 transition-all duration-300"
               >
                 {/* Project Image */}
-                <div className="relative h-56 overflow-hidden">
+                <button type="button" onClick={() => openProjectPage(project.id)} className="relative h-56 w-full overflow-hidden text-left">
                   <img
                     src={
                       project.image_url ||
@@ -995,17 +1042,21 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
                       </span>
                     </div>
                   )}
-                </div>
+                </button>
 
                 {/* Project Info */}
                 <div className="p-6">
-                  <h3 className="text-xl font-semibold text-gray-100 mb-3 group-hover:text-cyan-400 transition-colors flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => openProjectPage(project.id)}
+                    className="text-left text-xl font-semibold text-gray-100 mb-3 group-hover:text-cyan-400 transition-colors flex items-center gap-2"
+                  >
                     {project.title}
                     <ArrowRight
                       size={18}
                       className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"
                     />
-                  </h3>
+                  </button>
                   <p className="text-gray-400 text-sm mb-4 leading-relaxed">
                     {project.description}
                   </p>
@@ -1023,21 +1074,37 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="flex gap-3">
-                    <a
-                      href={project.live_url || "#"}
+                  <div className="flex flex-wrap gap-3">
+                    <button
+                      type="button"
+                      onClick={() => openProjectPage(project.id)}
                       className="btn-primary flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-teal-600 text-slate-900 text-sm font-medium rounded-xl hover:shadow-lg hover:shadow-cyan-500/30 transition-all duration-300"
                     >
-                      <ExternalLink size={16} />
-                      Live Demo
-                    </a>
-                    <a
-                      href={project.github_url || "#"}
-                      className="btn-secondary flex items-center gap-2 px-5 py-2.5 border border-slate-600 text-gray-300 text-sm font-medium rounded-xl hover:border-cyan-500 hover:text-cyan-400 transition-all duration-300"
-                    >
-                      <Github size={16} />
-                      Code
-                    </a>
+                      <ArrowRight size={16} />
+                      View Details
+                    </button>
+                    {project.live_url && (
+                      <a
+                        href={project.live_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="btn-secondary flex items-center gap-2 px-5 py-2.5 border border-slate-600 text-gray-300 text-sm font-medium rounded-xl hover:border-cyan-500 hover:text-cyan-400 transition-all duration-300"
+                      >
+                        <ExternalLink size={16} />
+                        Live Demo
+                      </a>
+                    )}
+                    {project.github_url && project.github_url_public !== false && (
+                      <a
+                        href={project.github_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="btn-secondary flex items-center gap-2 px-5 py-2.5 border border-slate-600 text-gray-300 text-sm font-medium rounded-xl hover:border-cyan-500 hover:text-cyan-400 transition-all duration-300"
+                      >
+                        <Github size={16} />
+                        Code
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>
@@ -1417,6 +1484,227 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
                 </a>
               ))}
             </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+
+type ProjectDetailsPageProps = {
+  project: Project | null;
+  projects: Project[];
+  about: AboutInfo | null;
+  contact: ContactInfo | null;
+  onAdminClick: () => void;
+  onBack: () => void;
+  onOpenProject: (projectId: string) => void;
+};
+
+function ProjectDetailsPage({
+  project,
+  projects,
+  about,
+  contact,
+  onAdminClick,
+  onBack,
+  onOpenProject,
+}: ProjectDetailsPageProps) {
+  const gallery = project
+    ? Array.from(new Set([project.image_url, ...(project.gallery_urls || [])].filter(Boolean)))
+    : [];
+  const relatedProjects = project ? projects.filter((item) => item.id !== project.id).slice(0, 3) : [];
+
+  if (!project) {
+    return (
+      <div className="min-h-screen bg-slate-950 text-gray-100 flex items-center justify-center px-4">
+        <div className="max-w-lg text-center glass rounded-3xl border border-slate-700/60 p-8">
+          <h1 className="text-3xl font-bold mb-4">Project not found</h1>
+          <p className="text-gray-400 mb-6">This project page may have been removed or the link is incorrect.</p>
+          <button
+            type="button"
+            onClick={onBack}
+            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-600 px-5 py-3 font-semibold text-slate-950"
+          >
+            <ArrowLeft size={18} /> Back to Projects
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-gray-100 overflow-x-hidden">
+      <div className="fixed inset-x-0 top-0 z-50 border-b border-slate-800 bg-slate-950/90 backdrop-blur-xl">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <button type="button" onClick={onBack} className="inline-flex items-center gap-2 text-sm text-gray-300 hover:text-cyan-400 transition-colors">
+            <ArrowLeft size={18} /> Back to Projects
+          </button>
+          <button
+            type="button"
+            onClick={onAdminClick}
+            className="rounded-full border border-slate-700 px-3 py-1 text-xs text-gray-500 hover:border-cyan-500 hover:text-cyan-400 transition-colors"
+          >
+            Admin
+          </button>
+        </div>
+      </div>
+
+      <main className="pt-24">
+        <section className="relative overflow-hidden pb-16">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(6,182,212,0.18),_transparent_35%),radial-gradient(circle_at_bottom_right,_rgba(20,184,166,0.14),_transparent_32%)]" />
+          <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+              <div>
+                <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-4 py-2 text-sm font-semibold text-cyan-300">
+                  <Briefcase size={16} /> {project.category}
+                </div>
+                <h1 className="text-4xl font-black leading-tight text-gray-100 sm:text-5xl lg:text-6xl">
+                  {project.title}
+                </h1>
+                <p className="mt-6 text-lg leading-relaxed text-gray-300">
+                  {project.description}
+                </p>
+                <div className="mt-6 flex flex-wrap gap-2">
+                  {project.tech.map((tech) => (
+                    <span key={tech} className="rounded-lg border border-slate-700 bg-slate-900/80 px-3 py-1.5 text-sm text-gray-300">
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+                <div className="mt-8 flex flex-wrap gap-3">
+                  {project.live_url && (
+                    <a
+                      href={project.live_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-600 px-5 py-3 font-semibold text-slate-950 hover:shadow-lg hover:shadow-cyan-500/25 transition-all"
+                    >
+                      <ExternalLink size={18} /> Live Demo
+                    </a>
+                  )}
+                  {project.github_url && project.github_url_public !== false && (
+                    <a
+                      href={project.github_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 rounded-xl border border-slate-600 px-5 py-3 font-semibold text-gray-300 hover:border-cyan-500 hover:text-cyan-400 transition-all"
+                    >
+                      <Github size={18} /> Source Code
+                    </a>
+                  )}
+                </div>
+              </div>
+
+              <div className="glass overflow-hidden rounded-3xl border border-slate-700/60 shadow-2xl shadow-cyan-950/30">
+                <img
+                  src={project.image_url || gallery[0] || "https://images.pexels.com/photos/230544/pexels-photo-230544.jpeg?auto=compress&cs=tinysrgb&w=1200"}
+                  alt={project.title}
+                  className="h-72 w-full object-cover sm:h-96 lg:h-[480px]"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="py-12">
+          <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[0.85fr_0.15fr] lg:px-8">
+            <div className="glass rounded-3xl border border-slate-700/60 p-6 sm:p-8">
+              <h2 className="mb-6 text-2xl font-bold text-gray-100">Project Details</h2>
+              <div className="space-y-5 text-gray-300 leading-relaxed">
+                {(project.detailed_description || project.description)
+                  .split(/\n\s*\n|\n/)
+                  .map((paragraph) => paragraph.trim())
+                  .filter(Boolean)
+                  .map((paragraph, index) => (
+                    <p key={index}>{paragraph}</p>
+                  ))}
+              </div>
+            </div>
+
+            <div className="glass rounded-3xl border border-slate-700/60 p-6">
+              <h3 className="mb-4 text-lg font-bold text-gray-100">Summary</h3>
+              <div className="space-y-4 text-sm">
+                <div>
+                  <p className="text-gray-500">Category</p>
+                  <p className="text-cyan-300">{project.category}</p>
+                </div>
+                <div>
+                  <p className="text-gray-500">Featured</p>
+                  <p className="text-gray-300">{project.is_featured ? "Yes" : "No"}</p>
+                </div>
+                <div>
+                  <p className="text-gray-500">Gallery</p>
+                  <p className="text-gray-300">{gallery.length} photo{gallery.length === 1 ? "" : "s"}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {gallery.length > 0 && (
+          <section className="py-12">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+              <div className="mb-8 flex items-center justify-between gap-4">
+                <div>
+                  <h2 className="text-3xl font-bold text-gray-100">Project Gallery</h2>
+                  <p className="mt-2 text-gray-400">All screenshots and photos added from the admin dashboard.</p>
+                </div>
+              </div>
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {gallery.map((url, index) => (
+                  <a
+                    key={`${url}-${index}`}
+                    href={url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="group overflow-hidden rounded-2xl border border-slate-700/60 bg-slate-900 shadow-lg shadow-slate-950/40 transition-all hover:-translate-y-1 hover:border-cyan-500/50"
+                  >
+                    <img src={url} alt={`${project.title} screenshot ${index + 1}`} className="h-64 w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                  </a>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {relatedProjects.length > 0 && (
+          <section className="py-16">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+              <h2 className="mb-8 text-3xl font-bold text-gray-100">More Projects</h2>
+              <div className="grid gap-5 md:grid-cols-3">
+                {relatedProjects.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => onOpenProject(item.id)}
+                    className="group overflow-hidden rounded-2xl border border-slate-700/60 bg-slate-900 text-left transition-all hover:border-cyan-500/50"
+                  >
+                    <img src={item.image_url || "https://images.pexels.com/photos/230544/pexels-photo-230544.jpeg?auto=compress&cs=tinysrgb&w=800"} alt={item.title} className="h-40 w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                    <div className="p-4">
+                      <h3 className="font-semibold text-gray-100 group-hover:text-cyan-400 transition-colors">{item.title}</h3>
+                      <p className="mt-2 line-clamp-2 text-sm text-gray-400">{item.description}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+      </main>
+
+      <VisitorLocationPrompt />
+      <CustomerLiveCall />
+      <LiveChatWidget />
+
+      <footer className="border-t border-slate-800 py-8">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 text-sm text-gray-500 sm:px-6 md:flex-row lg:px-8">
+          <p>Made with <Heart size={14} className="inline text-red-500" /> by {about?.name || "Portfolio"}</p>
+          <div className="flex items-center gap-4">
+            {contact?.github_url && <a href={contact.github_url} className="hover:text-cyan-400"><Github size={20} /></a>}
+            {contact?.linkedin_url && <a href={contact.linkedin_url} className="hover:text-cyan-400"><Linkedin size={20} /></a>}
+            {contact?.email && <a href={`mailto:${contact.email}`} className="hover:text-cyan-400"><Mail size={20} /></a>}
           </div>
         </div>
       </footer>

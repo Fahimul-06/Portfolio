@@ -248,10 +248,13 @@ export type Project = {
   id: string;
   title: string;
   description: string;
+  detailed_description: string;
   tech: string[];
   image_url: string;
+  gallery_urls: string[];
   live_url: string;
   github_url: string;
+  github_url_public: boolean;
   category: 'fullstack' | 'frontend' | 'backend' | 'mobile';
   display_order: number;
   is_featured: boolean;

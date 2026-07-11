@@ -114,10 +114,13 @@ const Skill = mongoose.model('Skill', new mongoose.Schema({
 const Project = mongoose.model('Project', new mongoose.Schema({
   title: { type: String, required: true },
   description: { type: String, required: true },
+  detailed_description: { type: String, default: '' },
   tech: { type: [String], default: [] },
   image_url: { type: String, default: '' },
+  gallery_urls: { type: [String], default: [] },
   live_url: { type: String, default: '' },
   github_url: { type: String, default: '' },
+  github_url_public: { type: Boolean, default: true },
   category: { type: String, enum: ['fullstack', 'frontend', 'backend', 'mobile'], required: true },
   display_order: { type: Number, default: 0 },
   is_featured: { type: Boolean, default: true },
@@ -366,19 +369,19 @@ async function seedDatabase() {
     await Project.insertMany([
       {
         title: 'E-Commerce Platform', description: 'Full-stack e-commerce solution with React, Node.js, and MongoDB. Features include real-time inventory, payment integration, and admin dashboard.',
-        tech: ['React', 'Node.js', 'MongoDB', 'Stripe', 'Express'], image_url: 'https://images.pexels.com/photos/230544/pexels-photo-230544.jpeg?auto=compress&cs=tinysrgb&w=800', live_url: '#', github_url: '#', category: 'fullstack', display_order: 1,
+        tech: ['React', 'Node.js', 'MongoDB', 'Stripe', 'Express'], image_url: 'https://images.pexels.com/photos/230544/pexels-photo-230544.jpeg?auto=compress&cs=tinysrgb&w=800', live_url: '#', github_url: '#', github_url_public: true, category: 'fullstack', display_order: 1,
       },
       {
         title: 'Task Management App', description: 'Cross-platform task management application built with React Native. Includes offline support, push notifications, and team collaboration.',
-        tech: ['React Native', 'TypeScript', 'PostgreSQL', 'Node.js'], image_url: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=800', live_url: '#', github_url: '#', category: 'mobile', display_order: 2,
+        tech: ['React Native', 'TypeScript', 'PostgreSQL', 'Node.js'], image_url: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=800', live_url: '#', github_url: '#', github_url_public: true, category: 'mobile', display_order: 2,
       },
       {
         title: 'Real-Time Chat Application', description: 'Scalable chat application with WebSocket integration, supporting private messaging, group chats, and file sharing.',
-        tech: ['React', 'Socket.io', 'Node.js', 'MongoDB'], image_url: 'https://images.pexels.com/photos/267350/pexels-photo-267350.jpeg?auto=compress&cs=tinysrgb&w=800', live_url: '#', github_url: '#', category: 'fullstack', display_order: 3,
+        tech: ['React', 'Socket.io', 'Node.js', 'MongoDB'], image_url: 'https://images.pexels.com/photos/267350/pexels-photo-267350.jpeg?auto=compress&cs=tinysrgb&w=800', live_url: '#', github_url: '#', github_url_public: true, category: 'fullstack', display_order: 3,
       },
       {
         title: 'API Gateway Service', description: 'High-performance API gateway with rate limiting, authentication, and request routing for microservices architecture.',
-        tech: ['Java', 'Spring Boot', 'PostgreSQL', 'Redis'], image_url: 'https://images.pexels.com/photos/1181671/pexels-photo-1181671.jpeg?auto=compress&cs=tinysrgb&w=800', live_url: '#', github_url: '#', category: 'backend', display_order: 4,
+        tech: ['Java', 'Spring Boot', 'PostgreSQL', 'Redis'], image_url: 'https://images.pexels.com/photos/1181671/pexels-photo-1181671.jpeg?auto=compress&cs=tinysrgb&w=800', live_url: '#', github_url: '#', github_url_public: true, category: 'backend', display_order: 4,
       },
     ]);
   }
