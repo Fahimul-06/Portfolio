@@ -21,12 +21,32 @@ export type PortfolioPdfData = {
 
 type RGB = [number, number, number];
 
-const sanitize = (value?: string | number | null) =>
-  String(value ?? '')
-    .replace(/[\u2013\u2014]/g, '-')
-    .replace(/[\u2022]/g, '-')
+const sanitize = (value?: string | number | null) => {
+  // jsPDF's built-in Helvetica font cannot safely render emojis, surrogate pairs,
+  // private-use symbols, or several smart Unicode marks. If those characters are
+  // passed directly, the generated resume can show corrupted text such as
+  // "Ø=Þ€" before the profile paragraph. Keep PDF text in a safe WinAnsi/Latin
+  // range and normalize common punctuation before writing it.
+  return String(value ?? '')
+    .normalize('NFKC')
+    .replace(/[\u2018\u2019\u201A\u201B]/g, "'")
+    .replace(/[\u201C\u201D\u201E\u201F]/g, '"')
+    .replace(/[\u2013\u2014\u2212]/g, '-')
+    .replace(/[\u2022\u25CF\u25E6\u2043]/g, '-')
+    .replace(/[\u00A0\u2000-\u200A\u202F\u205F\u3000]/g, ' ')
+    .replace(/[\u200B-\u200D\u2060\uFEFF]/g, '')
+    .replace(/[\uFE00-\uFE0F]/g, '')
+    .replace(/[\u{1F000}-\u{1FAFF}]/gu, '')
+    .replace(/[\u{2600}-\u{27BF}]/gu, '')
+    .replace(/[\uD800-\uDFFF]/g, '')
+    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
+    .replace(/[^\n\r\t\x20-\x7E\xA0-\xFF]/g, '')
+    .replace(/\r\n?/g, '\n')
+    .replace(/[ \t]+/g, ' ')
     .replace(/\s+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
     .trim();
+};
 
 const makeFileName = (name?: string | null) => {
   const safeName = sanitize(name || 'portfolio')
