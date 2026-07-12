@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "./lib/supabase";
+import { downloadPortfolioPdf } from "./lib/portfolioPdf";
 import { AdminLogin } from "./components/AdminLogin";
 import { AdminDashboard } from "./components/AdminDashboard";
 import { CustomerLiveCall } from "./components/CustomerLiveCall";
@@ -489,6 +490,18 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
     ? projects.find((project) => project.id === projectPageMatch[1]) || null
     : null;
 
+  const handleDownloadPortfolioPdf = () => {
+    downloadPortfolioPdf({
+      about,
+      skills,
+      projects,
+      experiences,
+      education,
+      certificates,
+      contact,
+    });
+  };
+
   const skillCategories = [
     { key: "frontend", label: "Frontend", icon: Code2 },
     { key: "backend", label: "Backend", icon: Server },
@@ -577,13 +590,14 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
                   {item}
                 </button>
               ))}
-              <a
-                href={about?.resume_url || "#"}
+              <button
+                type="button"
+                onClick={handleDownloadPortfolioPdf}
                 className="btn-primary flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-teal-600 text-slate-900 font-semibold rounded-xl hover:shadow-lg hover:shadow-cyan-500/30 transition-all duration-300"
               >
                 <Download size={18} className="animate-bounce-soft" />
-                Resume
-              </a>
+                Resume PDF
+              </button>
             </div>
 
             {/* Mobile Menu Button */}
@@ -621,6 +635,17 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
                     {item}
                   </button>
                 ))}
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleDownloadPortfolioPdf();
+                    setIsMenuOpen(false);
+                  }}
+                  className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-cyan-500 to-teal-600 px-4 py-3 font-semibold text-slate-900"
+                >
+                  <Download size={18} />
+                  Download Portfolio PDF
+                </button>
               </div>
             </div>
           )}

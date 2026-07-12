@@ -45,7 +45,6 @@ export function AboutManager() {
         tagline: about.tagline,
         years_experience: about.years_experience,
         projects_completed: about.projects_completed,
-        resume_url: about.resume_url,
         profile_image_url: about.profile_image_url,
         logo_url: about.logo_url,
         hero_background_url: about.hero_background_url,
@@ -197,16 +196,6 @@ export function AboutManager() {
             Supports JPG, PNG, WebP, and animated GIF. Recommended: square image or GIF for best fit.
           </p>
         </div>
-
-        <div>
-          <FileUpload
-            value={about.resume_url}
-            onChange={(url) => setAbout({ ...about, resume_url: url })}
-            accept="pdf"
-            label="Resume (PDF)"
-            folder="resume"
-          />
-        </div>
       </div>
 
       <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-6">
@@ -243,11 +232,11 @@ export function AboutManager() {
       <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-6">
         <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
           <LinkIcon className="text-amber-500" size={24} />
-          <h2 className="text-lg font-semibold text-gray-100">External Links (Optional)</h2>
+          <h2 className="text-lg font-semibold text-gray-100">External Profile Link (Optional)</h2>
         </div>
 
         <p className="text-sm text-gray-500">
-          Or paste external URLs below if you prefer to use externally hosted files instead of uploading.
+          Paste an externally hosted profile image/GIF URL if you prefer not to upload one. Resume uploads were removed; visitors now download the live portfolio as a PDF from the public Resume button.
         </p>
 
         <div>
@@ -256,17 +245,6 @@ export function AboutManager() {
             type="url"
             value={about.profile_image_url}
             onChange={(e) => setAbout({ ...about, profile_image_url: e.target.value })}
-            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
-            placeholder="https://..."
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">Resume URL</label>
-          <input
-            type="url"
-            value={about.resume_url}
-            onChange={(e) => setAbout({ ...about, resume_url: e.target.value })}
             className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
             placeholder="https://..."
           />
