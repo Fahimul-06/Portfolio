@@ -19,6 +19,8 @@ export type PortfolioPdfData = {
   contact: ContactInfo | null;
 };
 
+type RGB = [number, number, number];
+
 const sanitize = (value?: string | number | null) =>
   String(value ?? '')
     .replace(/[\u2013\u2014]/g, '-')
@@ -31,10 +33,19 @@ const makeFileName = (name?: string | null) => {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
-  return `${safeName || 'portfolio'}-portfolio.pdf`;
+  return `${safeName || 'portfolio'}-cv.pdf`;
 };
 
-const loadImageAsDataUrl = async (url?: string | null): Promise<string | null> => {
+const toTitleCase = (text: string) =>
+  sanitize(text)
+    .split(/[\s_-]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+
+const spacedHeading = (title: string) => sanitize(title).toUpperCase().split('').join(' ');
+
+const loadImageAsCircularDataUrl = async (url?: string | null): Promise<string | null> => {
   const imageUrl = sanitize(url);
   if (!imageUrl) return null;
 
@@ -59,24 +70,29 @@ const loadImageAsDataUrl = async (url?: string | null): Promise<string | null> =
         element.src = objectUrl;
       });
 
+      const size = 520;
       const canvas = document.createElement('canvas');
-      const size = 360;
       canvas.width = size;
       canvas.height = size;
       const ctx = canvas.getContext('2d');
       if (!ctx) return null;
+
+      ctx.clearRect(0, 0, size, size);
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(size / 2, size / 2, size / 2 - 2, 0, Math.PI * 2);
+      ctx.closePath();
+      ctx.clip();
 
       const scale = Math.max(size / img.naturalWidth, size / img.naturalHeight);
       const drawWidth = img.naturalWidth * scale;
       const drawHeight = img.naturalHeight * scale;
       const dx = (size - drawWidth) / 2;
       const dy = (size - drawHeight) / 2;
-
-      ctx.fillStyle = '#0f172a';
-      ctx.fillRect(0, 0, size, size);
       ctx.drawImage(img, dx, dy, drawWidth, drawHeight);
+      ctx.restore();
 
-      return canvas.toDataURL('image/jpeg', 0.9);
+      return canvas.toDataURL('image/png');
     } finally {
       URL.revokeObjectURL(objectUrl);
     }
@@ -98,212 +114,275 @@ export async function downloadPortfolioPdf({
   const pdf = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
-  const margin = 48;
-  const contentWidth = pageWidth - margin * 2;
-  let y = 52;
 
-  const checkPage = (needed = 48) => {
-    if (y + needed <= pageHeight - margin) return;
-    pdf.addPage();
-    y = margin;
-  };
-
-  const addWrappedText = (
-    text: string,
-    options: { fontSize?: number; color?: [number, number, number]; lineGap?: number; indent?: number } = {},
-  ) => {
-    const fontSize = options.fontSize ?? 10;
-    const lineGap = options.lineGap ?? 5;
-    const indent = options.indent ?? 0;
-    const color = options.color ?? [55, 65, 81];
-    const cleanText = sanitize(text);
-    if (!cleanText) return;
-
-    pdf.setFont('courier', 'normal');
-    pdf.setFontSize(fontSize);
-    pdf.setTextColor(...color);
-
-    const paragraphs = cleanText.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
-    paragraphs.forEach((paragraph, paragraphIndex) => {
-      const lines = pdf.splitTextToSize(paragraph, contentWidth - indent);
-      lines.forEach((line: string) => {
-        checkPage(fontSize + lineGap);
-        pdf.text(line, margin + indent, y);
-        y += fontSize + lineGap;
-      });
-      if (paragraphIndex < paragraphs.length - 1) y += 5;
-    });
-  };
-
-  const addSectionTitle = (title: string) => {
-    checkPage(48);
-    y += y > 64 ? 18 : 0;
-    pdf.setDrawColor(6, 182, 212);
-    pdf.setLineWidth(1.4);
-    pdf.line(margin, y, margin + 34, y);
-    y += 18;
-    pdf.setFont('courier', 'bold');
-    pdf.setFontSize(14);
-    pdf.setTextColor(15, 23, 42);
-    pdf.text(title.toUpperCase(), margin, y);
-    y += 18;
-  };
-
-  const addItemHeading = (text: string, meta?: string) => {
-    checkPage(42);
-    pdf.setFont('courier', 'bold');
-    pdf.setFontSize(11);
-    pdf.setTextColor(17, 24, 39);
-    pdf.text(sanitize(text), margin, y);
-    if (meta) {
-      pdf.setFont('courier', 'normal');
-      pdf.setFontSize(9);
-      pdf.setTextColor(75, 85, 99);
-      const metaText = pdf.splitTextToSize(sanitize(meta), contentWidth * 0.38);
-      pdf.text(metaText, pageWidth - margin - contentWidth * 0.38, y, { align: 'left' });
-    }
-    y += 16;
-  };
+  const sidebarWidth = 182;
+  const leftPadding = 18;
+  const rightX = sidebarWidth + 34;
+  const rightPadding = 38;
+  const rightWidth = pageWidth - rightX - rightPadding;
+  const teal: RGB = [96, 125, 126];
+  const sidebarGrey: RGB = [218, 218, 218];
+  const lightGrey: RGB = [232, 232, 232];
+  const body: RGB = [42, 42, 42];
+  const muted: RGB = [89, 89, 89];
 
   const name = sanitize(about?.name) || 'Portfolio';
   const title = sanitize(about?.title);
-  const profileImageDataUrl = await loadImageAsDataUrl(about?.profile_image_url);
-  const headerHeight = 164;
-  const imageSize = 86;
-  const imageX = pageWidth - margin - imageSize;
-  const imageY = 36;
-  const leftTextWidth = contentWidth - imageSize - 24;
-  const contactLines = [
-    contact?.email ? `Email: ${contact.email}` : '',
-    contact?.phone ? `Phone: ${contact.phone}` : '',
-    contact?.location ? `Location: ${contact.location}` : '',
-    contact?.linkedin_url ? `LinkedIn: ${contact.linkedin_url}` : '',
-    contact?.github_url ? `GitHub: ${contact.github_url}` : '',
-  ].filter(Boolean).map((line) => sanitize(line));
+  const profileImageDataUrl = await loadImageAsCircularDataUrl(about?.profile_image_url);
 
-  pdf.setFillColor(15, 23, 42);
-  pdf.rect(0, 0, pageWidth, headerHeight, 'F');
-  pdf.setDrawColor(6, 182, 212);
-  pdf.setLineWidth(1.2);
-  pdf.rect(margin - 10, 24, contentWidth + 20, headerHeight - 48, 'S');
+  const setFont = (style: 'normal' | 'bold' = 'normal', size = 10, color: RGB = body) => {
+    pdf.setFont('helvetica', style);
+    pdf.setFontSize(size);
+    pdf.setTextColor(...color);
+  };
 
-  if (profileImageDataUrl) {
-    pdf.addImage(profileImageDataUrl, 'JPEG', imageX, imageY, imageSize, imageSize);
-    pdf.setDrawColor(165, 243, 252);
-    pdf.setLineWidth(1.2);
-    pdf.rect(imageX, imageY, imageSize, imageSize, 'S');
-  } else {
-    pdf.setFillColor(30, 41, 59);
-    pdf.rect(imageX, imageY, imageSize, imageSize, 'F');
-    pdf.setDrawColor(165, 243, 252);
-    pdf.rect(imageX, imageY, imageSize, imageSize, 'S');
-    pdf.setFont('courier', 'bold');
-    pdf.setFontSize(22);
-    pdf.setTextColor(165, 243, 252);
-    pdf.text(name.charAt(0).toUpperCase(), imageX + imageSize / 2, imageY + imageSize / 2 + 8, { align: 'center' });
-  }
+  const lineHeight = (fontSize: number, multiplier = 1.18) => fontSize * multiplier;
 
-  pdf.setFont('courier', 'bold');
-  pdf.setFontSize(23);
-  pdf.setTextColor(255, 255, 255);
-  const nameLines = pdf.splitTextToSize(name, leftTextWidth);
-  pdf.text(nameLines.slice(0, 2), margin, 54);
+  const drawTemplate = (pageNo: number) => {
+    pdf.setFillColor(...sidebarGrey);
+    pdf.rect(0, 0, sidebarWidth, pageHeight, 'F');
 
-  pdf.setFont('courier', 'normal');
-  pdf.setFontSize(12);
-  pdf.setTextColor(165, 243, 252);
-  const titleLines = pdf.splitTextToSize(title || 'Portfolio', leftTextWidth);
-  pdf.text(titleLines.slice(0, 2), margin, 78 + Math.max(0, nameLines.slice(0, 2).length - 1) * 18);
+    pdf.setFillColor(...lightGrey);
+    pdf.rect(0, 0, sidebarWidth, 112, 'F');
 
-  pdf.setFontSize(8.8);
-  pdf.setTextColor(226, 232, 240);
-  let contactY = 108;
-  contactLines.slice(0, 5).forEach((line) => {
-    const lines = pdf.splitTextToSize(line, leftTextWidth);
-    pdf.text(lines.slice(0, 1), margin, contactY);
-    contactY += 12;
-  });
+    pdf.setFillColor(...teal);
+    pdf.rect(0, 118, pageWidth, 28, 'F');
 
-  pdf.setFontSize(8);
-  pdf.setTextColor(148, 163, 184);
-  pdf.text(`Generated from portfolio website - ${new Date().toLocaleDateString()}`, margin, headerHeight - 20);
-  y = headerHeight + 28;
+    if (pageNo === 1) {
+      const imageSize = 104;
+      const cx = sidebarWidth / 2 + 2;
+      const cy = 146;
+      pdf.setFillColor(255, 255, 255);
+      pdf.circle(cx, cy, imageSize / 2 + 11, 'F');
+      if (profileImageDataUrl) {
+        pdf.addImage(profileImageDataUrl, 'PNG', cx - imageSize / 2, cy - imageSize / 2, imageSize, imageSize);
+      } else {
+        pdf.setFillColor(245, 245, 245);
+        pdf.circle(cx, cy, imageSize / 2, 'F');
+        setFont('bold', 35, teal);
+        pdf.text(name.charAt(0).toUpperCase(), cx, cy + 12, { align: 'center' });
+      }
+      pdf.setDrawColor(255, 255, 255);
+      pdf.setLineWidth(3);
+      pdf.circle(cx, cy, imageSize / 2 + 1, 'S');
 
-  if (about?.tagline || about?.bio) {
-    addSectionTitle('Profile');
-    if (about?.tagline) addWrappedText(about.tagline, { fontSize: 11, color: [17, 24, 39] });
-    if (about?.bio) addWrappedText(about.bio, { fontSize: 10 });
-  }
+      setFont('bold', 24, [0, 0, 0]);
+      const nameLines = pdf.splitTextToSize(name.toUpperCase(), rightWidth);
+      pdf.text(nameLines.slice(0, 2), rightX + 12, 104);
+      if (title) {
+        setFont('normal', 9.5, teal);
+        const titleLines = pdf.splitTextToSize(title, rightWidth);
+        pdf.text(titleLines.slice(0, 1), rightX + 12, 126);
+      }
+    } else {
+      setFont('bold', 14, [0, 0, 0]);
+      pdf.text(name.toUpperCase(), rightX, 82);
+    }
+  };
 
-  if (education.length) {
-    addSectionTitle('Education');
-    education.forEach((item) => {
-      addItemHeading(item.degree || 'Education', [item.period, item.location].filter(Boolean).join(' | '));
-      if (item.institution) addWrappedText(item.institution, { fontSize: 10, color: [17, 24, 39] });
-      if (item.result) addWrappedText(`Result: ${item.result}`, { fontSize: 10 });
-      if (item.description) addWrappedText(item.description, { fontSize: 10 });
-      y += 6;
+  const addPage = () => {
+    pdf.addPage();
+    drawTemplate(pdf.getNumberOfPages());
+    return { leftY: 70, rightY: 172 };
+  };
+
+  drawTemplate(1);
+  let leftY = 225;
+  let rightY = 198;
+
+  const checkLeft = (needed = 34) => {
+    if (leftY + needed <= pageHeight - 30) return;
+    const positions = addPage();
+    leftY = positions.leftY;
+    rightY = positions.rightY;
+  };
+
+  const checkRight = (needed = 44) => {
+    if (rightY + needed <= pageHeight - 34) return;
+    const positions = addPage();
+    leftY = positions.leftY;
+    rightY = positions.rightY;
+  };
+
+  const sidebarHeading = (titleText: string) => {
+    checkLeft(38);
+    setFont('bold', 13, teal);
+    pdf.text(spacedHeading(titleText), leftPadding, leftY);
+    leftY += 8;
+    pdf.setDrawColor(...teal);
+    pdf.setLineWidth(0.7);
+    pdf.line(leftPadding, leftY, sidebarWidth - 24, leftY);
+    leftY += 16;
+  };
+
+  const mainHeading = (titleText: string) => {
+    checkRight(42);
+    setFont('bold', 13, teal);
+    pdf.text(spacedHeading(titleText), rightX, rightY);
+    rightY += 8;
+    pdf.setDrawColor(155, 164, 164);
+    pdf.setLineWidth(0.7);
+    pdf.line(rightX, rightY, rightX + Math.min(330, rightWidth), rightY);
+    rightY += 16;
+  };
+
+  const writeLeft = (text: string, options: { size?: number; bold?: boolean; color?: RGB; bullet?: boolean; maxWidth?: number; gap?: number } = {}) => {
+    const clean = sanitize(text);
+    if (!clean) return;
+    const size = options.size ?? 8.4;
+    const maxWidth = options.maxWidth ?? sidebarWidth - leftPadding - 22;
+    const x = leftPadding + (options.bullet ? 8 : 0);
+    const lines = pdf.splitTextToSize(clean, maxWidth - (options.bullet ? 8 : 0));
+    lines.forEach((line: string, index: number) => {
+      checkLeft(size + 6);
+      setFont(options.bold ? 'bold' : 'normal', size, options.color ?? body);
+      if (options.bullet && index === 0) {
+        pdf.setFillColor(0, 0, 0);
+        pdf.circle(leftPadding + 2, leftY - 2.5, 1.4, 'F');
+      }
+      pdf.text(line, x, leftY);
+      leftY += lineHeight(size, 1.18);
     });
-  }
+    leftY += options.gap ?? 2;
+  };
 
-  if (skills.length) {
-    addSectionTitle('Skills');
-    const grouped = skills.reduce<Record<string, Skill[]>>((acc, skill) => {
-      const key = skill.category || 'other';
-      acc[key] = acc[key] || [];
-      acc[key].push(skill);
-      return acc;
-    }, {});
-
-    Object.entries(grouped).forEach(([category, items]) => {
-      addItemHeading(category.charAt(0).toUpperCase() + category.slice(1));
-      addWrappedText(items.map((skill) => `${skill.name} (${skill.level}%)`).join(', '), { fontSize: 10 });
-      y += 4;
+  const writeRight = (text: string, options: { size?: number; bold?: boolean; color?: RGB; gap?: number; maxWidth?: number } = {}) => {
+    const clean = sanitize(text);
+    if (!clean) return;
+    const size = options.size ?? 9.2;
+    const maxWidth = options.maxWidth ?? rightWidth;
+    const paragraphs = clean.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
+    paragraphs.forEach((paragraph, paragraphIndex) => {
+      const lines = pdf.splitTextToSize(paragraph, maxWidth);
+      lines.forEach((line: string) => {
+        checkRight(size + 7);
+        setFont(options.bold ? 'bold' : 'normal', size, options.color ?? body);
+        pdf.text(line, rightX, rightY);
+        rightY += lineHeight(size, 1.14);
+      });
+      if (paragraphIndex < paragraphs.length - 1) rightY += 4;
     });
-  }
+    rightY += options.gap ?? 3;
+  };
 
-  if (projects.length) {
-    addSectionTitle('Projects');
-    projects.forEach((project) => {
-      addItemHeading(project.title, project.category);
-      if (project.description) addWrappedText(project.description, { fontSize: 10 });
-      if (project.detailed_description) addWrappedText(project.detailed_description, { fontSize: 10 });
-      if (project.tech?.length) addWrappedText(`Technologies: ${project.tech.join(', ')}`, { fontSize: 9 });
-      if (project.live_url) addWrappedText(`Live: ${project.live_url}`, { fontSize: 9 });
-      if (project.github_url && project.github_url_public) addWrappedText(`Code: ${project.github_url}`, { fontSize: 9 });
-      y += 8;
-    });
-  }
+  const addSidebarContact = () => {
+    sidebarHeading('Contact');
+    const contactLines = [
+      contact?.phone ? `Phone: ${contact.phone}` : '',
+      contact?.email ? `Email: ${contact.email}` : '',
+      contact?.location ? `Address: ${contact.location}` : '',
+      contact?.github_url ? `GitHub: ${contact.github_url.replace(/^https?:\/\//, '')}` : '',
+      contact?.linkedin_url ? `LinkedIn: ${contact.linkedin_url.replace(/^https?:\/\//, '')}` : '',
+    ].filter(Boolean);
+    contactLines.forEach((line) => writeLeft(line, { size: 7.7, gap: 4 }));
+    leftY += 7;
+  };
 
-  if (experiences.length) {
-    addSectionTitle('Experience');
-    experiences.forEach((item) => {
-      addItemHeading(item.title, item.period);
-      if (item.company) addWrappedText(item.company, { fontSize: 10, color: [17, 24, 39] });
-      if (item.description) addWrappedText(item.description, { fontSize: 10 });
-      y += 6;
+  const addSidebarEducation = () => {
+    if (!education.length) return;
+    sidebarHeading('Education');
+    education.slice(0, 4).forEach((item) => {
+      writeLeft(item.institution, { size: 7.6, bold: true, color: [0, 0, 0], gap: 1 });
+      if (item.period) {
+        setFont('bold', 7.4, [0, 0, 0]);
+        const period = sanitize(item.period);
+        pdf.text(period, sidebarWidth - 24, leftY - 1, { align: 'right' });
+      }
+      writeLeft(item.degree, { size: 7.7, bullet: true, gap: 1 });
+      if (item.result) writeLeft(item.result, { size: 7.7, bullet: true, gap: 1 });
+      if (item.location) writeLeft(item.location, { size: 7.1, color: muted, gap: 2 });
+      leftY += 7;
     });
-  }
+  };
 
-  if (certificates.length) {
-    addSectionTitle('Certificates');
-    certificates.forEach((item) => {
-      addItemHeading(item.title, item.issue_date);
-      if (item.issuer) addWrappedText(item.issuer, { fontSize: 10, color: [17, 24, 39] });
-      if (item.credential_id) addWrappedText(`Credential ID: ${item.credential_id}`, { fontSize: 9 });
-      if (item.credential_url) addWrappedText(`Credential URL: ${item.credential_url}`, { fontSize: 9 });
-      if (item.description) addWrappedText(item.description, { fontSize: 10 });
-      y += 6;
+  const addSidebarExperience = () => {
+    if (!experiences.length) return;
+    sidebarHeading('Experience');
+    experiences.slice(0, 3).forEach((item) => {
+      writeLeft(item.title, { size: 7.7, bold: true, gap: 1 });
+      if (item.company || item.period) writeLeft([item.company, item.period].filter(Boolean).join(' - '), { size: 7.2, color: muted, gap: 3 });
     });
-  }
+    leftY += 7;
+  };
+
+  const addSidebarCertificates = () => {
+    if (!certificates.length) return;
+    sidebarHeading('Certificates');
+    certificates.slice(0, 5).forEach((item) => {
+      writeLeft(item.title, { size: 7.6, bullet: true, gap: 1 });
+      if (item.issuer) writeLeft(item.issuer, { size: 7.1, color: muted, gap: 2 });
+    });
+  };
+
+  const groupedSkills = skills.reduce<Record<string, Skill[]>>((acc, skill) => {
+    const key = skill.category || 'other';
+    acc[key] = acc[key] || [];
+    acc[key].push(skill);
+    return acc;
+  }, {});
+
+  const addProfile = () => {
+    if (!about?.tagline && !about?.bio) return;
+    mainHeading('Profile');
+    if (about?.tagline) writeRight(about.tagline, { size: 9.2, bold: true, color: [0, 0, 0], gap: 4 });
+    if (about?.bio) writeRight(about.bio, { size: 8.9, gap: 3 });
+    rightY += 17;
+  };
+
+  const addProjects = () => {
+    if (!projects.length) return;
+    mainHeading('Project Experience');
+    projects.slice(0, 6).forEach((project) => {
+      const tech = project.tech?.length ? ` (${project.tech.join(', ')})` : '';
+      writeRight(`${project.title}${tech}`, { size: 8.8, bold: true, color: [0, 0, 0], gap: 1 });
+      const details = project.detailed_description || project.description;
+      if (details) writeRight(details, { size: 8.3, gap: 1 });
+      if (project.live_url) writeRight(`Live: ${project.live_url}`, { size: 7.4, color: muted, gap: 1 });
+      if (project.github_url && project.github_url_public) writeRight(`Code: ${project.github_url}`, { size: 7.4, color: muted, gap: 1 });
+      rightY += 6;
+    });
+    rightY += 8;
+  };
+
+  const addSkills = () => {
+    if (!skills.length) return;
+    mainHeading('Skills');
+    Object.entries(groupedSkills).forEach(([category, items]) => {
+      const label = toTitleCase(category);
+      const names = items
+        .sort((a, b) => a.display_order - b.display_order)
+        .map((skill) => skill.name)
+        .join(', ');
+      writeRight(`${label} - ${names}`, { size: 8.7, bold: false, gap: 2 });
+    });
+  };
+
+  const addExperienceMain = () => {
+    if (!experiences.length) return;
+    mainHeading('Professional Experience');
+    experiences.slice(0, 4).forEach((item) => {
+      const heading = [item.title, item.company].filter(Boolean).join(' - ');
+      writeRight(heading, { size: 8.6, bold: true, color: [0, 0, 0], gap: 1 });
+      if (item.period) writeRight(item.period, { size: 7.6, color: muted, gap: 1 });
+      if (item.description) writeRight(item.description, { size: 8.2, gap: 5 });
+    });
+  };
+
+  addSidebarContact();
+  addSidebarEducation();
+  addSidebarExperience();
+  addSidebarCertificates();
+
+  addProfile();
+  addProjects();
+  addSkills();
+  addExperienceMain();
 
   const totalPages = pdf.getNumberOfPages();
   for (let page = 1; page <= totalPages; page += 1) {
     pdf.setPage(page);
-    pdf.setFont('courier', 'normal');
-    pdf.setFontSize(8);
-    pdf.setTextColor(100, 116, 139);
-    pdf.text(`${page} / ${totalPages}`, pageWidth - margin, pageHeight - 24, { align: 'right' });
+    setFont('normal', 7, muted);
+    pdf.text(`${page} / ${totalPages}`, pageWidth - 24, pageHeight - 18, { align: 'right' });
   }
 
   pdf.save(makeFileName(about?.name));
