@@ -21,6 +21,7 @@ import {
   Phone,
   PhoneCall,
   Download,
+  FileText,
   Award,
   Briefcase,
   GraduationCap,
@@ -559,6 +560,7 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
                 "Home",
                 "About",
                 "Education",
+                "Resume",
                 "Skills",
                 "Projects",
                 "Experience",
@@ -577,14 +579,17 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
                   {item}
                 </button>
               ))}
-              <a
-                href={about?.resume_url ? "/api/resume/download" : "#"}
-                download
-                className="btn-primary flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-teal-600 text-slate-900 font-semibold rounded-xl hover:shadow-lg hover:shadow-cyan-500/30 transition-all duration-300"
-              >
-                <Download size={18} className="animate-bounce-soft" />
-                Resume
-              </a>
+              {about?.resume_url && (
+                <a
+                  href="/api/resume/view"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-primary flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-teal-600 text-slate-900 font-semibold rounded-xl hover:shadow-lg hover:shadow-cyan-500/30 transition-all duration-300"
+                >
+                  <FileText size={18} />
+                  View Resume
+                </a>
+              )}
             </div>
 
             {/* Mobile Menu Button */}
@@ -859,6 +864,79 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
           ) : (
             <div className="rounded-2xl border border-slate-700/50 bg-slate-900/60 p-10 text-center text-gray-500">
               Education information will appear here after admin adds records.
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Resume Section */}
+      <section id="resume" className="py-24 lg:py-32 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950" />
+        <div className="absolute top-10 left-10 w-80 h-80 bg-cyan-500/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 right-10 w-80 h-80 bg-teal-500/5 rounded-full blur-3xl" />
+
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
+              <span className="text-gray-100">My </span>
+              <span className="text-gradient">Resume</span>
+            </h2>
+            <div className="w-20 h-1 bg-gradient-to-r from-cyan-500 to-teal-600 mx-auto rounded-full animate-scale-up" />
+            <p className="mt-4 text-gray-400 max-w-2xl mx-auto">
+              View my resume in the browser or download a copy for later.
+            </p>
+          </div>
+
+          {about?.resume_url ? (
+            <div className="glass rounded-3xl border border-slate-700/60 bg-slate-900/70 p-6 sm:p-8 shadow-2xl shadow-cyan-950/20">
+              <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+                <div className="flex items-start gap-4">
+                  <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500 to-teal-600 shadow-lg shadow-cyan-500/20">
+                    <FileText className="text-white" size={32} />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold text-gray-100">
+                      {about.name ? `${about.name}'s Resume` : 'Resume'}
+                    </h3>
+                    <p className="mt-2 text-gray-400 leading-relaxed">
+                      The latest resume uploaded by the admin is available here.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <a
+                    href="/api/resume/view"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-cyan-400/30 bg-cyan-500/10 px-5 py-3 font-semibold text-cyan-200 hover:bg-cyan-500/20 transition-colors"
+                  >
+                    <ExternalLink size={18} />
+                    View Resume
+                  </a>
+                  <a
+                    href="/api/resume/download"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-600 px-5 py-3 font-semibold text-slate-950 hover:shadow-lg hover:shadow-cyan-500/30 transition-all"
+                  >
+                    <Download size={18} />
+                    Download Resume
+                  </a>
+                </div>
+              </div>
+
+              {about.resume_url.toLowerCase().includes('.pdf') && (
+                <div className="mt-8 overflow-hidden rounded-2xl border border-slate-700/70 bg-slate-950/70">
+                  <iframe
+                    src="/api/resume/view"
+                    title="Resume preview"
+                    className="h-[520px] w-full bg-white"
+                  />
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-slate-700/50 bg-slate-900/60 p-10 text-center text-gray-500">
+              Resume will appear here after admin uploads a resume file.
             </div>
           )}
         </div>

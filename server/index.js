@@ -931,29 +931,6 @@ async function saveLocalUpload(file, folder = 'general') {
   return { url: `/uploads/${base}`, provider: 'local', fileName: file.originalname, fileSize: file.size, mimeType: file.mimetype };
 }
 
-async function saveResumePdfLocally(file) {
-  const mime = String(file.mimetype || '').toLowerCase();
-  const originalName = String(file.originalname || '').toLowerCase();
-
-  if (mime !== 'application/pdf' && !originalName.endsWith('.pdf')) {
-    throw new Error('Resume must be a PDF file.');
-  }
-
-  return saveLocalUpload(
-    { ...file, originalname: sanitizeFileName(file.originalname || 'resume.pdf') },
-    'resume'
-  );
-}
-
-function resolveLocalUploadPath(fileUrl = '') {
-  const cleaned = String(fileUrl || '').split('?')[0];
-  if (!cleaned.startsWith('/uploads/')) return null;
-  const relative = cleaned.replace(/^\/uploads\//, '');
-  const filePath = path.resolve(uploadsDir, relative);
-  if (!filePath.startsWith(uploadsDir)) return null;
-  return filePath;
-}
-
 function cloudinarySignature(params) {
   const raw = Object.keys(params)
     .filter((key) => params[key] !== undefined && params[key] !== null && params[key] !== '')
@@ -1099,15 +1076,8 @@ app.patch('/api/chat/sessions/:id', requireAuth, async (req, res) => {
 app.post('/api/upload', requireAuth, upload.single('file'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ message: 'No file uploaded.' });
-    const folder = safeUploadFolder(req.body.folder || 'general');
-
-    // Resume PDFs are intentionally saved to the app's local /uploads folder.
-    // Do not send resume PDFs to Cloudinary because some Cloudinary accounts can return
-    // HTTP 401 for raw/private PDF delivery, which breaks the public Download Resume button.
-    const saved = folder === 'resume'
-      ? await saveResumePdfLocally(req.file)
-      : await uploadToCloudinary(req.file, folder);
-
+    const folder = req.body.folder || 'general';
+    const saved = await uploadToCloudinary(req.file, folder);
     res.json(saved);
   } catch (error) {
     res.status(500).json({ message: error.message || 'File upload failed.' });
@@ -1124,52 +1094,60 @@ app.delete('/api/upload', requireAuth, async (req, res) => {
   }
 });
 
-
-app.get('/api/resume/download', async (_req, res) => {
+function getResumeFileName(fileUrl = '') {
   try {
-    const about = await AboutInfo.findOne().sort({ created_at: 1 }).exec();
-    const resumeUrl = about?.resume_url || '';
+    const parsed = new URL(fileUrl, PUBLIC_APP_URL || 'http://localhost');
+    const baseName = path.basename(parsed.pathname || '').replace(/[^a-zA-Z0-9._-]/g, '-');
+    if (baseName && baseName.includes('.')) return baseName;
+  } catch {}
+  return 'resume.pdf';
+}
 
-    if (!resumeUrl) {
-      return res.status(404).send('Resume has not been uploaded yet.');
-    }
-
-    if (resumeUrl.startsWith('/uploads/')) {
-      const filePath = resolveLocalUploadPath(resumeUrl);
-      if (!filePath || !fs.existsSync(filePath)) {
-        return res.status(404).send('Resume file was not found on the server. Please upload the resume again from the admin dashboard.');
-      }
-      return res.download(filePath, 'resume.pdf');
-    }
-
-    return res.redirect(resumeUrl);
-  } catch (error) {
-    return res.status(500).send(error.message || 'Could not download resume.');
-  }
-});
+async function getCurrentResumeUrl() {
+  const about = await AboutInfo.findOne().sort({ created_at: 1 }).exec();
+  return String(about?.resume_url || '').trim();
+}
 
 app.get('/api/resume/view', async (_req, res) => {
   try {
-    const about = await AboutInfo.findOne().sort({ created_at: 1 }).exec();
-    const resumeUrl = about?.resume_url || '';
-
-    if (!resumeUrl) {
-      return res.status(404).send('Resume has not been uploaded yet.');
-    }
+    const resumeUrl = await getCurrentResumeUrl();
+    if (!resumeUrl) return res.status(404).send('Resume has not been uploaded yet.');
 
     if (resumeUrl.startsWith('/uploads/')) {
-      const filePath = resolveLocalUploadPath(resumeUrl);
-      if (!filePath || !fs.existsSync(filePath)) {
-        return res.status(404).send('Resume file was not found on the server. Please upload the resume again from the admin dashboard.');
-      }
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', 'inline; filename="resume.pdf"');
-      return fs.createReadStream(filePath).pipe(res);
+      const filePath = path.join(rootDir, resumeUrl.replace(/^\/+/, ''));
+      if (!fs.existsSync(filePath)) return res.status(404).send('Resume file was not found.');
+      return res.sendFile(filePath);
     }
 
     return res.redirect(resumeUrl);
   } catch (error) {
-    return res.status(500).send(error.message || 'Could not open resume.');
+    return res.status(500).send(error.message || 'Failed to open resume.');
+  }
+});
+
+app.get('/api/resume/download', async (_req, res) => {
+  try {
+    const resumeUrl = await getCurrentResumeUrl();
+    if (!resumeUrl) return res.status(404).send('Resume has not been uploaded yet.');
+
+    const fileName = getResumeFileName(resumeUrl);
+
+    if (resumeUrl.startsWith('/uploads/')) {
+      const filePath = path.join(rootDir, resumeUrl.replace(/^\/+/, ''));
+      if (!fs.existsSync(filePath)) return res.status(404).send('Resume file was not found.');
+      return res.download(filePath, fileName);
+    }
+
+    const response = await fetch(resumeUrl);
+    if (!response.ok) return res.redirect(resumeUrl);
+
+    const contentType = response.headers.get('content-type') || 'application/octet-stream';
+    const arrayBuffer = await response.arrayBuffer();
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+    return res.send(Buffer.from(arrayBuffer));
+  } catch (error) {
+    return res.status(500).send(error.message || 'Failed to download resume.');
   }
 });
 

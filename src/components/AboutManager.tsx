@@ -202,10 +202,13 @@ export function AboutManager() {
           <FileUpload
             value={about.resume_url}
             onChange={(url) => setAbout({ ...about, resume_url: url })}
-            accept="pdf"
-            label="Resume (PDF)"
+            accept="resume"
+            label="Resume / CV File"
             folder="resume"
           />
+          <p className="text-xs text-gray-500 mt-2">
+            Upload PDF for best browser preview. DOC/DOCX can still be downloaded by visitors.
+          </p>
         </div>
       </div>
 

@@ -5,7 +5,7 @@ import { uploadFile, deleteFile } from '../lib/supabase';
 interface FileUploadProps {
   value: string;
   onChange: (url: string) => void;
-  accept: 'image' | 'pdf' | 'all';
+  accept: 'image' | 'pdf' | 'resume' | 'all';
   label?: string;
   folder: string;
 }
@@ -19,7 +19,8 @@ export function FileUpload({ value, onChange, accept, label, folder }: FileUploa
   const acceptTypes = {
     image: 'image/jpeg,image/png,image/gif,image/webp,image/avif',
     pdf: 'application/pdf',
-    all: 'image/jpeg,image/png,image/gif,image/webp,image/avif,application/pdf',
+    resume: 'application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    all: 'image/jpeg,image/png,image/gif,image/webp,image/avif,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document',
   };
 
   const isImage = (url: string) => {
@@ -29,15 +30,21 @@ export function FileUpload({ value, onChange, accept, label, folder }: FileUploa
   const handleUpload = async (file: File) => {
     setError('');
 
-    const maxSize = accept === 'pdf' ? 20 * 1024 * 1024 : 5 * 1024 * 1024;
+    const maxSizeByType = {
+      image: 25 * 1024 * 1024,
+      pdf: 20 * 1024 * 1024,
+      resume: 20 * 1024 * 1024,
+      all: 50 * 1024 * 1024,
+    };
+    const maxSize = maxSizeByType[accept];
     if (file.size > maxSize) {
-      setError(`File size must be less than ${accept === 'pdf' ? '20MB' : '5MB'}`);
+      setError(`File size must be less than ${Math.round(maxSize / 1024 / 1024)}MB`);
       return;
     }
 
     const allowedTypes = acceptTypes[accept].split(',');
     if (!allowedTypes.includes(file.type)) {
-      setError(`Invalid file type. ${accept === 'image' ? 'Please upload an image.' : accept === 'pdf' ? 'Please upload a PDF.' : 'Please upload an image or PDF.'}`);
+      setError(`Invalid file type. ${accept === 'image' ? 'Please upload an image.' : accept === 'pdf' ? 'Please upload a PDF.' : accept === 'resume' ? 'Please upload a PDF, DOC, or DOCX resume.' : 'Please upload a supported file.'}`);
       return;
     }
 
@@ -131,7 +138,7 @@ export function FileUpload({ value, onChange, accept, label, folder }: FileUploa
               <div className="flex-1 min-w-0">
                 <p className="text-sm text-gray-300 truncate">Resume uploaded</p>
                 <a
-                  href={folder === 'resume' ? '/api/resume/view' : value}
+                  href={value}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-xs text-amber-400 hover:underline"
@@ -187,7 +194,7 @@ export function FileUpload({ value, onChange, accept, label, folder }: FileUploa
           ) : (
             <div className="flex flex-col items-center gap-3">
               <div className="p-4 bg-slate-700/50 rounded-full">
-                {accept === 'pdf' ? (
+                {accept === 'pdf' || accept === 'resume' ? (
                   <FileText className="text-gray-400" size={32} />
                 ) : accept === 'image' ? (
                   <ImageIcon className="text-gray-400" size={32} />
@@ -201,10 +208,12 @@ export function FileUpload({ value, onChange, accept, label, folder }: FileUploa
                 </p>
                 <p className="text-sm text-gray-500 mt-1">
                   {accept === 'image'
-                    ? 'PNG, JPG, GIF, WebP, AVIF (max 5MB)'
+                    ? 'PNG, JPG, GIF, WebP, AVIF (max 25MB)'
                     : accept === 'pdf'
                     ? 'PDF files only (max 20MB)'
-                    : 'Images or PDF (max 5MB)'}
+                    : accept === 'resume'
+                    ? 'PDF, DOC, or DOCX resume (max 20MB)'
+                    : 'Images, PDF, DOC, or DOCX (max 50MB)'}
                 </p>
               </div>
             </div>
