@@ -1517,6 +1517,16 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
 }
 
 
+type ProjectPublicComment = {
+  id: string;
+  project_id: string;
+  project_title?: string;
+  name: string;
+  comment: string;
+  created_at: string;
+  updated_at?: string;
+};
+
 type ProjectDetailsPageProps = {
   project: Project | null;
   projects: Project[];
@@ -1540,6 +1550,70 @@ function ProjectDetailsPage({
     ? Array.from(new Set([project.image_url, ...(project.gallery_urls || [])].filter(Boolean)))
     : [];
   const relatedProjects = project ? projects.filter((item) => item.id !== project.id).slice(0, 3) : [];
+  const [comments, setComments] = useState<ProjectPublicComment[]>([]);
+  const [commentsLoading, setCommentsLoading] = useState(false);
+  const [commentSubmitting, setCommentSubmitting] = useState(false);
+  const [commentError, setCommentError] = useState('');
+  const [commentSuccess, setCommentSuccess] = useState('');
+  const [commentForm, setCommentForm] = useState({ name: '', email: '', comment: '' });
+
+  const loadProjectComments = async (projectId: string) => {
+    setCommentsLoading(true);
+    try {
+      const response = await fetch(`/api/projects/${projectId}/comments`);
+      const payload = await response.json().catch(() => []);
+      if (!response.ok) throw new Error(payload?.message || 'Could not load comments.');
+      setComments(Array.isArray(payload) ? payload : []);
+    } catch (error) {
+      console.error('Project comments load error:', error);
+      setComments([]);
+    } finally {
+      setCommentsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (project?.id) {
+      loadProjectComments(project.id);
+      setCommentError('');
+      setCommentSuccess('');
+      setCommentForm({ name: '', email: '', comment: '' });
+    }
+  }, [project?.id]);
+
+  const submitProjectComment = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!project?.id) return;
+
+    setCommentError('');
+    setCommentSuccess('');
+
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(commentForm.email.trim());
+    if (!emailOk) {
+      setCommentError('Please enter a valid email address.');
+      return;
+    }
+
+    setCommentSubmitting(true);
+    try {
+      const response = await fetch(`/api/projects/${project.id}/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(commentForm),
+      });
+      const payload = await response.json().catch(() => null);
+      if (!response.ok) throw new Error(payload?.message || 'Comment could not be submitted.');
+
+      setComments((current) => [payload, ...current]);
+      setCommentForm({ name: '', email: '', comment: '' });
+      setCommentSuccess('Comment posted successfully.');
+    } catch (error) {
+      setCommentError(error instanceof Error ? error.message : 'Comment could not be submitted.');
+    } finally {
+      setCommentSubmitting(false);
+    }
+  };
+
 
   if (!project) {
     return (
@@ -1693,6 +1767,107 @@ function ProjectDetailsPage({
             </div>
           </section>
         )}
+
+        <section className="py-12">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+              <div className="glass rounded-3xl border border-slate-700/60 p-6 sm:p-8">
+                <h2 className="text-2xl font-bold text-gray-100">Comment on this project</h2>
+                <p className="mt-2 text-sm text-gray-400">Use a valid email address to post your comment. Your email stays private.</p>
+
+                <form onSubmit={submitProjectComment} className="mt-6 space-y-4">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-gray-300">Name</label>
+                      <input
+                        type="text"
+                        required
+                        minLength={2}
+                        maxLength={80}
+                        value={commentForm.name}
+                        onChange={(e) => setCommentForm((current) => ({ ...current, name: e.target.value }))}
+                        className="w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-gray-100 outline-none transition-all focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20"
+                        placeholder="Your name"
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-gray-300">Valid email</label>
+                      <input
+                        type="email"
+                        required
+                        maxLength={160}
+                        value={commentForm.email}
+                        onChange={(e) => setCommentForm((current) => ({ ...current, email: e.target.value }))}
+                        className="w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-gray-100 outline-none transition-all focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20"
+                        placeholder="name@example.com"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-300">Comment</label>
+                    <textarea
+                      required
+                      minLength={3}
+                      maxLength={1500}
+                      rows={5}
+                      value={commentForm.comment}
+                      onChange={(e) => setCommentForm((current) => ({ ...current, comment: e.target.value }))}
+                      className="w-full resize-none rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-gray-100 outline-none transition-all focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20"
+                      placeholder="Write your comment about this project..."
+                    />
+                    <p className="mt-1 text-right text-xs text-gray-500">{commentForm.comment.length}/1500</p>
+                  </div>
+
+                  {commentError && <p className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">{commentError}</p>}
+                  {commentSuccess && <p className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">{commentSuccess}</p>}
+
+                  <button
+                    type="submit"
+                    disabled={commentSubmitting}
+                    className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-600 px-5 py-3 font-semibold text-slate-950 transition-all hover:shadow-lg hover:shadow-cyan-500/25 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {commentSubmitting ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+                    {commentSubmitting ? 'Posting...' : 'Post Comment'}
+                  </button>
+                </form>
+              </div>
+
+              <div className="glass rounded-3xl border border-slate-700/60 p-6 sm:p-8">
+                <div className="mb-6 flex items-center justify-between gap-4">
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-100">Project Comments</h2>
+                    <p className="mt-1 text-sm text-gray-400">{comments.length} comment{comments.length === 1 ? '' : 's'}</p>
+                  </div>
+                </div>
+
+                {commentsLoading ? (
+                  <div className="flex items-center gap-3 text-gray-400">
+                    <Loader2 size={20} className="animate-spin text-cyan-400" /> Loading comments...
+                  </div>
+                ) : comments.length === 0 ? (
+                  <div className="rounded-2xl border border-slate-700/60 bg-slate-900/70 p-6 text-center text-gray-400">
+                    No comments yet. Be the first to comment on this project.
+                  </div>
+                ) : (
+                  <div className="max-h-[560px] space-y-4 overflow-y-auto pr-1">
+                    {comments.map((item) => (
+                      <article key={item.id} className="rounded-2xl border border-slate-700/60 bg-slate-900/75 p-4">
+                        <div className="mb-3 flex items-start justify-between gap-3">
+                          <div>
+                            <h3 className="font-semibold text-gray-100">{item.name}</h3>
+                            <p className="text-xs text-gray-500">{new Date(item.created_at).toLocaleString()}</p>
+                          </div>
+                        </div>
+                        <p className="whitespace-pre-wrap text-sm leading-relaxed text-gray-300">{item.comment}</p>
+                      </article>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
 
         {relatedProjects.length > 0 && (
           <section className="py-16">

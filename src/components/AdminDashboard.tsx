@@ -32,8 +32,9 @@ import { VisitorsManager } from './VisitorsManager';
 import { HeroMediaManager } from './HeroMediaManager';
 import { AdminChatManager } from './AdminChatManager';
 import { EducationManager } from './EducationManager';
+import { ProjectCommentsManager } from './ProjectCommentsManager';
 
-type Section = 'about' | 'hero' | 'education' | 'skills' | 'projects' | 'experience' | 'contact' | 'messages' | 'chat' | 'certificates' | 'calls' | 'visitors';
+type Section = 'about' | 'hero' | 'education' | 'skills' | 'projects' | 'projectComments' | 'experience' | 'contact' | 'messages' | 'chat' | 'certificates' | 'calls' | 'visitors';
 
 interface AdminDashboardProps {
   onLogout: () => void;
@@ -45,6 +46,7 @@ const navItems: { id: Section; label: string; icon: React.ElementType }[] = [
   { id: 'education', label: 'Education', icon: GraduationCap },
   { id: 'skills', label: 'Skills', icon: Code2 },
   { id: 'projects', label: 'Projects', icon: Briefcase },
+  { id: 'projectComments', label: 'Project Comments', icon: MessageSquare },
   { id: 'experience', label: 'Experience', icon: Clock },
   { id: 'certificates', label: 'Certificates', icon: Award },
   { id: 'contact', label: 'Contact', icon: Mail },
@@ -111,6 +113,8 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
         return <SkillsManager />;
       case 'projects':
         return <ProjectsManager />;
+      case 'projectComments':
+        return <ProjectCommentsManager />;
       case 'experience':
         return <ExperienceManager />;
       case 'certificates':

@@ -159,6 +159,17 @@ const Message = mongoose.model('Message', new mongoose.Schema({
   is_read: { type: Boolean, default: false },
 }, commonOptions), 'messages');
 
+const ProjectComment = mongoose.model('ProjectComment', new mongoose.Schema({
+  project_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Project', required: true, index: true },
+  project_title: { type: String, default: '' },
+  name: { type: String, required: true, trim: true, maxlength: 80 },
+  email: { type: String, required: true, trim: true, lowercase: true, maxlength: 160 },
+  comment: { type: String, required: true, trim: true, maxlength: 1500 },
+  is_approved: { type: Boolean, default: true, index: true },
+  ip_address: { type: String, default: '' },
+  user_agent: { type: String, default: '' },
+}, commonOptions), 'project_comments');
+
 const Certificate = mongoose.model('Certificate', new mongoose.Schema({
   title: { type: String, required: true },
   issuer: { type: String, required: true },
@@ -281,6 +292,7 @@ const modelMap = {
   education: Education,
   contact_info: ContactInfo,
   messages: Message,
+  project_comments: ProjectComment,
   certificates: Certificate,
 };
 
@@ -302,7 +314,7 @@ function requireAuth(req, res, next) {
 
 function maybeProtectWrite(req, res, next) {
   if (req.method === 'GET') {
-    if (req.params.collection === 'messages') return requireAuth(req, res, next);
+    if (req.params.collection === 'messages' || req.params.collection === 'project_comments') return requireAuth(req, res, next);
     return next();
   }
 
@@ -711,6 +723,116 @@ async function lookupIpLocation(ip) {
     return null;
   }
 }
+
+
+function isValidEmail(email = '') {
+  const value = String(email || '').trim().toLowerCase();
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value) && value.length <= 160;
+}
+
+function sanitizePublicText(value = '', maxLength = 1500) {
+  return String(value || '')
+    .replace(/[\u0000-\u001f\u007f]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, maxLength);
+}
+
+function publicProjectComment(doc) {
+  const item = typeof doc?.toJSON === 'function' ? doc.toJSON() : doc;
+  if (!item) return null;
+  return {
+    id: item.id,
+    project_id: item.project_id,
+    project_title: item.project_title,
+    name: item.name,
+    comment: item.comment,
+    is_approved: item.is_approved,
+    created_at: item.created_at,
+    updated_at: item.updated_at,
+  };
+}
+
+
+app.get('/api/projects/:projectId/comments', async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.projectId)) {
+      return res.status(400).json({ message: 'Invalid project ID.' });
+    }
+
+    const project = await Project.findById(req.params.projectId).select('_id').lean().exec();
+    if (!project) return res.status(404).json({ message: 'Project not found.' });
+
+    const limit = Math.min(Number(req.query.limit || 100), 300);
+    const docs = await ProjectComment.find({ project_id: req.params.projectId, is_approved: true })
+      .sort({ created_at: -1 })
+      .limit(limit)
+      .exec();
+    res.json(docs.map(publicProjectComment));
+  } catch (error) {
+    res.status(500).json({ message: error instanceof Error ? error.message : 'Could not load project comments.' });
+  }
+});
+
+app.post('/api/projects/:projectId/comments', async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.projectId)) {
+      return res.status(400).json({ message: 'Invalid project ID.' });
+    }
+
+    const project = await Project.findById(req.params.projectId).select('title').exec();
+    if (!project) return res.status(404).json({ message: 'Project not found.' });
+
+    const name = sanitizePublicText(req.body?.name, 80);
+    const email = String(req.body?.email || '').trim().toLowerCase();
+    const comment = sanitizePublicText(req.body?.comment, 1500);
+
+    if (!name || name.length < 2) {
+      return res.status(400).json({ message: 'Please enter your name.' });
+    }
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ message: 'Please enter a valid email address.' });
+    }
+    if (!comment || comment.length < 3) {
+      return res.status(400).json({ message: 'Please write a comment.' });
+    }
+
+    const doc = await ProjectComment.create({
+      project_id: project.id,
+      project_title: project.title,
+      name,
+      email,
+      comment,
+      is_approved: true,
+      ip_address: getClientIp(req),
+      user_agent: String(req.headers['user-agent'] || '').slice(0, 500),
+    });
+
+    res.status(201).json(publicProjectComment(doc));
+  } catch (error) {
+    res.status(500).json({ message: error instanceof Error ? error.message : 'Could not submit project comment.' });
+  }
+});
+
+app.get('/api/project-comments', requireAuth, async (req, res) => {
+  const limit = Math.min(Number(req.query.limit || 200), 500);
+  const docs = await ProjectComment.find().sort({ created_at: -1 }).limit(limit).exec();
+  res.json(docs);
+});
+
+app.patch('/api/project-comments/:id', requireAuth, async (req, res) => {
+  const updates = {};
+  if (typeof req.body?.is_approved === 'boolean') updates.is_approved = req.body.is_approved;
+  const doc = await ProjectComment.findByIdAndUpdate(req.params.id, updates, { new: true, runValidators: true });
+  if (!doc) return res.status(404).json({ message: 'Project comment not found.' });
+  res.json(doc);
+});
+
+app.delete('/api/project-comments/:id', requireAuth, async (req, res) => {
+  const doc = await ProjectComment.findByIdAndDelete(req.params.id);
+  if (!doc) return res.status(404).json({ message: 'Project comment not found.' });
+  res.json({ success: true });
+});
 
 app.post('/api/visitor/track', async (req, res) => {
   try {

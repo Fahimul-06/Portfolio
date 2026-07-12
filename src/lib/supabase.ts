@@ -306,6 +306,20 @@ export type Message = {
   created_at: string;
 };
 
+export type ProjectComment = {
+  id: string;
+  project_id: string;
+  project_title: string;
+  name: string;
+  email: string;
+  comment: string;
+  is_approved: boolean;
+  ip_address?: string;
+  user_agent?: string;
+  created_at: string;
+  updated_at: string;
+};
+
 export type Certificate = {
   id: string;
   title: string;
