@@ -6,6 +6,7 @@ import { AdminDashboard } from "./components/AdminDashboard";
 import { CustomerLiveCall } from "./components/CustomerLiveCall";
 import { VisitorLocationPrompt } from "./components/VisitorLocationPrompt";
 import { LiveChatWidget } from "./components/LiveChatWidget";
+import { isAdminPath, isLegacyAdminPath } from "./lib/adminPath";
 import {
   Menu,
   X,
@@ -46,7 +47,7 @@ type View = "portfolio" | "admin";
 
 function App() {
   const [view, setView] = useState<View>(() =>
-    window.location.pathname.startsWith("/admin") ? "admin" : "portfolio",
+    isAdminPath(window.location.pathname) ? "admin" : "portfolio",
   );
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -64,6 +65,15 @@ function App() {
   if (window.location.pathname.startsWith("/call")) {
     return <DirectCallPage />;
   }
+
+  if (isLegacyAdminPath(window.location.pathname) && !isAdminPath(window.location.pathname)) {
+    return <NotFoundPage />;
+  }
+
+  const openPortfolio = () => {
+    window.history.pushState(null, "", "/");
+    setView("portfolio");
+  };
 
   if (loading) {
     return (
@@ -83,7 +93,7 @@ function App() {
       <>
         <div className="fixed top-4 left-4 z-50">
           <button
-            onClick={() => setView("portfolio")}
+            onClick={openPortfolio}
             className="px-4 py-2 bg-slate-800 text-gray-300 rounded-lg hover:bg-slate-700 transition-colors text-sm"
           >
             Back to Portfolio
@@ -99,7 +109,7 @@ function App() {
       <>
         <div className="fixed top-4 right-4 z-50">
           <button
-            onClick={() => setView("portfolio")}
+            onClick={openPortfolio}
             className="px-4 py-2 bg-slate-800 text-gray-300 rounded-lg hover:bg-slate-700 transition-colors text-sm"
           >
             View Portfolio
@@ -110,7 +120,24 @@ function App() {
     );
   }
 
-  return <Portfolio onAdminClick={() => setView("admin")} />;
+  return <Portfolio />;
+}
+
+function NotFoundPage() {
+  return (
+    <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4 text-center text-gray-100">
+      <div className="max-w-md rounded-3xl border border-slate-800 bg-slate-900/80 p-8 shadow-2xl">
+        <h1 className="text-4xl font-black text-white">404</h1>
+        <p className="mt-3 text-gray-300">This page is not available.</p>
+        <button
+          onClick={() => { window.history.pushState(null, '', '/'); window.location.reload(); }}
+          className="mt-6 rounded-xl bg-cyan-500 px-5 py-3 font-bold text-slate-950 transition hover:bg-cyan-400"
+        >
+          Go Home
+        </button>
+      </div>
+    </div>
+  );
 }
 
 function DirectCallPage() {
@@ -292,11 +319,7 @@ function HeroMediaSlide({
   );
 }
 
-interface PortfolioProps {
-  onAdminClick: () => void;
-}
-
-function Portfolio({ onAdminClick }: PortfolioProps) {
+function Portfolio() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
   const [scrolled, setScrolled] = useState(false);
@@ -527,7 +550,6 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
         projects={projects}
         about={about}
         contact={contact}
-        onAdminClick={onAdminClick}
         onBack={() => {
           window.history.pushState({}, "", "/#projects");
           setCurrentPath(window.location.pathname);
@@ -1483,12 +1505,6 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
                 <Heart size={14} className="text-red-500 animate-pulse" /> by{" "}
                 {about?.name || "Fahimul Arefin"}
               </p>
-              <button
-                onClick={onAdminClick}
-                className="text-xs text-gray-600 hover:text-cyan-400 transition-colors border border-gray-700 hover:border-cyan-500 px-3 py-1 rounded-full"
-              >
-                Arefin
-              </button>
             </div>
             <p className="text-gray-600 text-sm">
               &copy; {new Date().getFullYear()} All rights reserved.
@@ -1532,7 +1548,6 @@ type ProjectDetailsPageProps = {
   projects: Project[];
   about: AboutInfo | null;
   contact: ContactInfo | null;
-  onAdminClick: () => void;
   onBack: () => void;
   onOpenProject: (projectId: string) => void;
 };
@@ -1542,7 +1557,6 @@ function ProjectDetailsPage({
   projects,
   about,
   contact,
-  onAdminClick,
   onBack,
   onOpenProject,
 }: ProjectDetailsPageProps) {
@@ -1640,13 +1654,7 @@ function ProjectDetailsPage({
           <button type="button" onClick={onBack} className="inline-flex items-center gap-2 text-sm text-gray-300 hover:text-cyan-400 transition-colors">
             <ArrowLeft size={18} /> Back to Projects
           </button>
-          <button
-            type="button"
-            onClick={onAdminClick}
-            className="rounded-full border border-slate-700 px-3 py-1 text-xs text-gray-500 hover:border-cyan-500 hover:text-cyan-400 transition-colors"
-          >
-            Admin
-          </button>
+          <div className="h-8" aria-hidden="true" />
         </div>
       </div>
 

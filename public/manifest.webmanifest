@@ -2,7 +2,7 @@
   "name": "Portfolio Admin Calls",
   "short_name": "Admin Calls",
   "description": "Installable admin dashboard for portfolio live calls, SMS, visitors, and content management.",
-  "start_url": "/admin?source=pwa",
+  "start_url": "/secure-admin-dashboard?source=pwa",
   "scope": "/",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "standalone", "browser"],

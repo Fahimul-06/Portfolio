@@ -60,6 +60,28 @@ const CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET || '';
 const CLOUDINARY_FOLDER = (process.env.CLOUDINARY_FOLDER || 'portfolio').replace(/^\/+|\/+$/g, '');
 const USE_CLOUDINARY = UPLOAD_STORAGE === 'cloudinary' && CLOUDINARY_CLOUD_NAME && CLOUDINARY_API_KEY && CLOUDINARY_API_SECRET;
 
+function normalizeAdminPath(value) {
+  const fallback = '/secure-admin-dashboard';
+  const raw = String(value || fallback).trim();
+  const withSlash = raw.startsWith('/') ? raw : `/${raw}`;
+  const cleaned = withSlash.replace(/\/+/g, '/').replace(/\/$/, '');
+  return cleaned || fallback;
+}
+
+const ADMIN_DASHBOARD_PATH = normalizeAdminPath(process.env.ADMIN_DASHBOARD_PATH || process.env.VITE_ADMIN_PATH || '/secure-admin-dashboard');
+
+function injectRuntimeConfig(html) {
+  const config = { adminPath: ADMIN_DASHBOARD_PATH };
+  const script = `<script>window.__APP_CONFIG__=${JSON.stringify(config)};</script>`;
+  return html.includes('</head>') ? html.replace('</head>', `${script}</head>`) : `${script}${html}`;
+}
+
+function sendFrontendIndex(res) {
+  const indexFile = path.join(distDir, 'index.html');
+  if (!fs.existsSync(indexFile)) return res.status(404).json({ message: 'Frontend build not found. Run npm run build first.' });
+  return res.type('html').send(injectRuntimeConfig(fs.readFileSync(indexFile, 'utf8')));
+}
+
 
 app.use(cors({ origin: CLIENT_URL === '*' ? true : CLIENT_URL, credentials: true }));
 app.use(express.json({ limit: '10mb' }));
@@ -1250,12 +1272,30 @@ app.delete('/api/:collection/:id', getModel, maybeProtectWrite, async (req, res)
   res.json({ success: true });
 });
 
-app.use(express.static(distDir));
-app.get('*', (_req, res) => {
-  const indexFile = path.join(distDir, 'index.html');
-  if (fs.existsSync(indexFile)) return res.sendFile(indexFile);
-  res.status(404).json({ message: 'Frontend build not found. Run npm run build first.' });
+app.get('/manifest.webmanifest', (_req, res) => {
+  res.json({
+    name: 'Portfolio Admin Secure Dashboard',
+    short_name: 'Admin',
+    description: 'Installable private admin dashboard for portfolio management, live calls, SMS, visitors, and chat.',
+    start_url: `${ADMIN_DASHBOARD_PATH}?source=pwa`,
+    scope: '/',
+    display: 'standalone',
+    display_override: ['window-controls-overlay', 'standalone', 'browser'],
+    background_color: '#020617',
+    theme_color: '#f59e0b',
+    orientation: 'portrait',
+    categories: ['business', 'productivity', 'communication'],
+    icons: [
+      { src: '/icons/admin-icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+      { src: '/icons/admin-icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+      { src: '/icons/admin-maskable-192.png', sizes: '192x192', type: 'image/png', purpose: 'maskable' },
+      { src: '/icons/admin-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+    ],
+  });
 });
+
+app.use(express.static(distDir, { index: false }));
+app.get('*', (_req, res) => sendFrontendIndex(res));
 
 const server = http.createServer(app);
 const io = new SocketIOServer(server, {

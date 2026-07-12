@@ -33,6 +33,7 @@ import { HeroMediaManager } from './HeroMediaManager';
 import { AdminChatManager } from './AdminChatManager';
 import { EducationManager } from './EducationManager';
 import { ProjectCommentsManager } from './ProjectCommentsManager';
+import { adminUrl } from '../lib/adminPath';
 
 type Section = 'about' | 'hero' | 'education' | 'skills' | 'projects' | 'projectComments' | 'experience' | 'contact' | 'messages' | 'chat' | 'certificates' | 'calls' | 'visitors';
 
@@ -92,7 +93,7 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
   }, []);
 
   useEffect(() => {
-    const nextUrl = activeSection === 'calls' ? '/admin?section=calls' : '/admin';
+    const nextUrl = activeSection === 'calls' ? adminUrl('calls') : adminUrl();
     window.history.replaceState(null, '', nextUrl);
   }, [activeSection]);
 

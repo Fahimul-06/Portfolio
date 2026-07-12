@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { BellRing, PhoneCall, X } from 'lucide-react';
 import type { Socket } from 'socket.io-client';
 import { createAdminSocket, getCallConfig, type LiveCall, type RingConfig } from '../lib/callClient';
+import { adminUrl } from '../lib/adminPath';
 
 const DEFAULT_RING_CONFIG: RingConfig = {
   enabled: true,
@@ -119,7 +120,7 @@ export function AdminGlobalCallRinger({ onOpenCalls, activeSection }: AdminGloba
           requireInteraction: true,
           icon: '/vite.svg',
           badge: '/vite.svg',
-          data: { url: '/admin?section=calls', callId: call.callId },
+          data: { url: adminUrl('calls'), callId: call.callId },
         } as NotificationOptions))
         .catch(() => {});
       return;

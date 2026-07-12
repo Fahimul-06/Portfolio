@@ -1,7 +1,6 @@
 const CACHE_NAME = 'portfolio-admin-pwa-v1';
 const CORE_ASSETS = [
   '/',
-  '/admin',
   '/manifest.webmanifest',
   '/icons/admin-icon-192.png',
   '/icons/admin-icon-512.png'
@@ -38,7 +37,7 @@ self.addEventListener('fetch', (event) => {
     } catch {
       const cached = await caches.match(request);
       if (cached) return cached;
-      if (request.mode === 'navigate') return caches.match('/admin') || caches.match('/');
+      if (request.mode === 'navigate') return (await caches.match('/')) || new Response('Offline', { status: 503, headers: { 'Content-Type': 'text/plain' } });
       throw new Error('Offline and no cached response available.');
     }
   })());
@@ -46,7 +45,7 @@ self.addEventListener('fetch', (event) => {
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  const targetUrl = event.notification.data?.url || '/admin?section=calls';
+  const targetUrl = event.notification.data?.url || '/';
   event.waitUntil((async () => {
     const allClients = await clients.matchAll({ type: 'window', includeUncontrolled: true });
     for (const client of allClients) {
