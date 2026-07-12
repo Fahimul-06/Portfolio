@@ -34,7 +34,59 @@ const makeFileName = (name?: string | null) => {
   return `${safeName || 'portfolio'}-portfolio.pdf`;
 };
 
-export function downloadPortfolioPdf({
+const loadImageAsDataUrl = async (url?: string | null): Promise<string | null> => {
+  const imageUrl = sanitize(url);
+  if (!imageUrl) return null;
+
+  try {
+    const absoluteUrl = imageUrl.startsWith('http')
+      ? imageUrl
+      : `${window.location.origin}${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
+
+    const response = await fetch(absoluteUrl, { mode: 'cors', cache: 'force-cache' });
+    if (!response.ok) return null;
+
+    const blob = await response.blob();
+    if (!blob.type.startsWith('image/')) return null;
+
+    const objectUrl = URL.createObjectURL(blob);
+    try {
+      const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const element = new Image();
+        element.crossOrigin = 'anonymous';
+        element.onload = () => resolve(element);
+        element.onerror = reject;
+        element.src = objectUrl;
+      });
+
+      const canvas = document.createElement('canvas');
+      const size = 360;
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+
+      const scale = Math.max(size / img.naturalWidth, size / img.naturalHeight);
+      const drawWidth = img.naturalWidth * scale;
+      const drawHeight = img.naturalHeight * scale;
+      const dx = (size - drawWidth) / 2;
+      const dy = (size - drawHeight) / 2;
+
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(0, 0, size, size);
+      ctx.drawImage(img, dx, dy, drawWidth, drawHeight);
+
+      return canvas.toDataURL('image/jpeg', 0.9);
+    } finally {
+      URL.revokeObjectURL(objectUrl);
+    }
+  } catch (error) {
+    console.warn('Could not add profile image to PDF:', error);
+    return null;
+  }
+};
+
+export async function downloadPortfolioPdf({
   about,
   skills,
   projects,
@@ -113,52 +165,74 @@ export function downloadPortfolioPdf({
     y += 16;
   };
 
-  const addBullet = (text: string) => {
-    checkPage(20);
-    pdf.setFont('courier', 'normal');
-    pdf.setFontSize(10);
-    pdf.setTextColor(55, 65, 81);
-    const lines = pdf.splitTextToSize(sanitize(text), contentWidth - 18);
-    pdf.text('-', margin, y);
-    pdf.text(lines, margin + 18, y);
-    y += lines.length * 14 + 4;
-  };
-
   const name = sanitize(about?.name) || 'Portfolio';
   const title = sanitize(about?.title);
+  const profileImageDataUrl = await loadImageAsDataUrl(about?.profile_image_url);
+  const headerHeight = 164;
+  const imageSize = 86;
+  const imageX = pageWidth - margin - imageSize;
+  const imageY = 36;
+  const leftTextWidth = contentWidth - imageSize - 24;
+  const contactLines = [
+    contact?.email ? `Email: ${contact.email}` : '',
+    contact?.phone ? `Phone: ${contact.phone}` : '',
+    contact?.location ? `Location: ${contact.location}` : '',
+    contact?.linkedin_url ? `LinkedIn: ${contact.linkedin_url}` : '',
+    contact?.github_url ? `GitHub: ${contact.github_url}` : '',
+  ].filter(Boolean).map((line) => sanitize(line));
 
   pdf.setFillColor(15, 23, 42);
-  pdf.rect(0, 0, pageWidth, 126, 'F');
+  pdf.rect(0, 0, pageWidth, headerHeight, 'F');
+  pdf.setDrawColor(6, 182, 212);
+  pdf.setLineWidth(1.2);
+  pdf.rect(margin - 10, 24, contentWidth + 20, headerHeight - 48, 'S');
+
+  if (profileImageDataUrl) {
+    pdf.addImage(profileImageDataUrl, 'JPEG', imageX, imageY, imageSize, imageSize);
+    pdf.setDrawColor(165, 243, 252);
+    pdf.setLineWidth(1.2);
+    pdf.rect(imageX, imageY, imageSize, imageSize, 'S');
+  } else {
+    pdf.setFillColor(30, 41, 59);
+    pdf.rect(imageX, imageY, imageSize, imageSize, 'F');
+    pdf.setDrawColor(165, 243, 252);
+    pdf.rect(imageX, imageY, imageSize, imageSize, 'S');
+    pdf.setFont('courier', 'bold');
+    pdf.setFontSize(22);
+    pdf.setTextColor(165, 243, 252);
+    pdf.text(name.charAt(0).toUpperCase(), imageX + imageSize / 2, imageY + imageSize / 2 + 8, { align: 'center' });
+  }
+
   pdf.setFont('courier', 'bold');
-  pdf.setFontSize(24);
+  pdf.setFontSize(23);
   pdf.setTextColor(255, 255, 255);
-  pdf.text(name, margin, 62);
+  const nameLines = pdf.splitTextToSize(name, leftTextWidth);
+  pdf.text(nameLines.slice(0, 2), margin, 54);
+
   pdf.setFont('courier', 'normal');
   pdf.setFontSize(12);
   pdf.setTextColor(165, 243, 252);
-  pdf.text(title || 'Portfolio', margin, 84);
-  pdf.setFontSize(9);
-  pdf.setTextColor(203, 213, 225);
-  pdf.text(`Generated from portfolio website - ${new Date().toLocaleDateString()}`, margin, 106);
-  y = 152;
+  const titleLines = pdf.splitTextToSize(title || 'Portfolio', leftTextWidth);
+  pdf.text(titleLines.slice(0, 2), margin, 78 + Math.max(0, nameLines.slice(0, 2).length - 1) * 18);
+
+  pdf.setFontSize(8.8);
+  pdf.setTextColor(226, 232, 240);
+  let contactY = 108;
+  contactLines.slice(0, 5).forEach((line) => {
+    const lines = pdf.splitTextToSize(line, leftTextWidth);
+    pdf.text(lines.slice(0, 1), margin, contactY);
+    contactY += 12;
+  });
+
+  pdf.setFontSize(8);
+  pdf.setTextColor(148, 163, 184);
+  pdf.text(`Generated from portfolio website - ${new Date().toLocaleDateString()}`, margin, headerHeight - 20);
+  y = headerHeight + 28;
 
   if (about?.tagline || about?.bio) {
     addSectionTitle('Profile');
     if (about?.tagline) addWrappedText(about.tagline, { fontSize: 11, color: [17, 24, 39] });
     if (about?.bio) addWrappedText(about.bio, { fontSize: 10 });
-  }
-
-  if (contact) {
-    addSectionTitle('Contact');
-    [
-      contact.email ? `Email: ${contact.email}` : '',
-      contact.phone ? `Phone: ${contact.phone}` : '',
-      contact.location ? `Location: ${contact.location}` : '',
-      contact.linkedin_url ? `LinkedIn: ${contact.linkedin_url}` : '',
-      contact.github_url ? `GitHub: ${contact.github_url}` : '',
-    ]
-      .filter(Boolean)
-      .forEach(addBullet);
   }
 
   if (education.length) {

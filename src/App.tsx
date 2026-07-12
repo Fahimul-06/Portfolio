@@ -490,8 +490,8 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
     ? projects.find((project) => project.id === projectPageMatch[1]) || null
     : null;
 
-  const handleDownloadPortfolioPdf = () => {
-    downloadPortfolioPdf({
+  const handleDownloadPortfolioPdf = async () => {
+    await downloadPortfolioPdf({
       about,
       skills,
       projects,
