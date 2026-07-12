@@ -29,9 +29,9 @@ export function FileUpload({ value, onChange, accept, label, folder }: FileUploa
   const handleUpload = async (file: File) => {
     setError('');
 
-    const maxSize = accept === 'pdf' ? 10 * 1024 * 1024 : 5 * 1024 * 1024;
+    const maxSize = accept === 'pdf' ? 20 * 1024 * 1024 : 5 * 1024 * 1024;
     if (file.size > maxSize) {
-      setError(`File size must be less than ${accept === 'pdf' ? '10MB' : '5MB'}`);
+      setError(`File size must be less than ${accept === 'pdf' ? '20MB' : '5MB'}`);
       return;
     }
 
@@ -131,7 +131,7 @@ export function FileUpload({ value, onChange, accept, label, folder }: FileUploa
               <div className="flex-1 min-w-0">
                 <p className="text-sm text-gray-300 truncate">Resume uploaded</p>
                 <a
-                  href={value}
+                  href={folder === 'resume' ? '/api/resume/view' : value}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-xs text-amber-400 hover:underline"
@@ -203,7 +203,7 @@ export function FileUpload({ value, onChange, accept, label, folder }: FileUploa
                   {accept === 'image'
                     ? 'PNG, JPG, GIF, WebP, AVIF (max 5MB)'
                     : accept === 'pdf'
-                    ? 'PDF files only (max 10MB)'
+                    ? 'PDF files only (max 20MB)'
                     : 'Images or PDF (max 5MB)'}
                 </p>
               </div>

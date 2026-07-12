@@ -295,15 +295,6 @@ interface PortfolioProps {
   onAdminClick: () => void;
 }
 
-function publicResumeHref(url?: string) {
-  if (!url) return "#";
-  const trimmed = url.trim();
-  if (!trimmed) return "#";
-  if (trimmed.startsWith("/api/resume/download") || trimmed === "/resume.pdf") return trimmed;
-  if (trimmed.startsWith("/uploads/") || trimmed.startsWith("http://") || trimmed.startsWith("https://")) return trimmed;
-  return trimmed;
-}
-
 function Portfolio({ onAdminClick }: PortfolioProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
@@ -587,9 +578,8 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
                 </button>
               ))}
               <a
-                href={publicResumeHref(about?.resume_url)}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={about?.resume_url ? "/api/resume/download" : "#"}
+                download
                 className="btn-primary flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-teal-600 text-slate-900 font-semibold rounded-xl hover:shadow-lg hover:shadow-cyan-500/30 transition-all duration-300"
               >
                 <Download size={18} className="animate-bounce-soft" />

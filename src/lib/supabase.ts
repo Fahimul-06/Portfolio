@@ -192,8 +192,7 @@ export async function uploadFile(file: File, folder: string): Promise<string | n
   formData.append('file', file);
   formData.append('folder', folder);
 
-  const endpoint = folder === 'resume' ? '/resume/upload' : '/upload';
-  const result = await apiFetch(endpoint, {
+  const result = await apiFetch('/upload', {
     method: 'POST',
     body: formData,
   });
@@ -207,10 +206,9 @@ export async function uploadFile(file: File, folder: string): Promise<string | n
 }
 
 export async function deleteFile(url: string): Promise<boolean> {
-  const isStoredResume = url.includes('/api/resume/download') || url.endsWith('/resume.pdf') || url === '/resume.pdf';
-  const result = await apiFetch(isStoredResume ? '/resume' : '/upload', {
+  const result = await apiFetch('/upload', {
     method: 'DELETE',
-    body: isStoredResume ? undefined : JSON.stringify({ url }),
+    body: JSON.stringify({ url }),
   });
 
   return !result.error;
