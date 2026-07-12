@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { supabase } from "./lib/supabase";
+import { apiUrl, supabase } from "./lib/supabase";
 import { AdminLogin } from "./components/AdminLogin";
 import { AdminDashboard } from "./components/AdminDashboard";
 import { CustomerLiveCall } from "./components/CustomerLiveCall";
@@ -578,7 +578,9 @@ function Portfolio({ onAdminClick }: PortfolioProps) {
                 </button>
               ))}
               <a
-                href={about?.resume_url || "#"}
+                href={about?.resume_url ? apiUrl("/resume/download") : "#"}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="btn-primary flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-teal-600 text-slate-900 font-semibold rounded-xl hover:shadow-lg hover:shadow-cyan-500/30 transition-all duration-300"
               >
                 <Download size={18} className="animate-bounce-soft" />

@@ -1094,6 +1094,30 @@ app.delete('/api/upload', requireAuth, async (req, res) => {
   }
 });
 
+
+app.get('/api/resume/download', async (_req, res) => {
+  try {
+    const about = await AboutInfo.findOne().exec();
+    const resumeUrl = String(about?.resume_url || '').trim();
+
+    if (!resumeUrl) {
+      return res.status(404).send('Resume has not been uploaded yet.');
+    }
+
+    if (resumeUrl.startsWith('/uploads/')) {
+      return res.redirect(resumeUrl);
+    }
+
+    if (/^https?:\/\//i.test(resumeUrl)) {
+      return res.redirect(resumeUrl);
+    }
+
+    return res.status(400).send('Saved resume URL is invalid. Please re-upload the resume from Admin Dashboard → About.');
+  } catch (error) {
+    return res.status(500).send('Could not open resume.');
+  }
+});
+
 app.get('/api/:collection', getModel, maybeProtectWrite, async (req, res) => {
   const { collection } = req.params;
   const { order, single } = req.query;
