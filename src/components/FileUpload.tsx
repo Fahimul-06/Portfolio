@@ -29,9 +29,9 @@ export function FileUpload({ value, onChange, accept, label, folder }: FileUploa
   const handleUpload = async (file: File) => {
     setError('');
 
-    const maxSize = 5 * 1024 * 1024;
+    const maxSize = accept === 'pdf' ? 10 * 1024 * 1024 : 5 * 1024 * 1024;
     if (file.size > maxSize) {
-      setError('File size must be less than 5MB');
+      setError(`File size must be less than ${accept === 'pdf' ? '10MB' : '5MB'}`);
       return;
     }
 
@@ -203,7 +203,7 @@ export function FileUpload({ value, onChange, accept, label, folder }: FileUploa
                   {accept === 'image'
                     ? 'PNG, JPG, GIF, WebP, AVIF (max 5MB)'
                     : accept === 'pdf'
-                    ? 'PDF files only (max 5MB)'
+                    ? 'PDF files only (max 10MB)'
                     : 'Images or PDF (max 5MB)'}
                 </p>
               </div>

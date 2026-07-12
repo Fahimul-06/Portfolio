@@ -95,6 +95,15 @@ const AboutInfo = mongoose.model('AboutInfo', new mongoose.Schema({
   hero_greeting: { type: String, default: "Hi, I'm" },
 }, commonOptions), 'about_info');
 
+const ResumeFile = mongoose.model('ResumeFile', new mongoose.Schema({
+  kind: { type: String, default: 'resume', unique: true },
+  original_name: { type: String, default: 'resume.pdf' },
+  mime_type: { type: String, default: 'application/pdf' },
+  size: { type: Number, default: 0 },
+  data: { type: Buffer, required: true },
+  uploaded_at: { type: Date, default: Date.now },
+}, commonOptions), 'resume_files');
+
 
 const HeroMedia = mongoose.model('HeroMedia', new mongoose.Schema({
   title: { type: String, default: '' },
@@ -1018,6 +1027,74 @@ async function deleteStoredFile(fileUrl = '') {
   return false;
 }
 
+
+app.post('/api/resume/upload', requireAuth, upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ message: 'No resume PDF uploaded.' });
+    const mime = String(req.file.mimetype || '').toLowerCase();
+    const ext = path.extname(req.file.originalname || '').toLowerCase();
+    if (mime !== 'application/pdf' && ext !== '.pdf') {
+      return res.status(400).json({ message: 'Resume must be a PDF file.' });
+    }
+
+    const doc = await ResumeFile.findOneAndUpdate(
+      { kind: 'resume' },
+      {
+        kind: 'resume',
+        original_name: sanitizeFileName(req.file.originalname || 'resume.pdf'),
+        mime_type: 'application/pdf',
+        size: req.file.size,
+        data: req.file.buffer,
+        uploaded_at: new Date(),
+      },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
+
+    const publicUrl = `/api/resume/download?v=${doc.updated_at ? new Date(doc.updated_at).getTime() : Date.now()}`;
+    await AboutInfo.findOneAndUpdate({}, { resume_url: publicUrl }, { sort: { created_at: 1 }, new: true });
+
+    res.json({
+      url: publicUrl,
+      provider: 'mongodb',
+      fileName: doc.original_name,
+      fileSize: doc.size,
+      mimeType: doc.mime_type,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message || 'Resume upload failed.' });
+  }
+});
+
+app.get(['/api/resume/download', '/resume.pdf'], async (_req, res) => {
+  try {
+    const doc = await ResumeFile.findOne({ kind: 'resume' }).exec();
+    if (doc?.data?.length) {
+      const filename = sanitizeFileName(doc.original_name || 'resume.pdf');
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Length', String(doc.data.length));
+      res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
+      res.setHeader('Cache-Control', 'public, max-age=300');
+      return res.end(doc.data);
+    }
+
+    const about = await AboutInfo.findOne().exec();
+    const url = String(about?.resume_url || '');
+    if (url && !url.startsWith('/api/resume/download') && url !== '/resume.pdf') {
+      return res.redirect(url);
+    }
+
+    return res.status(404).send('Resume PDF not uploaded yet.');
+  } catch (error) {
+    return res.status(500).send(error.message || 'Resume download failed.');
+  }
+});
+
+app.delete('/api/resume', requireAuth, async (_req, res) => {
+  await ResumeFile.deleteOne({ kind: 'resume' });
+  await AboutInfo.findOneAndUpdate({}, { resume_url: '' }, { sort: { created_at: 1 } });
+  res.json({ success: true });
+});
+
 app.post('/api/chat/upload', upload.single('file'), async (req, res) => {
   try {
     if (!CHAT_ENABLED) return res.status(503).json({ message: 'Live chat is disabled.' });
@@ -1091,30 +1168,6 @@ app.delete('/api/upload', requireAuth, async (req, res) => {
     res.json({ success });
   } catch {
     res.json({ success: false });
-  }
-});
-
-
-app.get('/api/resume/download', async (_req, res) => {
-  try {
-    const about = await AboutInfo.findOne().exec();
-    const resumeUrl = String(about?.resume_url || '').trim();
-
-    if (!resumeUrl) {
-      return res.status(404).send('Resume has not been uploaded yet.');
-    }
-
-    if (resumeUrl.startsWith('/uploads/')) {
-      return res.redirect(resumeUrl);
-    }
-
-    if (/^https?:\/\//i.test(resumeUrl)) {
-      return res.redirect(resumeUrl);
-    }
-
-    return res.status(400).send('Saved resume URL is invalid. Please re-upload the resume from Admin Dashboard → About.');
-  } catch (error) {
-    return res.status(500).send('Could not open resume.');
   }
 });
 

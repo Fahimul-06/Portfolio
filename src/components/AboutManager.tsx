@@ -206,6 +206,9 @@ export function AboutManager() {
             label="Resume (PDF)"
             folder="resume"
           />
+          <p className="text-xs text-gray-500 mt-2">
+            Resume PDFs are stored in MongoDB and served through a public download route, so visitors can open them without admin login.
+          </p>
         </div>
       </div>
 

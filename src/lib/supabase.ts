@@ -1,10 +1,5 @@
 const API_BASE = import.meta.env.VITE_API_URL || '/api';
 
-export function apiUrl(path: string): string {
-  const cleanPath = path.startsWith('/') ? path : `/${path}`;
-  return `${API_BASE}${cleanPath}`;
-}
-
 function getToken() {
   return localStorage.getItem('admin_token') || '';
 }
@@ -197,7 +192,8 @@ export async function uploadFile(file: File, folder: string): Promise<string | n
   formData.append('file', file);
   formData.append('folder', folder);
 
-  const result = await apiFetch('/upload', {
+  const endpoint = folder === 'resume' ? '/resume/upload' : '/upload';
+  const result = await apiFetch(endpoint, {
     method: 'POST',
     body: formData,
   });
@@ -211,9 +207,10 @@ export async function uploadFile(file: File, folder: string): Promise<string | n
 }
 
 export async function deleteFile(url: string): Promise<boolean> {
-  const result = await apiFetch('/upload', {
+  const isStoredResume = url.includes('/api/resume/download') || url.endsWith('/resume.pdf') || url === '/resume.pdf';
+  const result = await apiFetch(isStoredResume ? '/resume' : '/upload', {
     method: 'DELETE',
-    body: JSON.stringify({ url }),
+    body: isStoredResume ? undefined : JSON.stringify({ url }),
   });
 
   return !result.error;
