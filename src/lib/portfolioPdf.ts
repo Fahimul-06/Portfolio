@@ -146,8 +146,8 @@ export async function downloadPortfolioPdf({
   const body: RGB = [42, 42, 42];
   const muted: RGB = [89, 89, 89];
 
-  const name = 'Fahimul Arefin';
-  const title = 'Software Developer';
+  const name = sanitize(about?.name) || 'Fahimul Arefin';
+  const title = sanitize(about?.title) || 'Software Developer';
   const profileImageDataUrl = await loadImageAsCircularDataUrl(about?.profile_image_url);
 
   const setFont = (style: 'normal' | 'bold' = 'normal', size = 10, color: RGB = body) => {
@@ -187,16 +187,15 @@ export async function downloadPortfolioPdf({
       pdf.circle(cx, cy, imageSize / 2 + 1, 'S');
 
       setFont('bold', 24, [0, 0, 0]);
-      const nameLines = pdf.splitTextToSize(name.toUpperCase(), rightWidth);
-      pdf.text(nameLines.slice(0, 2), rightX + 12, 104);
-      if (title) {
-        setFont('normal', 9.5, teal);
-        const titleLines = pdf.splitTextToSize(title, rightWidth);
-        pdf.text(titleLines.slice(0, 1), rightX + 12, 126);
-      }
+      const nameLines = pdf.splitTextToSize(name, rightWidth);
+      pdf.text(nameLines.slice(0, 2), rightX + 12, 101);
+
+      setFont('normal', 11, teal);
+      const titleLines = pdf.splitTextToSize(title, rightWidth);
+      pdf.text(titleLines.slice(0, 1), rightX + 12, 126);
     } else {
       setFont('bold', 14, [0, 0, 0]);
-      pdf.text(name.toUpperCase(), rightX, 82);
+      pdf.text(name, rightX, 82);
     }
   };
 
@@ -298,6 +297,20 @@ export async function downloadPortfolioPdf({
     leftY += 7;
   };
 
+  const addSidebarSkills = () => {
+    if (!skills.length) return;
+    sidebarHeading('Skills');
+    Object.entries(groupedSkills).forEach(([category, items]) => {
+      const label = toTitleCase(category);
+      writeLeft(label, { size: 7.8, bold: true, color: [0, 0, 0], gap: 2 });
+      items
+        .sort((a, b) => a.display_order - b.display_order)
+        .forEach((skill) => writeLeft(skill.name, { size: 7.6, bullet: true, gap: 1 }));
+      leftY += 4;
+    });
+    leftY += 5;
+  };
+
   const addSidebarCertificates = () => {
     if (!certificates.length) return;
     sidebarHeading('Certificates');
@@ -314,21 +327,6 @@ export async function downloadPortfolioPdf({
     return acc;
   }, {});
 
-  const addSidebarSkills = () => {
-    if (!skills.length) return;
-    sidebarHeading('Skills');
-    Object.entries(groupedSkills).forEach(([category, items]) => {
-      const label = toTitleCase(category);
-      writeLeft(label, { size: 7.6, bold: true, color: [0, 0, 0], gap: 1 });
-      const names = items
-        .sort((a, b) => a.display_order - b.display_order)
-        .map((skill) => skill.name)
-        .join(', ');
-      writeLeft(names, { size: 7.2, gap: 5 });
-    });
-    leftY += 5;
-  };
-
   const addProfile = () => {
     if (!about?.tagline && !about?.bio) return;
     mainHeading('Profile');
@@ -337,73 +335,30 @@ export async function downloadPortfolioPdf({
     rightY += 17;
   };
 
-  const addProjectsAndEducation = () => {
-    if (!projects.length && !education.length) return;
+  const addProjects = () => {
+    if (!projects.length) return;
+    mainHeading('Project Experience');
+    projects.slice(0, 6).forEach((project) => {
+      writeRight(project.title, { size: 8.8, bold: true, color: [0, 0, 0], gap: 1 });
+      if (project.description) writeRight(project.description, { size: 8.3, gap: 1 });
+      rightY += 6;
+    });
+    rightY += 8;
+  };
 
-    checkRight(150);
-    const gap = 18;
-    const columnWidth = (rightWidth - gap) / 2;
-    const projectX = rightX;
-    const educationX = rightX + columnWidth + gap;
-    let projectY = rightY;
-    let educationY = rightY;
-
-    const columnHeading = (titleText: string, x: number, y: number) => {
-      setFont('bold', 11.2, teal);
-      pdf.text(spacedHeading(titleText), x, y);
-      pdf.setDrawColor(155, 164, 164);
-      pdf.setLineWidth(0.7);
-      pdf.line(x, y + 8, x + columnWidth, y + 8);
-      return y + 23;
-    };
-
-    const writeColumn = (
-      text: string,
-      x: number,
-      y: number,
-      options: { size?: number; bold?: boolean; color?: RGB; gap?: number } = {},
-    ) => {
-      const clean = sanitize(text);
-      if (!clean) return y;
-      const size = options.size ?? 7.7;
-      const lines = pdf.splitTextToSize(clean, columnWidth);
-      setFont(options.bold ? 'bold' : 'normal', size, options.color ?? body);
-      lines.forEach((line: string) => {
-        if (y + size + 5 > pageHeight - 36) return;
-        pdf.text(line, x, y);
-        y += lineHeight(size, 1.13);
-      });
-      return y + (options.gap ?? 2);
-    };
-
-    projectY = columnHeading('Project Experience', projectX, projectY);
-    educationY = columnHeading('Education', educationX, educationY);
-
-    if (projects.length) {
-      projects.slice(0, 5).forEach((project) => {
-        projectY = writeColumn(project.title, projectX, projectY, { size: 7.8, bold: true, color: [0, 0, 0], gap: 1 });
-        if (project.description) {
-          projectY = writeColumn(project.description, projectX, projectY, { size: 7.15, gap: 5 });
-        }
-      });
-    } else {
-      projectY = writeColumn('Projects will appear here after admin adds them.', projectX, projectY, { size: 7.2, color: muted });
-    }
-
-    if (education.length) {
-      education.slice(0, 4).forEach((item) => {
-        educationY = writeColumn(item.institution, educationX, educationY, { size: 7.5, bold: true, color: [0, 0, 0], gap: 1 });
-        educationY = writeColumn(item.degree, educationX, educationY, { size: 7.2, gap: 1 });
-        if (item.result) educationY = writeColumn(item.result, educationX, educationY, { size: 7.1, gap: 1 });
-        if (item.period || item.location) {
-          educationY = writeColumn([item.period, item.location].filter(Boolean).join(' - '), educationX, educationY, { size: 6.8, color: muted, gap: 5 });
-        }
-      });
-    } else {
-      educationY = writeColumn('Education will appear here after admin adds records.', educationX, educationY, { size: 7.2, color: muted });
-    }
-
-    rightY = Math.max(projectY, educationY) + 12;
+  const addEducationMain = () => {
+    if (!education.length) return;
+    mainHeading('Education');
+    education.slice(0, 5).forEach((item) => {
+      writeRight(item.degree, { size: 8.8, bold: true, color: [0, 0, 0], gap: 1 });
+      if (item.institution) writeRight(item.institution, { size: 8.2, bold: true, color: body, gap: 1 });
+      const meta = [item.period, item.location].filter(Boolean).join(' | ');
+      if (meta) writeRight(meta, { size: 7.6, color: muted, gap: 1 });
+      if (item.result) writeRight(item.result, { size: 7.9, color: body, gap: 1 });
+      if (item.description) writeRight(item.description, { size: 8.1, gap: 4 });
+      rightY += 7;
+    });
+    rightY += 8;
   };
 
   const addExperienceMain = () => {
@@ -422,7 +377,8 @@ export async function downloadPortfolioPdf({
   addSidebarCertificates();
 
   addProfile();
-  addProjectsAndEducation();
+  addProjects();
+  addEducationMain();
   addExperienceMain();
 
   const totalPages = pdf.getNumberOfPages();
@@ -432,5 +388,5 @@ export async function downloadPortfolioPdf({
     pdf.text(`${page} / ${totalPages}`, pageWidth - 24, pageHeight - 18, { align: 'right' });
   }
 
-  pdf.save(makeFileName(name));
+  pdf.save(makeFileName(about?.name));
 }
