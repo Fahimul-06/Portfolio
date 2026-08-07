@@ -353,12 +353,8 @@ export async function downloadPortfolioPdf({
     if (!projects.length) return;
     mainHeading('Project Experience');
     projects.slice(0, 6).forEach((project) => {
-      const tech = project.tech?.length ? ` (${project.tech.join(', ')})` : '';
-      writeRight(`${project.title}${tech}`, { size: 8.8, bold: true, color: [0, 0, 0], gap: 1 });
-      const details = project.detailed_description || project.description;
-      if (details) writeRight(details, { size: 8.3, gap: 1 });
-      if (project.live_url) writeRight(`Live: ${project.live_url}`, { size: 7.4, color: muted, gap: 1 });
-      if (project.github_url && project.github_url_public) writeRight(`Code: ${project.github_url}`, { size: 7.4, color: muted, gap: 1 });
+      writeRight(project.title, { size: 8.8, bold: true, color: [0, 0, 0], gap: 1 });
+      if (project.description) writeRight(project.description, { size: 8.3, gap: 1 });
       rightY += 6;
     });
     rightY += 8;
