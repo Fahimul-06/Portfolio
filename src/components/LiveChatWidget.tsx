@@ -188,7 +188,7 @@ export function LiveChatWidget() {
       )}
 
       {open && (
-        <div className="fixed right-3 top-1/2 z-50 flex h-[600px] max-h-[calc(100vh-2rem)] w-[calc(100vw-1.5rem)] max-w-sm -translate-y-1/2 flex-col overflow-hidden rounded-2xl border border-violet-400/30 bg-[#0b0614] shadow-2xl shadow-violet-500/20 sm:right-5">
+        <div className="fixed bottom-3 right-3 z-50 flex h-[600px] max-h-[calc(100vh-1.5rem)] w-[calc(100vw-1.5rem)] max-w-sm flex-col overflow-hidden rounded-2xl border border-violet-400/30 bg-[#0b0614] shadow-2xl shadow-violet-500/20 sm:bottom-5 sm:right-5">
           <div className="flex items-center justify-between border-b border-[#322044] bg-[#160b24] px-5 py-4">
             <div>
               <h3 className="font-black text-white">Live Chat</h3>
