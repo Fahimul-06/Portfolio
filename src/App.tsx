@@ -773,8 +773,8 @@ function Portfolio() {
         <div className="absolute bottom-10 right-10 h-80 w-80 rounded-full bg-purple-400/10 blur-3xl" />
 
         <div className="glass-reveal-target relative z-10 mx-auto max-w-6xl text-center">
-          <div className="mb-4 text-[10px] font-semibold uppercase tracking-[0.32em] text-violet-300/65 sm:text-[11px]">
-            SOFTWARE ENGINEER <span className="px-1.5 text-purple-300/35">·</span> FOUNDER <span className="px-1.5 text-purple-300/35">·</span> CREATIVE
+          <div className="mb-10 text-[10px] font-semibold uppercase tracking-[0.32em] text-violet-300/65 sm:mb-12 sm:text-[11px]">
+            SOFTWARE ENGINEER <span className="px-1.5 text-purple-300/35">·</span> CREATIVE <span className="px-1.5 text-purple-300/35">·</span> FOUNDER
           </div>
 
           <h1 className="text-3xl font-black leading-tight text-white sm:text-5xl lg:text-7xl">
@@ -789,28 +789,41 @@ function Portfolio() {
             {homeShortDescription}
           </p>
 
-          <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-            <button
-              onClick={() => scrollToSection("projects")}
-              className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-400 to-purple-400 px-5 py-2.5 text-sm font-bold text-[#0b0614] shadow-lg shadow-violet-900/20 transition-all hover:-translate-y-0.5"
+          <div className="mt-9 flex flex-wrap items-center justify-center gap-2.5">
+            <a
+              href={contact?.github_url || "#"}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 rounded-full border border-violet-300/20 bg-[#160b24] px-4 py-2 text-xs font-semibold text-violet-100 transition-all hover:-translate-y-0.5 hover:border-violet-300/50 hover:bg-[#211032]"
             >
-              View Projects
-              <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
-            </button>
-            <button
-              onClick={() => scrollToSection("contact")}
-              className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-[#160b24] px-5 py-2.5 text-sm font-bold text-white transition-all hover:-translate-y-0.5 hover:border-violet-300/40 hover:bg-[#211032]"
+              <Github size={15} />
+              GitHub
+            </a>
+            <a
+              href={contact?.linkedin_url || "#"}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 rounded-full border border-violet-300/20 bg-[#160b24] px-4 py-2 text-xs font-semibold text-violet-100 transition-all hover:-translate-y-0.5 hover:border-violet-300/50 hover:bg-[#211032]"
             >
-              Contact Me
-              <Mail size={16} />
-            </button>
-            <button
-              onClick={openResearchPage}
-              className="inline-flex items-center gap-2 rounded-full border border-violet-300/25 bg-[#160b24] px-5 py-2.5 text-sm font-bold text-violet-100 transition-all hover:-translate-y-0.5 hover:border-violet-300/50 hover:bg-[#211032]"
+              <Linkedin size={15} />
+              LinkedIn
+            </a>
+            <a
+              href={contact?.email ? `mailto:${contact.email}` : "#"}
+              className="inline-flex items-center gap-2 rounded-full border border-violet-300/20 bg-[#160b24] px-4 py-2 text-xs font-semibold text-violet-100 transition-all hover:-translate-y-0.5 hover:border-violet-300/50 hover:bg-[#211032]"
             >
-              Research
-              <BookOpen size={16} />
-            </button>
+              <Mail size={15} />
+              Mail Me
+            </a>
+            <a
+              href={contact?.facebook_url || "#"}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 rounded-full border border-violet-300/20 bg-[#160b24] px-4 py-2 text-xs font-semibold text-violet-100 transition-all hover:-translate-y-0.5 hover:border-violet-300/50 hover:bg-[#211032]"
+            >
+              <span className="flex h-[15px] w-[15px] items-center justify-center rounded-sm bg-violet-300 text-[11px] font-black leading-none text-[#160b24]">f</span>
+              Facebook
+            </a>
           </div>
         </div>
       </section>

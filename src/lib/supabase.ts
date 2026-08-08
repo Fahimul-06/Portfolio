@@ -312,6 +312,7 @@ export type ContactInfo = {
   location: string;
   github_url: string;
   linkedin_url: string;
+  facebook_url: string;
   created_at: string;
   updated_at: string;
 };

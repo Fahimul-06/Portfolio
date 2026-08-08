@@ -189,6 +189,7 @@ const ContactInfo = mongoose.model('ContactInfo', new mongoose.Schema({
   location: { type: String, default: '' },
   github_url: { type: String, default: '' },
   linkedin_url: { type: String, default: '' },
+  facebook_url: { type: String, default: '' },
 }, commonOptions), 'contact_info');
 
 const Message = mongoose.model('Message', new mongoose.Schema({
@@ -406,6 +407,7 @@ async function seedDatabase() {
       location: 'Available Remote Worldwide',
       github_url: '#',
       linkedin_url: '#',
+      facebook_url: '#',
     });
   }
 

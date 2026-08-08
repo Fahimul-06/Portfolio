@@ -43,6 +43,7 @@ export function ContactManager() {
         location: contact.location,
         github_url: contact.github_url,
         linkedin_url: contact.linkedin_url,
+        facebook_url: contact.facebook_url,
         updated_at: new Date().toISOString(),
       })
       .eq('id', contact.id);
@@ -170,6 +171,20 @@ export function ContactManager() {
               onChange={(e) => setContact({ ...contact, linkedin_url: e.target.value })}
               className="w-full pl-12 pr-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
               placeholder="https://linkedin.com/in/username"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">Facebook URL</label>
+          <div className="relative">
+            <span className="absolute left-4 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-sm bg-gray-500 text-xs font-black text-[#160b24]">f</span>
+            <input
+              type="url"
+              value={contact.facebook_url || ''}
+              onChange={(e) => setContact({ ...contact, facebook_url: e.target.value })}
+              className="w-full pl-12 pr-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-violet-500 transition-colors"
+              placeholder="https://facebook.com/username"
             />
           </div>
         </div>
