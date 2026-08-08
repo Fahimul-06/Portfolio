@@ -125,7 +125,7 @@ function App() {
 function NotFoundPage() {
   return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4 text-center text-gray-100">
-      <div className="max-w-md rounded-3xl border border-slate-800 bg-slate-900/80 p-8 shadow-2xl">
+      <div className="max-w-md rounded-3xl border border-slate-800 bg-slate-900 p-8 shadow-2xl">
         <h1 className="text-4xl font-black text-white">404</h1>
         <p className="mt-3 text-gray-300">This page is not available.</p>
         <button
@@ -155,7 +155,7 @@ function DirectCallPage() {
           This secure link was shared by the admin. Tap the button below, allow
           microphone access, and the admin phone/dashboard will ring.
         </p>
-        <div className="mt-8 rounded-2xl border border-slate-700/70 bg-slate-900/70 p-5 text-left text-sm text-gray-300 shadow-2xl">
+        <div className="mt-8 rounded-2xl border border-slate-700/70 bg-slate-900 p-5 text-left text-sm text-gray-300 shadow-2xl">
           <p className="font-semibold text-gray-100">Before you call:</p>
           <p className="mt-2">
             Keep this page open during the call. Use Chrome/Safari/Edge and
@@ -629,7 +629,7 @@ function Portfolio() {
           <div className="glass-pill-nav flex h-12 items-center gap-2 rounded-full px-2.5 py-1.5 shadow-2xl sm:h-14 sm:gap-3 sm:px-3 lg:h-14 lg:gap-4 lg:px-4">
             <button
               onClick={() => navigateToPortfolioSection("home")}
-              className="group relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-white/10 text-sm font-black text-cyan-100 transition-all hover:scale-105 sm:h-10 sm:w-10"
+              className="group relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-slate-800 text-sm font-black text-cyan-100 transition-all hover:scale-105 sm:h-10 sm:w-10"
               aria-label="Go to home"
             >
               {about?.logo_url ? (
@@ -662,7 +662,7 @@ function Portfolio() {
                   className={`rounded-full px-3 py-2 text-xs font-semibold transition-all duration-300 ${
                     activeSection === item.toLowerCase()
                       ? "bg-cyan-300/20 text-cyan-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.16)]"
-                      : "text-gray-300 hover:bg-white/10 hover:text-cyan-100"
+                      : "text-gray-300 hover:bg-slate-800 hover:text-cyan-100"
                   }`}
                 >
                   {item}
@@ -681,7 +681,7 @@ function Portfolio() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/10 text-gray-200 transition-colors hover:text-cyan-200 lg:hidden"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-slate-800 text-gray-200 transition-colors hover:text-cyan-200 lg:hidden"
               aria-label="Toggle menu"
             >
               {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -708,7 +708,7 @@ function Portfolio() {
                     className={`rounded-full px-3 py-2.5 text-center text-sm font-semibold transition-colors ${
                       activeSection === item.toLowerCase()
                         ? "bg-cyan-300/20 text-cyan-100"
-                        : "text-gray-300 hover:bg-white/10 hover:text-cyan-100"
+                        : "text-gray-300 hover:bg-slate-800 hover:text-cyan-100"
                     }`}
                   >
                     {item}
@@ -741,7 +741,7 @@ function Portfolio() {
         <div className="absolute bottom-10 right-10 h-80 w-80 rounded-full bg-teal-400/10 blur-3xl" />
 
         <div className="glass-reveal-target relative z-10 mx-auto max-w-6xl text-center">
-          <div className="mb-8 inline-flex items-center gap-3 rounded-full border border-cyan-300/20 bg-white/5 px-5 py-2 text-sm font-semibold uppercase tracking-[0.35em] text-cyan-200 shadow-2xl shadow-cyan-900/10 backdrop-blur-xl">
+          <div className="mb-8 inline-flex items-center gap-3 rounded-full border border-cyan-300/20 bg-slate-900 px-5 py-2 text-sm font-semibold uppercase tracking-[0.35em] text-cyan-200 shadow-2xl shadow-cyan-900/10 ">
             <span className="h-2 w-2 rounded-full bg-cyan-300 shadow-[0_0_18px_rgba(103,232,249,0.9)]" />
             Portfolio Home
           </div>
@@ -768,7 +768,7 @@ function Portfolio() {
             </button>
             <button
               onClick={() => scrollToSection("contact")}
-              className="inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/5 px-8 py-4 font-bold text-white backdrop-blur-xl transition-all hover:-translate-y-1 hover:border-cyan-300/40 hover:bg-cyan-300/10"
+              className="inline-flex items-center gap-3 rounded-full border border-white/15 bg-slate-900 px-8 py-4 font-bold text-white  transition-all hover:-translate-y-1 hover:border-cyan-300/40 hover:bg-slate-800"
             >
               Contact Me
               <Mail size={20} />
@@ -906,7 +906,7 @@ function Portfolio() {
                           {item.period}
                         </span>
                         {item.result && (
-                          <span className="px-3 py-1 rounded-full bg-slate-800/80 text-gray-300 border border-slate-700/60 text-sm">
+                          <span className="px-3 py-1 rounded-full bg-slate-800 text-gray-300 border border-slate-700/60 text-sm">
                             {item.result}
                           </span>
                         )}
@@ -934,7 +934,7 @@ function Portfolio() {
               ))}
             </div>
           ) : (
-            <div className="rounded-2xl border border-slate-700/50 bg-slate-900/60 p-10 text-center text-gray-500">
+            <div className="rounded-2xl border border-slate-700/50 bg-slate-900 p-10 text-center text-gray-500">
               Education information will appear here after admin adds records.
             </div>
           )}
@@ -1106,7 +1106,7 @@ function Portfolio() {
 
                   {/* Category Badge */}
                   <div className="absolute top-4 right-4">
-                    <span className="px-4 py-2 bg-slate-900/80 backdrop-blur-sm text-sm text-cyan-400 rounded-full border border-cyan-500/30 animate-float">
+                    <span className="px-4 py-2 bg-slate-900  text-sm text-cyan-400 rounded-full border border-cyan-500/30 animate-float">
                       {project.category}
                     </span>
                   </div>
@@ -1144,7 +1144,7 @@ function Portfolio() {
                     {project.tech.map((t) => (
                       <span
                         key={t}
-                        className="px-3 py-1 bg-slate-800/80 border border-slate-700/50 text-xs text-gray-300 rounded-lg hover:border-cyan-500/50 hover:text-cyan-400 transition-all duration-300"
+                        className="px-3 py-1 bg-slate-800 border border-slate-700/50 text-xs text-gray-300 rounded-lg hover:border-cyan-500/50 hover:text-cyan-400 transition-all duration-300"
                       >
                         {t}
                       </span>
@@ -1335,7 +1335,7 @@ function Portfolio() {
                   {/* Credential Info */}
                   <div className="flex flex-wrap items-center gap-2">
                     {certificate.credential_id && (
-                      <span className="px-3 py-1 bg-slate-800/80 border border-slate-700/50 text-xs text-gray-400 rounded-lg">
+                      <span className="px-3 py-1 bg-slate-800 border border-slate-700/50 text-xs text-gray-400 rounded-lg">
                         ID: {certificate.credential_id}
                       </span>
                     )}
@@ -1456,7 +1456,7 @@ function Portfolio() {
                           [field.key]: e.target.value,
                         })
                       }
-                      className="w-full px-5 py-4 bg-slate-800/50 border border-slate-700/50 rounded-xl text-gray-100 placeholder-gray-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300"
+                      className="w-full px-5 py-4 bg-slate-800 border border-slate-700/50 rounded-xl text-gray-100 placeholder-gray-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300"
                       placeholder={field.placeholder}
                       required
                     />
@@ -1473,7 +1473,7 @@ function Portfolio() {
                       setFormData({ ...formData, message: e.target.value })
                     }
                     rows={5}
-                    className="w-full px-5 py-4 bg-slate-800/50 border border-slate-700/50 rounded-xl text-gray-100 placeholder-gray-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300 resize-none"
+                    className="w-full px-5 py-4 bg-slate-800 border border-slate-700/50 rounded-xl text-gray-100 placeholder-gray-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300 resize-none"
                     placeholder="Tell me about your project..."
                     required
                   />
@@ -1686,7 +1686,7 @@ function ProjectDetailsPage({
             <button
               type="button"
               onClick={onBack}
-              className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-gray-200 transition-all hover:bg-white/10 hover:text-cyan-100"
+              className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-gray-200 transition-all hover:bg-slate-800 hover:text-cyan-100"
             >
               <ArrowLeft size={17} /> Back to Projects
             </button>
@@ -1711,7 +1711,7 @@ function ProjectDetailsPage({
                 </p>
                 <div className="mt-6 flex flex-wrap gap-2">
                   {project.tech.map((tech) => (
-                    <span key={tech} className="rounded-lg border border-slate-700 bg-slate-900/80 px-3 py-1.5 text-sm text-gray-300">
+                    <span key={tech} className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-sm text-gray-300">
                       {tech}
                     </span>
                   ))}
@@ -1890,7 +1890,7 @@ function ProjectDetailsPage({
                     <Loader2 size={20} className="animate-spin text-cyan-400" /> Loading comments...
                   </div>
                 ) : comments.length === 0 ? (
-                  <div className="rounded-2xl border border-slate-700/60 bg-slate-900/70 p-6 text-center text-gray-400">
+                  <div className="rounded-2xl border border-slate-700/60 bg-slate-900 p-6 text-center text-gray-400">
                     No comments yet. Be the first to comment on this project.
                   </div>
                 ) : (
