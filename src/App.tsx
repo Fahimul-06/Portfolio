@@ -276,7 +276,7 @@ function HeroMediaSlide({
       <iframe
         src={isActive ? embedUrl : "about:blank"}
         title={item.title || "Hero video"}
-        className="h-full w-full border-0 object-cover"
+        className="h-full w-full border-0 bg-black object-contain"
         allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
         allowFullScreen
       />
@@ -287,7 +287,7 @@ function HeroMediaSlide({
     return (
       <video
         ref={videoRef}
-        className="h-full w-full bg-black object-cover"
+        className="h-full w-full bg-black object-contain"
         muted
         loop
         autoPlay
@@ -820,7 +820,7 @@ function Portfolio() {
         className="relative bg-slate-950 pb-8 pt-24 sm:pb-10 sm:pt-28"
       >
         <div className="w-screen max-w-none">
-          <div className="glass-hero-frame relative h-[320px] w-screen overflow-hidden rounded-none border-y border-cyan-400/30 bg-slate-900 shadow-2xl shadow-cyan-950/30 ring-1 ring-white/10 sm:h-[420px] lg:h-[520px] xl:h-[560px]">
+          <div className="relative h-[220px] w-screen overflow-hidden bg-slate-950 sm:h-[280px] lg:h-[340px] xl:h-[380px]">
             {heroMedia.length > 0 ? (
               <>
                 {heroMedia.map((item, index) => {
@@ -843,10 +843,7 @@ function Portfolio() {
                   );
                 })}
 
-                <div className="pointer-events-none absolute inset-0 z-20 rounded-none bg-gradient-to-t from-slate-950/55 via-transparent to-black/20" />
-                <div className="pointer-events-none absolute inset-0 z-20 rounded-none border-y border-white/10" />
-
-                {heroMedia.length > 1 && (
+                                {heroMedia.length > 1 && (
                   <div className="absolute bottom-5 left-1/2 z-30 flex -translate-x-1/2 items-center gap-3 rounded-full bg-black/40 px-4 py-3 backdrop-blur-md">
                     {heroMedia.map((item, index) => (
                       <button
