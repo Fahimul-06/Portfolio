@@ -182,20 +182,20 @@ export function CustomerLiveCall({
 
   return (
     <>
-      {!hideFloatingButton && (
+      {!hideFloatingButton && !open && (
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="fixed bottom-6 right-6 z-40 flex items-center gap-3 rounded-full bg-gradient-to-r from-green-400 to-emerald-600 px-5 py-4 font-bold text-slate-950 shadow-2xl shadow-green-500/30 hover:scale-105 transition-all"
+          className="fixed bottom-5 right-5 z-40 flex items-center gap-2 rounded-full bg-gradient-to-r from-green-400 to-emerald-600 px-3.5 py-2.5 text-sm font-bold text-slate-950 shadow-lg shadow-green-500/20 transition-all hover:scale-105"
         >
-          <PhoneCall size={22} />
+          <PhoneCall size={18} />
           Live Call
         </button>
       )}
 
       {open && (
-        <div className="fixed inset-0 z-[60] flex items-end justify-center bg-slate-950/70 p-4 backdrop-blur-sm sm:items-center">
-          <div className="w-full max-w-md rounded-2xl border border-slate-700 bg-slate-900 p-6 shadow-2xl">
+        <div className="fixed right-3 top-1/2 z-[60] w-[calc(100vw-1.5rem)] max-w-sm -translate-y-1/2 sm:right-5">
+          <div className="w-full rounded-2xl border border-slate-700 bg-slate-900 p-5 shadow-2xl">
             <div className="mb-5 flex items-start justify-between gap-4">
               <div>
                 <h3 className="text-2xl font-bold text-gray-100">{title}</h3>

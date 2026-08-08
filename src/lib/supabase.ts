@@ -264,6 +264,23 @@ export type Project = {
   updated_at: string;
 };
 
+export type Research = {
+  id: string;
+  title: string;
+  authors: string[];
+  journal: string;
+  publication_date: string;
+  abstract: string;
+  keywords: string[];
+  doi_url: string;
+  paper_url: string;
+  image_url: string;
+  display_order: number;
+  is_published: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
 export type Experience = {
   id: string;
   title: string;

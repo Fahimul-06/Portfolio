@@ -150,6 +150,21 @@ const Project = mongoose.model('Project', new mongoose.Schema({
   is_featured: { type: Boolean, default: true },
 }, commonOptions), 'projects');
 
+
+const Research = mongoose.model('Research', new mongoose.Schema({
+  title: { type: String, required: true },
+  authors: { type: [String], default: [] },
+  journal: { type: String, default: '' },
+  publication_date: { type: String, default: '' },
+  abstract: { type: String, default: '' },
+  keywords: { type: [String], default: [] },
+  doi_url: { type: String, default: '' },
+  paper_url: { type: String, default: '' },
+  image_url: { type: String, default: '' },
+  display_order: { type: Number, default: 0 },
+  is_published: { type: Boolean, default: true },
+}, commonOptions), 'research');
+
 const Experience = mongoose.model('Experience', new mongoose.Schema({
   title: { type: String, required: true },
   company: { type: String, required: true },
@@ -312,6 +327,7 @@ const modelMap = {
   hero_media: HeroMedia,
   skills: Skill,
   projects: Project,
+  research: Research,
   experience: Experience,
   education: Education,
   contact_info: ContactInfo,

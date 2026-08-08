@@ -31,6 +31,7 @@ import {
   ArrowLeft,
   Star,
   Heart,
+  BookOpen,
 } from "lucide-react";
 import type {
   AboutInfo,
@@ -40,6 +41,7 @@ import type {
   Education,
   ContactInfo,
   Certificate,
+  Research,
 } from "./lib/supabase";
 
 type View = "portfolio" | "admin";
@@ -235,9 +237,12 @@ function AnimatedHomeTitle({ titles }: { titles: string[] }) {
   }, [titles.join("|")]);
 
   return (
-    <span className="inline-flex min-h-[1.25em] items-center">
-      <span>{visibleText || "\u00a0"}</span>
-      <span className="ml-2 h-[1em] w-[3px] rounded-full bg-cyan-300 animate-pulse" aria-hidden="true" />
+    <span className="inline-flex min-h-[1.25em] items-center justify-center gap-3">
+      <span className="shrink-0 text-white">I AM</span>
+      <span className="inline-flex items-center">
+        <span>{visibleText || "\u00a0"}</span>
+        <span className="ml-2 h-[1em] w-[3px] rounded-full bg-cyan-300 animate-pulse" aria-hidden="true" />
+      </span>
     </span>
   );
 }
@@ -413,6 +418,7 @@ function Portfolio() {
   const [about, setAbout] = useState<AboutInfo | null>(null);
   const [skills, setSkills] = useState<Skill[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [research, setResearch] = useState<Research[]>([]);
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [education, setEducation] = useState<Education[]>([]);
   const [certificates, setCertificates] = useState<Certificate[]>([]);
@@ -421,7 +427,7 @@ function Portfolio() {
   const [currentPath, setCurrentPath] = useState(() => window.location.pathname);
 
   useTactileUiFeedback(activeSection);
-  usePortfolioScrollReveal(`${currentPath}-${dataLoading}-${skills.length}-${projects.length}-${education.length}-${experiences.length}-${certificates.length}`);
+  usePortfolioScrollReveal(`${currentPath}-${dataLoading}-${skills.length}-${projects.length}-${research.length}-${education.length}-${experiences.length}-${certificates.length}`);
 
   useEffect(() => {
     fetchAllData();
@@ -467,6 +473,7 @@ function Portfolio() {
       aboutRes,
       skillsRes,
       projectsRes,
+      researchRes,
       experienceRes,
       educationRes,
       certificatesRes,
@@ -479,6 +486,10 @@ function Portfolio() {
         .order("display_order", { ascending: true }),
       supabase
         .from("projects")
+        .select("*")
+        .order("display_order", { ascending: true }),
+      supabase
+        .from("research")
         .select("*")
         .order("display_order", { ascending: true }),
       supabase
@@ -499,6 +510,7 @@ function Portfolio() {
     if (aboutRes.data) setAbout(aboutRes.data);
     if (skillsRes.data) setSkills(skillsRes.data);
     if (projectsRes.data) setProjects(projectsRes.data);
+    if (researchRes.data) setResearch(researchRes.data);
     if (experienceRes.data) setExperiences(experienceRes.data);
     if (educationRes.data) setEducation(educationRes.data);
     if (certificatesRes.data) setCertificates(certificatesRes.data);
@@ -508,7 +520,7 @@ function Portfolio() {
 
 
   const navigateToPortfolioSection = (id: string) => {
-    if (currentPath.startsWith("/projects/")) {
+    if (currentPath.startsWith("/projects/") || currentPath === "/research") {
       window.history.pushState({}, "", `/#${id}`);
       setCurrentPath(window.location.pathname);
       window.setTimeout(() => scrollToSection(id), 50);
@@ -521,6 +533,13 @@ function Portfolio() {
     window.history.pushState({}, "", `/projects/${projectId}`);
     setCurrentPath(window.location.pathname);
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const openResearchPage = () => {
+    window.history.pushState({}, "", "/research");
+    setCurrentPath(window.location.pathname);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setIsMenuOpen(false);
   };
 
   const scrollToSection = (id: string) => {
@@ -597,6 +616,20 @@ function Portfolio() {
           <span className="text-gray-400 animate-pulse">Loading...</span>
         </div>
       </div>
+    );
+  }
+
+  if (currentPath === "/research") {
+    return (
+      <ResearchPage
+        research={research.filter((item) => item.is_published !== false)}
+        about={about}
+        onBack={() => {
+          window.history.pushState({}, "", "/");
+          setCurrentPath(window.location.pathname);
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }}
+      />
     );
   }
 
@@ -758,20 +791,27 @@ function Portfolio() {
             {homeShortDescription}
           </p>
 
-          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+          <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
             <button
               onClick={() => scrollToSection("projects")}
-              className="group inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-cyan-400 to-teal-400 px-8 py-4 font-bold text-slate-950 shadow-2xl shadow-cyan-900/30 transition-all hover:-translate-y-1 hover:shadow-cyan-400/30"
+              className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-cyan-400 to-teal-400 px-5 py-2.5 text-sm font-bold text-slate-950 shadow-lg shadow-cyan-900/20 transition-all hover:-translate-y-0.5"
             >
               View Projects
-              <ArrowRight size={20} className="transition-transform group-hover:translate-x-1" />
+              <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
             </button>
             <button
               onClick={() => scrollToSection("contact")}
-              className="inline-flex items-center gap-3 rounded-full border border-white/15 bg-slate-900 px-8 py-4 font-bold text-white  transition-all hover:-translate-y-1 hover:border-cyan-300/40 hover:bg-slate-800"
+              className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-slate-900 px-5 py-2.5 text-sm font-bold text-white transition-all hover:-translate-y-0.5 hover:border-cyan-300/40 hover:bg-slate-800"
             >
               Contact Me
-              <Mail size={20} />
+              <Mail size={16} />
+            </button>
+            <button
+              onClick={openResearchPage}
+              className="inline-flex items-center gap-2 rounded-full border border-cyan-300/25 bg-slate-900 px-5 py-2.5 text-sm font-bold text-cyan-100 transition-all hover:-translate-y-0.5 hover:border-cyan-300/50 hover:bg-slate-800"
+            >
+              Research
+              <BookOpen size={16} />
             </button>
           </div>
         </div>
@@ -1565,6 +1605,106 @@ type ProjectDetailsPageProps = {
   onBack: () => void;
   onOpenProject: (projectId: string) => void;
 };
+
+
+function ResearchPage({
+  research,
+  about,
+  onBack,
+}: {
+  research: Research[];
+  about: AboutInfo | null;
+  onBack: () => void;
+}) {
+  useTactileUiFeedback("research");
+
+  return (
+    <div className="portfolio-glass-theme min-h-screen bg-slate-950 text-gray-100">
+      <nav className="fixed left-0 right-0 top-3 z-50 px-3 sm:top-4 sm:px-4">
+        <div className="mx-auto flex w-fit items-center gap-2 rounded-full border border-slate-700 bg-slate-900 px-2.5 py-1.5 shadow-2xl sm:px-3">
+          <button
+            onClick={onBack}
+            className="inline-flex h-9 items-center gap-2 rounded-full px-3 text-sm font-semibold text-gray-200 transition hover:bg-slate-800 hover:text-cyan-200"
+          >
+            <ArrowLeft size={17} /> Home
+          </button>
+          <div className="h-6 w-px bg-slate-700" />
+          <div className="px-3 text-sm font-bold text-cyan-200">Research</div>
+        </div>
+      </nav>
+
+      <main className="relative overflow-hidden px-4 pb-24 pt-28 sm:px-6 lg:px-8 lg:pt-32">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(34,211,238,0.12),transparent_32%),linear-gradient(180deg,#020617,#0f172a_50%,#020617)]" />
+        <div className="relative z-10 mx-auto max-w-6xl">
+          <header className="mx-auto mb-12 max-w-3xl text-center">
+            <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-cyan-300/20 bg-slate-900 text-cyan-300">
+              <BookOpen size={28} />
+            </div>
+            <h1 className="text-4xl font-black text-white sm:text-5xl">Published Research</h1>
+            <p className="mt-4 text-base leading-7 text-gray-400 sm:text-lg">
+              Publications, peer-reviewed research, conference work, and scholarly contributions by {about?.name || "Fahimul Arefin"}.
+            </p>
+          </header>
+
+          {research.length === 0 ? (
+            <div className="rounded-3xl border border-slate-800 bg-slate-900 p-10 text-center text-gray-400">
+              Published research will appear here after it is added from the admin dashboard.
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {research.map((item) => (
+                <article key={item.id} className="overflow-hidden rounded-3xl border border-slate-800 bg-slate-900 shadow-xl">
+                  <div className={item.image_url ? "grid lg:grid-cols-[280px_1fr]" : ""}>
+                    {item.image_url && (
+                      <div className="min-h-56 bg-slate-950">
+                        <img src={item.image_url} alt={item.title} className="h-full w-full object-cover" />
+                      </div>
+                    )}
+                    <div className="p-6 sm:p-8">
+                      <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-wider text-cyan-300">
+                        {item.journal && <span>{item.journal}</span>}
+                        {item.journal && item.publication_date && <span className="text-slate-600">•</span>}
+                        {item.publication_date && <span>{item.publication_date}</span>}
+                      </div>
+                      <h2 className="mt-3 text-2xl font-black leading-tight text-white sm:text-3xl">{item.title}</h2>
+                      {item.authors?.length > 0 && (
+                        <p className="mt-3 text-sm leading-6 text-gray-400">{item.authors.join(', ')}</p>
+                      )}
+                      {item.abstract && (
+                        <p className="mt-5 whitespace-pre-line text-sm leading-7 text-gray-300 sm:text-base">{item.abstract}</p>
+                      )}
+                      {item.keywords?.length > 0 && (
+                        <div className="mt-5 flex flex-wrap gap-2">
+                          {item.keywords.map((keyword) => (
+                            <span key={keyword} className="rounded-full border border-slate-700 bg-slate-950 px-3 py-1 text-xs font-medium text-gray-300">{keyword}</span>
+                          ))}
+                        </div>
+                      )}
+                      {(item.paper_url || item.doi_url) && (
+                        <div className="mt-6 flex flex-wrap gap-3">
+                          {item.paper_url && (
+                            <a href={item.paper_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full bg-cyan-400 px-4 py-2 text-sm font-bold text-slate-950 transition hover:bg-cyan-300">
+                              View Publication <ExternalLink size={15} />
+                            </a>
+                          )}
+                          {item.doi_url && (
+                            <a href={item.doi_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full border border-slate-700 bg-slate-950 px-4 py-2 text-sm font-bold text-gray-200 transition hover:border-cyan-300/40 hover:text-cyan-200">
+                              DOI <ExternalLink size={15} />
+                            </a>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </div>
+      </main>
+    </div>
+  );
+}
 
 function ProjectDetailsPage({
   project,

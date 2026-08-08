@@ -17,6 +17,7 @@ import {
   PhoneCall,
   UsersRound,
   GraduationCap,
+  BookOpen,
 } from 'lucide-react';
 import { AboutManager } from './AboutManager';
 import { SkillsManager } from './SkillsManager';
@@ -31,9 +32,10 @@ import { VisitorsManager } from './VisitorsManager';
 import { AdminChatManager } from './AdminChatManager';
 import { EducationManager } from './EducationManager';
 import { ProjectCommentsManager } from './ProjectCommentsManager';
+import { ResearchManager } from './ResearchManager';
 import { adminUrl } from '../lib/adminPath';
 
-type Section = 'about' | 'education' | 'skills' | 'projects' | 'projectComments' | 'experience' | 'contact' | 'messages' | 'chat' | 'certificates' | 'calls' | 'visitors';
+type Section = 'about' | 'education' | 'skills' | 'projects' | 'research' | 'projectComments' | 'experience' | 'contact' | 'messages' | 'chat' | 'certificates' | 'calls' | 'visitors';
 
 interface AdminDashboardProps {
   onLogout: () => void;
@@ -44,6 +46,7 @@ const navItems: { id: Section; label: string; icon: React.ElementType }[] = [
   { id: 'education', label: 'Education', icon: GraduationCap },
   { id: 'skills', label: 'Skills', icon: Code2 },
   { id: 'projects', label: 'Projects', icon: Briefcase },
+  { id: 'research', label: 'Research', icon: BookOpen },
   { id: 'projectComments', label: 'Project Comments', icon: MessageSquare },
   { id: 'experience', label: 'Experience', icon: Clock },
   { id: 'certificates', label: 'Certificates', icon: Award },
@@ -109,6 +112,8 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
         return <SkillsManager />;
       case 'projects':
         return <ProjectsManager />;
+      case 'research':
+        return <ResearchManager />;
       case 'projectComments':
         return <ProjectCommentsManager />;
       case 'experience':

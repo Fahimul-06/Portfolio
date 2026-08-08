@@ -180,15 +180,15 @@ export function LiveChatWidget() {
       {!open && (
         <button
           onClick={() => setOpen(true)}
-          className="fixed bottom-24 right-5 z-40 flex items-center gap-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 px-5 py-4 font-bold text-white shadow-2xl shadow-cyan-500/30 transition hover:scale-105"
+          className="fixed bottom-16 right-5 z-40 flex items-center gap-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 px-3.5 py-2.5 text-sm font-bold text-white shadow-lg shadow-cyan-500/20 transition hover:scale-105"
         >
-          <MessageCircle size={22} />
+          <MessageCircle size={18} />
           Live Chat
         </button>
       )}
 
       {open && (
-        <div className="fixed bottom-5 right-4 z-50 flex h-[620px] max-h-[calc(100vh-2rem)] w-[calc(100vw-2rem)] max-w-md flex-col overflow-hidden rounded-3xl border border-cyan-400/30 bg-slate-950 shadow-2xl shadow-cyan-500/20">
+        <div className="fixed right-3 top-1/2 z-50 flex h-[600px] max-h-[calc(100vh-2rem)] w-[calc(100vw-1.5rem)] max-w-sm -translate-y-1/2 flex-col overflow-hidden rounded-2xl border border-cyan-400/30 bg-slate-950 shadow-2xl shadow-cyan-500/20 sm:right-5">
           <div className="flex items-center justify-between border-b border-slate-800 bg-slate-900 px-5 py-4">
             <div>
               <h3 className="font-black text-white">Live Chat</h3>
