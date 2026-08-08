@@ -679,16 +679,7 @@ function Portfolio() {
 
             {/* Desktop Menu */}
             <div className="hidden items-center gap-1.5 lg:flex">
-              {[
-                "Home",
-                "About",
-                "Education",
-                "Skills",
-                "Projects",
-                "Experience",
-                "Certificates",
-                "Contact",
-              ].map((item) => (
+              {["Home", "Skills", "Projects", "Experience", "Certificates", "Contact"].map((item) => (
                 <button
                   key={item}
                   onClick={() => scrollToSection(item.toLowerCase())}
@@ -701,6 +692,13 @@ function Portfolio() {
                   {item}
                 </button>
               ))}
+              <button
+                type="button"
+                onClick={openResearchPage}
+                className="rounded-full px-3 py-2 text-xs font-semibold text-gray-300 transition-all duration-300 hover:bg-[#211032] hover:text-violet-100"
+              >
+                Research
+              </button>
               <button
                 type="button"
                 onClick={handleDownloadPortfolioPdf}
@@ -725,16 +723,7 @@ function Portfolio() {
           {isMenuOpen && (
             <div className="glass-mobile-pill-menu mt-3 w-[min(92vw,360px)] rounded-[2rem] p-3 shadow-2xl animate-slide-down lg:hidden">
               <div className="grid grid-cols-2 gap-2">
-                {[
-                  "Home",
-                  "About",
-                  "Education",
-                  "Skills",
-                  "Projects",
-                  "Experience",
-                  "Certificates",
-                  "Contact",
-                ].map((item) => (
+                {["Home", "Skills", "Projects", "Experience", "Certificates", "Contact"].map((item) => (
                   <button
                     key={item}
                     onClick={() => scrollToSection(item.toLowerCase())}
@@ -747,6 +736,16 @@ function Portfolio() {
                     {item}
                   </button>
                 ))}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    openResearchPage();
+                  }}
+                  className="rounded-full px-3 py-2.5 text-center text-sm font-semibold text-gray-300 transition-colors hover:bg-[#211032] hover:text-violet-100"
+                >
+                  Research
+                </button>
                 <button
                   type="button"
                   onClick={() => {
@@ -774,9 +773,8 @@ function Portfolio() {
         <div className="absolute bottom-10 right-10 h-80 w-80 rounded-full bg-purple-400/10 blur-3xl" />
 
         <div className="glass-reveal-target relative z-10 mx-auto max-w-6xl text-center">
-          <div className="mb-8 inline-flex items-center gap-3 rounded-full border border-violet-300/20 bg-[#160b24] px-5 py-2 text-sm font-semibold uppercase tracking-[0.35em] text-violet-200 shadow-2xl shadow-violet-900/10 ">
-            <span className="h-2 w-2 rounded-full bg-violet-300 shadow-[0_0_18px_rgba(103,232,249,0.9)]" />
-            Portfolio Home
+          <div className="mb-4 text-[10px] font-semibold uppercase tracking-[0.32em] text-violet-300/65 sm:text-[11px]">
+            SOFTWARE ENGINEER <span className="px-1.5 text-purple-300/35">·</span> FOUNDER <span className="px-1.5 text-purple-300/35">·</span> CREATIVE
           </div>
 
           <h1 className="text-3xl font-black leading-tight text-white sm:text-5xl lg:text-7xl">
