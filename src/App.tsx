@@ -6,6 +6,7 @@ import { AdminDashboard } from "./components/AdminDashboard";
 import { CustomerLiveCall } from "./components/CustomerLiveCall";
 import { VisitorLocationPrompt } from "./components/VisitorLocationPrompt";
 import { LiveChatWidget } from "./components/LiveChatWidget";
+import { ScrollEarthBackground } from "./components/ScrollEarthBackground";
 import { isAdminPath, isLegacyAdminPath } from "./lib/adminPath";
 import {
   Menu,
@@ -702,6 +703,7 @@ function Portfolio() {
 
   return (
     <div className="portfolio-glass-theme min-h-screen bg-slate-950 text-gray-100 overflow-x-hidden">
+      <ScrollEarthBackground />
       {/* Navigation */}
       <nav
         className={`glass-nav fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
@@ -1786,6 +1788,7 @@ function ProjectDetailsPage({
 
   return (
     <div className="portfolio-glass-theme min-h-screen bg-slate-950 text-gray-100 overflow-x-hidden">
+      <ScrollEarthBackground />
       <div className="fixed inset-x-0 top-0 z-50 bg-slate-950/90 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <button type="button" onClick={onBack} className="inline-flex items-center gap-2 text-sm text-gray-300 hover:text-cyan-400 transition-colors">

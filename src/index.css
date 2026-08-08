@@ -829,3 +829,174 @@ body {
   border-bottom: 0 !important;
   box-shadow: none !important;
 }
+
+/* Scroll-reactive 3D Earth background */
+.portfolio-glass-theme {
+  background: #020617 !important;
+}
+
+.portfolio-glass-theme .scroll-earth-background {
+  position: fixed !important;
+  inset: 0;
+  z-index: 0 !important;
+  pointer-events: none;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 76% 22%, rgba(34, 211, 238, 0.17), transparent 30%),
+    radial-gradient(circle at 20% 78%, rgba(20, 184, 166, 0.10), transparent 38%),
+    linear-gradient(135deg, rgba(2, 6, 23, 0.96), rgba(8, 18, 34, 0.92));
+}
+
+.portfolio-glass-theme .scroll-earth-stage {
+  --earth-rotate-y: -24deg;
+  --earth-rotate-z: -10deg;
+  --earth-shift-y: 0px;
+  --earth-shift-x: 0px;
+  --earth-scale: 1;
+  --earth-map-shift: 0px;
+  --earth-cloud-shift: 0px;
+  position: absolute;
+  top: clamp(80px, 15vh, 150px);
+  right: clamp(-260px, -10vw, -80px);
+  width: clamp(390px, 58vw, 860px);
+  aspect-ratio: 1;
+  transform:
+    translate3d(var(--earth-shift-x), var(--earth-shift-y), 0)
+    rotateZ(var(--earth-rotate-z))
+    scale(var(--earth-scale));
+  transform-origin: 50% 50%;
+  opacity: 0.78;
+  filter: saturate(1.12) contrast(1.05);
+  will-change: transform;
+  perspective: 1200px;
+}
+
+.portfolio-glass-theme .scroll-earth-sphere {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 9999px;
+  transform: rotateX(-10deg) rotateY(var(--earth-rotate-y));
+  transform-style: preserve-3d;
+  box-shadow:
+    inset -48px -28px 90px rgba(0, 0, 0, 0.82),
+    inset 38px 18px 70px rgba(125, 211, 252, 0.15),
+    0 0 52px rgba(34, 211, 238, 0.24),
+    0 0 140px rgba(14, 165, 233, 0.15),
+    0 42px 130px rgba(2, 6, 23, 0.66);
+}
+
+.portfolio-glass-theme .scroll-earth-ocean {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 32% 26%, rgba(186, 230, 253, 0.44), transparent 8%),
+    radial-gradient(circle at 30% 28%, rgba(56, 189, 248, 0.24), transparent 26%),
+    radial-gradient(circle at 65% 68%, rgba(15, 118, 110, 0.20), transparent 27%),
+    linear-gradient(145deg, #0b2a4a 0%, #075985 38%, #083344 68%, #020617 100%);
+}
+
+.portfolio-glass-theme .scroll-earth-map {
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 600'%3E%3Cg fill='%2322c55e' opacity='.78'%3E%3Cpath d='M122 150c56-50 139-62 191-28 35 23 11 67 52 86 38 18 99-4 117 35 18 40-35 82-72 101-59 31-136 10-169-41-23-35-16-70-56-85-28-11-68 4-86-22-10-15 4-34 23-46z'/%3E%3Cpath d='M405 104c60-32 124-29 160 8 37 38 9 82 47 118 28 27 74 24 99 55 34 43-9 106-59 128-68 30-150-19-173-78-15-37 3-61-26-91-27-27-73-25-90-59-13-26 11-64 42-81z'/%3E%3Cpath d='M698 121c47-43 138-50 198-11 52 34 45 83 95 108 35 18 81 8 109 39 31 34 15 94-23 120-45 32-104 2-143 32-41 31-21 96-69 124-54 32-145-36-162-103-14-54 27-84 6-132-21-46-78-58-87-103-5-28 26-54 76-74z'/%3E%3Cpath d='M845 420c42-23 98-15 125 18 27 34 10 85-27 112-42 31-105 29-139-7-33-35-4-96 41-123z'/%3E%3Cpath d='M205 390c38-10 82 5 99 37 20 38-9 90-54 99-46 9-91-28-91-70 0-30 18-57 46-66z'/%3E%3Cpath d='M538 438c36-23 92-17 121 15 31 34 16 90-27 113-47 25-113 6-132-39-14-33 6-70 38-89z'/%3E%3C/g%3E%3Cg fill='%23a7f3d0' opacity='.42'%3E%3Cellipse cx='310' cy='176' rx='66' ry='26'/%3E%3Cellipse cx='558' cy='206' rx='58' ry='21'/%3E%3Cellipse cx='913' cy='185' rx='76' ry='30'/%3E%3Cellipse cx='702' cy='391' rx='50' ry='20'/%3E%3C/g%3E%3C/svg%3E"),
+    radial-gradient(circle at 50% 40%, transparent 0%, rgba(2, 6, 23, 0.15) 72%, rgba(0, 0, 0, 0.72) 100%);
+  background-repeat: repeat-x, no-repeat;
+  background-size: 190% 100%, 100% 100%;
+  background-position: calc(var(--earth-map-shift) * -1) 50%, center;
+  mix-blend-mode: screen;
+  opacity: 0.94;
+  filter: drop-shadow(0 0 7px rgba(34, 197, 94, 0.18));
+}
+
+.portfolio-glass-theme .scroll-earth-clouds {
+  position: absolute;
+  inset: -2%;
+  border-radius: inherit;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 600'%3E%3Cg fill='white' opacity='.42'%3E%3Cellipse cx='150' cy='150' rx='90' ry='18'/%3E%3Cellipse cx='240' cy='280' rx='120' ry='20'/%3E%3Cellipse cx='480' cy='120' rx='105' ry='18'/%3E%3Cellipse cx='680' cy='335' rx='135' ry='22'/%3E%3Cellipse cx='925' cy='190' rx='145' ry='20'/%3E%3Cellipse cx='1030' cy='415' rx='110' ry='18'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-size: 170% 100%;
+  background-position: calc(var(--earth-cloud-shift) * -1) 50%;
+  opacity: 0.46;
+  filter: blur(0.4px);
+  mix-blend-mode: screen;
+}
+
+.portfolio-glass-theme .scroll-earth-atmosphere,
+.portfolio-glass-theme .scroll-earth-shine {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.portfolio-glass-theme .scroll-earth-atmosphere {
+  box-shadow:
+    inset 10px 0 28px rgba(125, 211, 252, 0.22),
+    inset -18px -8px 34px rgba(2, 6, 23, 0.52),
+    0 0 34px rgba(56, 189, 248, 0.38);
+}
+
+.portfolio-glass-theme .scroll-earth-shine {
+  background:
+    radial-gradient(circle at 30% 24%, rgba(255, 255, 255, 0.34), transparent 18%),
+    radial-gradient(circle at 70% 72%, rgba(34, 211, 238, 0.12), transparent 26%),
+    linear-gradient(115deg, rgba(255,255,255,0.11), transparent 34%, rgba(0,0,0,0.30) 74%);
+  mix-blend-mode: screen;
+}
+
+.portfolio-glass-theme .scroll-earth-shadow {
+  position: absolute;
+  left: 14%;
+  right: 14%;
+  bottom: -8%;
+  height: 12%;
+  border-radius: 9999px;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.44), transparent 70%);
+  filter: blur(14px);
+}
+
+.portfolio-glass-theme .scroll-earth-stars {
+  position: absolute;
+  inset: 0;
+  opacity: 0.34;
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,0.86) 0 1px, transparent 1.6px),
+    radial-gradient(circle, rgba(103,232,249,0.78) 0 1px, transparent 1.8px),
+    radial-gradient(circle, rgba(255,255,255,0.52) 0 1px, transparent 1.5px);
+  background-size: 90px 90px, 150px 150px, 230px 230px;
+  background-position: 0 0, 40px 70px, 120px 20px;
+}
+
+.portfolio-glass-theme .scroll-earth-space-glow {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 72% 38%, rgba(14, 165, 233, 0.12), transparent 36%),
+    radial-gradient(circle at 55% 85%, rgba(34, 197, 94, 0.07), transparent 40%);
+}
+
+.portfolio-glass-theme section > .absolute.inset-0,
+.portfolio-glass-theme section .absolute.inset-0.bg-slate-900 {
+  opacity: 0.34 !important;
+}
+
+@media (max-width: 768px) {
+  .portfolio-glass-theme .scroll-earth-stage {
+    top: 105px;
+    right: -185px;
+    width: 470px;
+    opacity: 0.64;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portfolio-glass-theme .scroll-earth-stage {
+    transform: none !important;
+  }
+}
