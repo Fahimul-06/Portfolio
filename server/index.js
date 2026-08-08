@@ -115,6 +115,8 @@ const AboutInfo = mongoose.model('AboutInfo', new mongoose.Schema({
   hero_cta_primary_text: { type: String, default: 'View My Work' },
   hero_cta_secondary_text: { type: String, default: 'Get In Touch' },
   hero_greeting: { type: String, default: "Hi, I'm" },
+  home_titles: { type: [String], default: ['Software Developer', 'Full Stack Developer', 'MERN Stack Developer'] },
+  home_short_description: { type: String, default: 'I build modern web applications, smart software systems, and clean digital experiences.' },
 }, commonOptions), 'about_info');
 
 
@@ -365,6 +367,8 @@ async function seedDatabase() {
       hero_cta_primary_text: 'View My Work',
       hero_cta_secondary_text: 'Get In Touch',
       hero_greeting: "Hi, I'm",
+      home_titles: ['Software Developer', 'Full Stack Developer', 'MERN Stack Developer'],
+      home_short_description: 'I build modern web applications, smart backend systems, realtime web features, and clean user-focused digital experiences.',
     });
   }
 

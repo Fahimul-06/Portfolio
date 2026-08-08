@@ -230,6 +230,8 @@ export type AboutInfo = {
   hero_cta_primary_text: string;
   hero_cta_secondary_text: string;
   hero_greeting: string;
+  home_titles: string[];
+  home_short_description: string;
   created_at: string;
   updated_at: string;
 };

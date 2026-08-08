@@ -52,6 +52,8 @@ export function AboutManager() {
         hero_cta_primary_text: about.hero_cta_primary_text,
         hero_cta_secondary_text: about.hero_cta_secondary_text,
         hero_greeting: about.hero_greeting,
+        home_titles: about.home_titles || [],
+        home_short_description: about.home_short_description || '',
         updated_at: new Date().toISOString(),
       })
       .eq('id', about.id);
@@ -254,80 +256,45 @@ export function AboutManager() {
       <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-6">
         <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
           <Home className="text-amber-500" size={24} />
-          <h2 className="text-lg font-semibold text-gray-100">Hero Section (Homepage)</h2>
+          <div>
+            <h2 className="text-lg font-semibold text-gray-100">Home Section</h2>
+            <p className="mt-1 text-sm text-gray-500">
+              The homepage now shows name, animated typing titles, and a short description. The old photo/video hero box is removed from Home.
+            </p>
+          </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">Hero Background Image</label>
-          <FileUpload
-            value={about.hero_background_url || ''}
-            onChange={(url) => setAbout({ ...about, hero_background_url: url })}
-            accept="image"
-            label="Background Image"
-            folder="hero"
+          <label className="block text-sm font-medium text-gray-300 mb-2">Animated Titles</label>
+          <textarea
+            value={(about.home_titles || []).join('\n')}
+            onChange={(e) =>
+              setAbout({
+                ...about,
+                home_titles: e.target.value
+                  .split('\n')
+                  .map((item) => item.trim())
+                  .filter(Boolean),
+              })
+            }
+            rows={5}
+            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors resize-y"
+            placeholder={"Software Developer\nFull Stack Developer\nMERN Stack Developer"}
           />
           <p className="text-xs text-gray-500 mt-2">
-            Upload a background image for the hero section. Recommended: high-resolution image (1920x1080 or larger).
+            Add one title per line. The homepage will type one title, clear it, then type the next title automatically.
           </p>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">Or use external Background URL</label>
-          <input
-            type="url"
-            value={about.hero_background_url || ''}
-            onChange={(e) => setAbout({ ...about, hero_background_url: e.target.value })}
-            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
-            placeholder="https://..."
+          <label className="block text-sm font-medium text-gray-300 mb-2">Home Short Description</label>
+          <textarea
+            value={about.home_short_description || ''}
+            onChange={(e) => setAbout({ ...about, home_short_description: e.target.value })}
+            rows={4}
+            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors resize-y"
+            placeholder="Write a short introduction for the homepage."
           />
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Greeting Text</label>
-            <input
-              type="text"
-              value={about.hero_greeting || ''}
-              onChange={(e) => setAbout({ ...about, hero_greeting: e.target.value })}
-              className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
-              placeholder="Hi, I'm"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Status Text</label>
-            <input
-              type="text"
-              value={about.hero_status_text || ''}
-              onChange={(e) => setAbout({ ...about, hero_status_text: e.target.value })}
-              className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
-              placeholder="Available for new opportunities"
-            />
-          </div>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Primary CTA Button Text</label>
-            <input
-              type="text"
-              value={about.hero_cta_primary_text || ''}
-              onChange={(e) => setAbout({ ...about, hero_cta_primary_text: e.target.value })}
-              className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
-              placeholder="View My Work"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Secondary CTA Button Text</label>
-            <input
-              type="text"
-              value={about.hero_cta_secondary_text || ''}
-              onChange={(e) => setAbout({ ...about, hero_cta_secondary_text: e.target.value })}
-              className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
-              placeholder="Get In Touch"
-            />
-          </div>
         </div>
       </div>
 

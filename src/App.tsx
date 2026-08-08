@@ -6,7 +6,6 @@ import { AdminDashboard } from "./components/AdminDashboard";
 import { CustomerLiveCall } from "./components/CustomerLiveCall";
 import { VisitorLocationPrompt } from "./components/VisitorLocationPrompt";
 import { LiveChatWidget } from "./components/LiveChatWidget";
-import { ScrollEarthBackground } from "./components/ScrollEarthBackground";
 import { isAdminPath, isLegacyAdminPath } from "./lib/adminPath";
 import {
   Menu,
@@ -41,7 +40,6 @@ import type {
   Education,
   ContactInfo,
   Certificate,
-  HeroMedia,
 } from "./lib/supabase";
 
 type View = "portfolio" | "admin";
@@ -177,55 +175,72 @@ function DirectCallPage() {
   );
 }
 
-function isVideoUrl(url: string) {
+function getHomeTitles(about?: AboutInfo | null) {
+  const titles = (about?.home_titles || [])
+    .map((title) => title.trim())
+    .filter(Boolean);
+
+  if (titles.length > 0) return titles;
+  if (about?.title?.trim()) return [about.title.trim()];
+  return ["Software Developer"];
+}
+
+function getHomeShortDescription(about?: AboutInfo | null) {
+  if (about?.home_short_description?.trim()) {
+    return about.home_short_description.trim();
+  }
+  if (about?.tagline?.trim()) return about.tagline.trim();
+  if (about?.bio?.trim()) return about.bio.trim().split(/\n\s*\n/)[0];
+  return "I build modern web applications, smart software systems, and clean digital experiences.";
+}
+
+function AnimatedHomeTitle({ titles }: { titles: string[] }) {
+  const [titleIndex, setTitleIndex] = useState(0);
+  const [visibleText, setVisibleText] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    const currentTitle = titles[titleIndex] || "Software Developer";
+    const typingDelay = isDeleting ? 45 : 85;
+    const pauseDelay = isDeleting ? 350 : 1600;
+
+    if (!isDeleting && visibleText === currentTitle) {
+      const pause = window.setTimeout(() => setIsDeleting(true), pauseDelay);
+      return () => window.clearTimeout(pause);
+    }
+
+    if (isDeleting && visibleText === "") {
+      const pause = window.setTimeout(() => {
+        setIsDeleting(false);
+        setTitleIndex((index) => (index + 1) % Math.max(titles.length, 1));
+      }, pauseDelay);
+      return () => window.clearTimeout(pause);
+    }
+
+    const timer = window.setTimeout(() => {
+      setVisibleText((text) =>
+        isDeleting
+          ? currentTitle.slice(0, Math.max(text.length - 1, 0))
+          : currentTitle.slice(0, text.length + 1),
+      );
+    }, typingDelay);
+
+    return () => window.clearTimeout(timer);
+  }, [titles, titleIndex, visibleText, isDeleting]);
+
+  useEffect(() => {
+    setTitleIndex(0);
+    setVisibleText("");
+    setIsDeleting(false);
+  }, [titles.join("|")]);
+
   return (
-    /\.(mp4|webm|ogg|mov|m4v)(\?|#|$)/i.test(url) ||
-    /(youtube\.com|youtu\.be|vimeo\.com|drive\.google\.com)/i.test(url)
+    <span className="inline-flex min-h-[1.25em] items-center">
+      <span>{visibleText || "\u00a0"}</span>
+      <span className="ml-2 h-[1em] w-[3px] rounded-full bg-cyan-300 animate-pulse" aria-hidden="true" />
+    </span>
   );
 }
-
-function getVideoEmbedUrl(url: string) {
-  if (!url) return "";
-
-  try {
-    const parsed = new URL(url, window.location.origin);
-    const host = parsed.hostname.replace(/^www\./, "");
-
-    if (host === "youtu.be") {
-      const id = parsed.pathname.split("/").filter(Boolean)[0];
-      return id
-        ? `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&controls=0&modestbranding=1&playsinline=1`
-        : "";
-    }
-
-    if (host.includes("youtube.com")) {
-      const id =
-        parsed.searchParams.get("v") ||
-        parsed.pathname.split("/").filter(Boolean).pop();
-      return id
-        ? `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&controls=0&modestbranding=1&playsinline=1`
-        : "";
-    }
-
-    if (host.includes("vimeo.com")) {
-      const id = parsed.pathname.split("/").filter(Boolean).pop();
-      return id
-        ? `https://player.vimeo.com/video/${id}?autoplay=1&muted=1&loop=1&background=1&playsinline=1`
-        : "";
-    }
-
-    if (host.includes("drive.google.com")) {
-      const match = url.match(/\/d\/([^/]+)/) || url.match(/[?&]id=([^&]+)/);
-      const id = match?.[1];
-      return id ? `https://drive.google.com/file/d/${id}/preview` : "";
-    }
-  } catch {
-    return "";
-  }
-
-  return "";
-}
-
 
 function renderBioParagraphs(bio?: string | null) {
   const fallback =
@@ -242,82 +257,6 @@ function renderBioParagraphs(bio?: string | null) {
         {paragraph}
       </p>
     ));
-}
-
-function HeroMediaSlide({
-  item,
-  isActive,
-  onEnded,
-}: {
-  item: HeroMedia;
-  isActive: boolean;
-  onEnded: () => void;
-}) {
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const shouldRenderVideo =
-    item.media_type === "video" || isVideoUrl(item.media_url);
-  const embedUrl = shouldRenderVideo ? getVideoEmbedUrl(item.media_url) : "";
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    if (isActive) {
-      video.muted = true;
-      const playPromise = video.play();
-      if (playPromise) playPromise.catch(() => undefined);
-    } else {
-      video.pause();
-      video.currentTime = 0;
-    }
-  }, [isActive, item.media_url]);
-
-  if (shouldRenderVideo && embedUrl) {
-    return (
-      <iframe
-        src={isActive ? embedUrl : "about:blank"}
-        title={item.title || "Hero video"}
-        className="h-full w-full border-0 bg-black object-contain"
-        allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
-        allowFullScreen
-      />
-    );
-  }
-
-  if (shouldRenderVideo) {
-    return (
-      <video
-        ref={videoRef}
-        className="h-full w-full bg-black object-contain"
-        muted
-        loop
-        autoPlay
-        playsInline
-        preload="metadata"
-        controls={false}
-        onEnded={onEnded}
-      >
-        <source src={item.media_url} />
-        Your browser does not support this video.
-      </video>
-    );
-  }
-
-  return (
-    <div className="relative h-full w-full overflow-hidden bg-slate-950">
-      <img
-        src={item.media_url}
-        alt=""
-        aria-hidden="true"
-        className="absolute inset-0 h-full w-full scale-110 object-cover opacity-40 blur-2xl"
-      />
-      <img
-        src={item.media_url}
-        alt={item.title || "Hero media"}
-        className="relative z-10 h-full w-full object-contain object-center"
-      />
-    </div>
-  );
 }
 
 
@@ -472,8 +411,6 @@ function Portfolio() {
   const [submitError, setSubmitError] = useState("");
 
   const [about, setAbout] = useState<AboutInfo | null>(null);
-  const [heroMedia, setHeroMedia] = useState<HeroMedia[]>([]);
-  const [activeHeroIndex, setActiveHeroIndex] = useState(0);
   const [skills, setSkills] = useState<Skill[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [experiences, setExperiences] = useState<Experience[]>([]);
@@ -484,7 +421,7 @@ function Portfolio() {
   const [currentPath, setCurrentPath] = useState(() => window.location.pathname);
 
   useTactileUiFeedback(activeSection);
-  usePortfolioScrollReveal(`${currentPath}-${dataLoading}-${heroMedia.length}-${skills.length}-${projects.length}-${education.length}-${experiences.length}-${certificates.length}`);
+  usePortfolioScrollReveal(`${currentPath}-${dataLoading}-${skills.length}-${projects.length}-${education.length}-${experiences.length}-${certificates.length}`);
 
   useEffect(() => {
     fetchAllData();
@@ -528,7 +465,6 @@ function Portfolio() {
   const fetchAllData = async () => {
     const [
       aboutRes,
-      heroMediaRes,
       skillsRes,
       projectsRes,
       experienceRes,
@@ -537,10 +473,6 @@ function Portfolio() {
       contactRes,
     ] = await Promise.all([
       supabase.from("about_info").select("*").single(),
-      supabase
-        .from("hero_media")
-        .select("*")
-        .order("display_order", { ascending: true }),
       supabase
         .from("skills")
         .select("*")
@@ -565,10 +497,6 @@ function Portfolio() {
     ]);
 
     if (aboutRes.data) setAbout(aboutRes.data);
-    if (heroMediaRes.data)
-      setHeroMedia(
-        heroMediaRes.data.filter((item: HeroMedia) => item.is_active),
-      );
     if (skillsRes.data) setSkills(skillsRes.data);
     if (projectsRes.data) setProjects(projectsRes.data);
     if (experienceRes.data) setExperiences(experienceRes.data);
@@ -578,21 +506,6 @@ function Portfolio() {
     setDataLoading(false);
   };
 
-  useEffect(() => {
-    if (heroMedia.length <= 1) return;
-    const current = heroMedia[activeHeroIndex];
-    if (
-      current &&
-      (current.media_type === "video" || isVideoUrl(current.media_url))
-    )
-      return;
-
-    const timer = window.setTimeout(() => {
-      setActiveHeroIndex((index) => (index + 1) % heroMedia.length);
-    }, 5000);
-
-    return () => window.clearTimeout(timer);
-  }, [heroMedia, activeHeroIndex]);
 
   const navigateToPortfolioSection = (id: string) => {
     if (currentPath.startsWith("/projects/")) {
@@ -666,6 +579,9 @@ function Portfolio() {
     });
   };
 
+  const homeTitles = getHomeTitles(about);
+  const homeShortDescription = getHomeShortDescription(about);
+
   const skillCategories = [
     { key: "frontend", label: "Frontend", icon: Code2 },
     { key: "backend", label: "Backend", icon: Server },
@@ -703,7 +619,6 @@ function Portfolio() {
 
   return (
     <div className="portfolio-glass-theme min-h-screen bg-slate-950 text-gray-100 overflow-x-hidden">
-      <ScrollEarthBackground />
       {/* Navigation */}
       <nav
         className={`glass-nav fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
@@ -816,71 +731,48 @@ function Portfolio() {
         </div>
       </nav>
 
-      {/* Hero Section */}
+      {/* Home Section */}
       <section
         id="home"
-        className="relative bg-transparent pb-0 pt-16 lg:pt-20"
+        className="relative flex min-h-[calc(100vh-4rem)] items-center overflow-hidden bg-transparent px-4 pb-16 pt-24 sm:px-6 lg:px-8 lg:pt-28"
       >
-        <div className="w-screen max-w-none">
-          <div className="relative h-[220px] w-screen overflow-hidden bg-transparent sm:h-[280px] lg:h-[340px] xl:h-[380px]">
-            {heroMedia.length > 0 ? (
-              <>
-                {heroMedia.map((item, index) => {
-                  const isActive = index === activeHeroIndex;
-                  return (
-                    <div
-                      key={item.id}
-                      className={`absolute inset-0 transition-opacity duration-1000 ${isActive ? "opacity-100 z-10" : "opacity-0 z-0"}`}
-                    >
-                      <HeroMediaSlide
-                        item={item}
-                        isActive={isActive}
-                        onEnded={() =>
-                          setActiveHeroIndex(
-                            (current) => (current + 1) % heroMedia.length,
-                          )
-                        }
-                      />
-                    </div>
-                  );
-                })}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_20%,rgba(34,211,238,0.18),transparent_34%),radial-gradient(circle_at_75%_10%,rgba(45,212,191,0.14),transparent_30%),linear-gradient(135deg,rgba(2,6,23,0.96),rgba(15,23,42,0.94))]" />
+        <div className="absolute left-1/2 top-24 h-72 w-72 -translate-x-1/2 rounded-full bg-cyan-400/10 blur-3xl" />
+        <div className="absolute bottom-10 right-10 h-80 w-80 rounded-full bg-teal-400/10 blur-3xl" />
 
-                                {heroMedia.length > 1 && (
-                  <div className="absolute bottom-5 left-1/2 z-30 flex -translate-x-1/2 items-center gap-3 rounded-full bg-black/40 px-4 py-3 backdrop-blur-md">
-                    {heroMedia.map((item, index) => (
-                      <button
-                        key={item.id}
-                        onClick={() => setActiveHeroIndex(index)}
-                        aria-label={`Show hero media ${index + 1}`}
-                        className={`h-3 rounded-full transition-all ${
-                          index === activeHeroIndex
-                            ? "w-10 bg-white"
-                            : "w-3 bg-white/45 hover:bg-white/75"
-                        }`}
-                      />
-                    ))}
-                  </div>
-                )}
-              </>
-            ) : about?.hero_background_url ? (
-              <div className="relative h-full w-full overflow-hidden bg-transparent">
-                <img
-                  src={about.hero_background_url}
-                  alt=""
-                  aria-hidden="true"
-                  className="absolute inset-0 h-full w-full scale-110 object-cover opacity-40 blur-2xl"
-                />
-                <img
-                  src={about.hero_background_url}
-                  alt="Hero"
-                  className="relative z-10 h-full w-full object-contain object-center"
-                />
-              </div>
-            ) : (
-              <div className="flex h-full items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 px-4 text-center">
-                <p className="text-lg text-gray-500">No hero media added yet.</p>
-              </div>
-            )}
+        <div className="glass-reveal-target relative z-10 mx-auto max-w-6xl text-center">
+          <div className="mb-8 inline-flex items-center gap-3 rounded-full border border-cyan-300/20 bg-white/5 px-5 py-2 text-sm font-semibold uppercase tracking-[0.35em] text-cyan-200 shadow-2xl shadow-cyan-900/10 backdrop-blur-xl">
+            <span className="h-2 w-2 rounded-full bg-cyan-300 shadow-[0_0_18px_rgba(103,232,249,0.9)]" />
+            Portfolio Home
+          </div>
+
+          <h1 className="text-4xl font-black leading-tight text-white sm:text-6xl lg:text-8xl">
+            {about?.name || "Fahimul Arefin"}
+          </h1>
+
+          <div className="mt-6 min-h-[4rem] text-2xl font-extrabold leading-tight text-gradient sm:text-4xl lg:text-5xl">
+            <AnimatedHomeTitle titles={homeTitles} />
+          </div>
+
+          <p className="mx-auto mt-8 max-w-4xl text-base leading-8 text-slate-300 sm:text-lg lg:text-xl">
+            {homeShortDescription}
+          </p>
+
+          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <button
+              onClick={() => scrollToSection("projects")}
+              className="group inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-cyan-400 to-teal-400 px-8 py-4 font-bold text-slate-950 shadow-2xl shadow-cyan-900/30 transition-all hover:-translate-y-1 hover:shadow-cyan-400/30"
+            >
+              View Projects
+              <ArrowRight size={20} className="transition-transform group-hover:translate-x-1" />
+            </button>
+            <button
+              onClick={() => scrollToSection("contact")}
+              className="inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/5 px-8 py-4 font-bold text-white backdrop-blur-xl transition-all hover:-translate-y-1 hover:border-cyan-300/40 hover:bg-cyan-300/10"
+            >
+              Contact Me
+              <Mail size={20} />
+            </button>
           </div>
         </div>
       </section>
@@ -1788,7 +1680,6 @@ function ProjectDetailsPage({
 
   return (
     <div className="portfolio-glass-theme min-h-screen bg-slate-950 text-gray-100 overflow-x-hidden">
-      <ScrollEarthBackground />
       <div className="fixed inset-x-0 top-0 z-50 bg-slate-950/90 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <button type="button" onClick={onBack} className="inline-flex items-center gap-2 text-sm text-gray-300 hover:text-cyan-400 transition-colors">
