@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type CSSProperties } from "react";
 import { supabase } from "./lib/supabase";
 import { downloadPortfolioPdf } from "./lib/portfolioPdf";
 import { AdminLogin } from "./components/AdminLogin";
@@ -396,6 +396,137 @@ function useTactileUiFeedback(activeSection?: string) {
   }, [activeSection]);
 }
 
+
+function clampNumber(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function easeRobotProgress(progress: number) {
+  return progress < 0.5
+    ? 4 * progress * progress * progress
+    : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+}
+
+function useRobotHumanScrollAnimation() {
+  const [progress, setProgress] = useState(0);
+  const [direction, setDirection] = useState<'up' | 'down'>('down');
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    let frame = 0;
+    let lastScrollY = window.scrollY;
+
+    const updateProgress = () => {
+      const scrollY = window.scrollY;
+      const documentHeight = Math.max(
+        document.documentElement.scrollHeight,
+        document.body.scrollHeight,
+        window.innerHeight,
+      );
+      const maxScroll = Math.max(1, documentHeight - window.innerHeight);
+      const activationRange = Math.max(620, Math.min(1400, maxScroll * 0.38));
+      const nextProgress = clampNumber(scrollY / activationRange, 0, 1);
+
+      setDirection(scrollY >= lastScrollY ? 'down' : 'up');
+      setProgress(nextProgress);
+      lastScrollY = scrollY;
+      frame = 0;
+    };
+
+    const handleScroll = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(updateProgress);
+    };
+
+    updateProgress();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  return { progress: easeRobotProgress(progress), direction };
+}
+
+function RobotHumanScrollBackground() {
+  const { progress, direction } = useRobotHumanScrollAnimation();
+  const robotStyle = {
+    '--head-open': `${-58 * progress}deg`,
+    '--head-lift': `${-20 * progress}px`,
+    '--brain-y': `${-210 * progress}px`,
+    '--brain-x': `${22 * progress}px`,
+    '--brain-scale': `${0.44 + progress * 0.72}`,
+    '--brain-rotate': `${760 * progress}deg`,
+    '--brain-rotate-reverse': `${-760 * progress}deg`,
+    '--brain-opacity': `${0.18 + progress * 0.82}`,
+    '--orbit-opacity': `${clampNumber(progress * 1.55, 0, 1)}`,
+    '--helmet-gap': `${4 + progress * 34}px`,
+    '--scanner-opacity': `${0.42 + progress * 0.58}`,
+    '--chest-glow': `${0.35 + progress * 0.55}`,
+    '--chest-glow-size': `${18 + progress * 44}px`,
+  } as CSSProperties;
+
+  return (
+    <div className="robot-human-scroll-bg" style={robotStyle} data-scroll-direction={direction} aria-hidden="true">
+      <div className="robot-human-stage">
+        <div className="robot-halo-ring robot-halo-ring-one" />
+        <div className="robot-halo-ring robot-halo-ring-two" />
+
+        <div className="robot-brain-orbit">
+          <span className="robot-orbit-dot robot-orbit-dot-one" />
+          <span className="robot-orbit-dot robot-orbit-dot-two" />
+          <span className="robot-orbit-dot robot-orbit-dot-three" />
+        </div>
+
+        <div className="robot-brain-core">
+          <span className="brain-lobe brain-lobe-one" />
+          <span className="brain-lobe brain-lobe-two" />
+          <span className="brain-lobe brain-lobe-three" />
+          <span className="brain-lobe brain-lobe-four" />
+          <span className="brain-stem" />
+          <span className="brain-spark brain-spark-one" />
+          <span className="brain-spark brain-spark-two" />
+          <span className="brain-spark brain-spark-three" />
+        </div>
+
+        <div className="robot-human-model">
+          <div className="robot-shoulders">
+            <span className="robot-shoulder robot-shoulder-left" />
+            <span className="robot-shoulder robot-shoulder-right" />
+          </div>
+          <div className="robot-torso">
+            <span className="robot-chest-core" />
+            <span className="robot-torso-line robot-torso-line-one" />
+            <span className="robot-torso-line robot-torso-line-two" />
+          </div>
+          <div className="robot-neck" />
+          <div className="robot-head">
+            <div className="robot-head-back" />
+            <div className="robot-head-face">
+              <span className="robot-eye robot-eye-left" />
+              <span className="robot-eye robot-eye-right" />
+              <span className="robot-nose-bridge" />
+              <span className="robot-mouth" />
+            </div>
+            <div className="robot-head-top">
+              <span className="robot-top-panel-line" />
+              <span className="robot-top-panel-glow" />
+            </div>
+            <div className="robot-head-side-panel" />
+            <div className="robot-ear robot-ear-left" />
+            <div className="robot-ear robot-ear-right" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Portfolio() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
@@ -619,6 +750,7 @@ function Portfolio() {
 
   return (
     <div className="portfolio-glass-theme min-h-screen bg-slate-950 text-gray-100 overflow-x-hidden">
+      <RobotHumanScrollBackground />
       {/* Navigation */}
       <nav
         className={`glass-nav fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
@@ -1680,6 +1812,7 @@ function ProjectDetailsPage({
 
   return (
     <div className="portfolio-glass-theme min-h-screen bg-slate-950 text-gray-100 overflow-x-hidden">
+      <RobotHumanScrollBackground />
       <div className="fixed inset-x-0 top-0 z-50 bg-slate-950/90 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <button type="button" onClick={onBack} className="inline-flex items-center gap-2 text-sm text-gray-300 hover:text-cyan-400 transition-colors">
