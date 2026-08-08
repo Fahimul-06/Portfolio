@@ -1564,18 +1564,14 @@ function Portfolio() {
       <footer className="py-8 border-t border-[#322044] relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-t from-[#0b0614] to-transparent" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <p className="text-gray-500 text-sm flex items-center gap-2">
-                Made with{" "}
-                <Heart size={14} className="text-red-500 animate-pulse" /> by{" "}
-                {about?.name || "Fahimul Arefin"}
-              </p>
-            </div>
-            <p className="text-gray-600 text-sm">
-              &copy; {new Date().getFullYear()} All rights reserved.
+          <div className="flex flex-col items-center text-center gap-3">
+            <p className="text-lg sm:text-xl font-semibold tracking-wide text-violet-300">
+              {about?.name || "Fahimul Arefin"}
             </p>
-            <div className="flex items-center gap-4">
+            <p className="text-[10px] sm:text-xs font-medium uppercase tracking-[0.22em] text-violet-400/70">
+              SOFTWARE ENGINEER × CREATIVE × FOUNDER
+            </p>
+            <div className="flex items-center gap-3 pt-1">
               {[
                 { href: contact?.github_url, icon: Github },
                 { href: contact?.linkedin_url, icon: Linkedin },
@@ -1584,13 +1580,15 @@ function Portfolio() {
                 <a
                   key={i}
                   href={item.href || "#"}
-                  className="p-2 text-gray-500 hover:text-violet-400 transition-all duration-300 hover:scale-110 animate-float"
-                  style={{ animationDelay: `${i * 0.3}s` }}
+                  className="p-2 text-gray-500 hover:text-violet-400 transition-all duration-300 hover:scale-110"
                 >
-                  <item.icon size={20} />
+                  <item.icon size={18} />
                 </a>
               ))}
             </div>
+            <p className="text-gray-600 text-xs">
+              &copy; {new Date().getFullYear()} All rights reserved.
+            </p>
           </div>
         </div>
       </footer>
@@ -2078,13 +2076,19 @@ function ProjectDetailsPage({
       <LiveChatWidget />
 
       <footer className="border-t border-[#322044] py-8">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 text-sm text-gray-500 sm:px-6 md:flex-row lg:px-8">
-          <p>Made with <Heart size={14} className="inline text-red-500" /> by {about?.name || "Portfolio"}</p>
-          <div className="flex items-center gap-4">
-            {contact?.github_url && <a href={contact.github_url} className="hover:text-violet-400"><Github size={20} /></a>}
-            {contact?.linkedin_url && <a href={contact.linkedin_url} className="hover:text-violet-400"><Linkedin size={20} /></a>}
-            {contact?.email && <a href={`mailto:${contact.email}`} className="hover:text-violet-400"><Mail size={20} /></a>}
+        <div className="mx-auto flex max-w-7xl flex-col items-center gap-3 px-4 text-center sm:px-6 lg:px-8">
+          <p className="text-lg sm:text-xl font-semibold tracking-wide text-violet-300">
+            {about?.name || "Fahimul Arefin"}
+          </p>
+          <p className="text-[10px] sm:text-xs font-medium uppercase tracking-[0.22em] text-violet-400/70">
+            SOFTWARE ENGINEER × CREATIVE × FOUNDER
+          </p>
+          <div className="flex items-center gap-3 pt-1 text-gray-500">
+            {contact?.github_url && <a href={contact.github_url} className="p-2 hover:text-violet-400"><Github size={18} /></a>}
+            {contact?.linkedin_url && <a href={contact.linkedin_url} className="p-2 hover:text-violet-400"><Linkedin size={18} /></a>}
+            {contact?.email && <a href={`mailto:${contact.email}`} className="p-2 hover:text-violet-400"><Mail size={18} /></a>}
           </div>
+          <p className="text-xs text-gray-600">&copy; {new Date().getFullYear()} All rights reserved.</p>
         </div>
       </footer>
     </div>
