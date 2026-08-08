@@ -830,40 +830,11 @@ body {
   box-shadow: none !important;
 }
 
-/* Bottom floating pill navbar */
-.portfolio-glass-theme .bottom-pill-nav {
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  background:
-    linear-gradient(135deg, rgba(15, 23, 42, 0.78), rgba(2, 6, 23, 0.68)) !important;
-  box-shadow:
-    0 24px 70px rgba(0, 0, 0, 0.42),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(170%);
-  backdrop-filter: blur(24px) saturate(170%);
+.bottom-pill-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
-@supports (padding-bottom: env(safe-area-inset-bottom)) {
-  .portfolio-glass-theme .bottom-pill-nav {
-    bottom: max(1rem, env(safe-area-inset-bottom));
-  }
-}
-
-@keyframes slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(14px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.animate-slide-up {
-  animation: slide-up 220ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.portfolio-glass-theme section {
-  scroll-margin-top: 32px;
-  scroll-margin-bottom: 112px;
+.bottom-pill-scrollbar::-webkit-scrollbar {
+  display: none;
 }

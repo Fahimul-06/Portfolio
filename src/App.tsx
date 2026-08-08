@@ -8,8 +8,6 @@ import { VisitorLocationPrompt } from "./components/VisitorLocationPrompt";
 import { LiveChatWidget } from "./components/LiveChatWidget";
 import { isAdminPath, isLegacyAdminPath } from "./lib/adminPath";
 import {
-  Menu,
-  X,
   Github,
   Linkedin,
   Mail,
@@ -257,8 +255,59 @@ function renderBioParagraphs(bio?: string | null) {
         {paragraph}
       </p>
     ));
+
 }
 
+const portfolioNavItems = [
+  { id: "home", label: "Home" },
+  { id: "about", label: "About" },
+  { id: "education", label: "Education" },
+  { id: "skills", label: "Skills" },
+  { id: "projects", label: "Projects" },
+  { id: "experience", label: "Experience" },
+  { id: "certificates", label: "Certificates" },
+  { id: "contact", label: "Contact" },
+];
+
+type BottomPillNavbarProps = {
+  activeSection: string;
+  onNavigate: (id: string) => void;
+  onDownload: () => void;
+};
+
+function BottomPillNavbar({ activeSection, onNavigate, onDownload }: BottomPillNavbarProps) {
+  return (
+    <nav className="fixed bottom-3 left-0 right-0 z-50 flex justify-center px-2 sm:bottom-5 sm:px-4" aria-label="Portfolio navigation">
+      <div className="bottom-pill-scrollbar flex max-w-[calc(100vw-1rem)] items-center gap-1 overflow-x-auto rounded-full border border-white/10 bg-slate-950/78 p-1.5 shadow-2xl shadow-cyan-950/30 ring-1 ring-cyan-300/10 backdrop-blur-2xl sm:gap-2 sm:p-2">
+        {portfolioNavItems.map((item) => {
+          const isActive = activeSection === item.id;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => onNavigate(item.id)}
+              className={`shrink-0 rounded-full px-3 py-2 text-[11px] font-bold uppercase tracking-[0.08em] transition-all duration-300 sm:px-4 sm:text-xs ${
+                isActive
+                  ? "bg-gradient-to-r from-cyan-400 to-teal-400 text-slate-950 shadow-lg shadow-cyan-500/25"
+                  : "text-slate-300 hover:bg-white/10 hover:text-cyan-200"
+              }`}
+            >
+              {item.label}
+            </button>
+          );
+        })}
+        <button
+          type="button"
+          onClick={onDownload}
+          className="ml-1 inline-flex shrink-0 items-center gap-2 rounded-full bg-white/10 px-3 py-2 text-[11px] font-bold uppercase tracking-[0.08em] text-cyan-100 ring-1 ring-white/10 transition-all duration-300 hover:bg-cyan-300/15 hover:text-white sm:px-4 sm:text-xs"
+        >
+          <Download size={15} />
+          Resume
+        </button>
+      </div>
+    </nav>
+  );
+}
 
 function usePortfolioScrollReveal(triggerKey: string) {
   useEffect(() => {
@@ -397,7 +446,6 @@ function useTactileUiFeedback(activeSection?: string) {
 }
 
 function Portfolio() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
   const [filter, setFilter] = useState("all");
   const [formData, setFormData] = useState({
@@ -526,7 +574,6 @@ function Portfolio() {
     if (element) {
       element.scrollIntoView({ behavior: "smooth" });
     }
-    setIsMenuOpen(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -610,137 +657,29 @@ function Portfolio() {
           setCurrentPath(window.location.pathname);
           window.setTimeout(() => scrollToSection("projects"), 50);
         }}
+        onNavigateSection={(id) => {
+          window.history.pushState({}, "", `/#${id}`);
+          setCurrentPath(window.location.pathname);
+          window.setTimeout(() => scrollToSection(id), 50);
+        }}
+        onDownloadPortfolioPdf={handleDownloadPortfolioPdf}
         onOpenProject={openProjectPage}
       />
     );
   }
 
   return (
-    <div className="portfolio-glass-theme min-h-screen bg-slate-950 pb-28 text-gray-100 overflow-x-hidden">
-      {/* Bottom Pill Navigation */}
-      <nav
-        className="bottom-pill-nav fixed bottom-4 left-1/2 z-50 w-[calc(100%-1rem)] max-w-6xl -translate-x-1/2 rounded-full bg-slate-950/70 px-3 py-2 shadow-2xl shadow-black/40 backdrop-blur-2xl transition-all duration-500 sm:w-[calc(100%-2rem)]"
-        aria-label="Portfolio navigation"
-      >
-        <div className="relative flex h-12 items-center justify-between gap-3 lg:h-14">
-          <button
-            onClick={() => navigateToPortfolioSection("home")}
-            className="relative flex h-10 min-w-10 items-center justify-center rounded-full px-3 text-lg font-black transition-all hover:bg-white/10 lg:h-11 lg:min-w-11"
-            aria-label="Go to home"
-          >
-            {about?.logo_url ? (
-              <img
-                src={about.logo_url}
-                alt="Logo"
-                className="h-8 w-8 rounded-full object-cover lg:h-9 lg:w-9"
-              />
-            ) : (
-              <span className="text-gradient">FA</span>
-            )}
-            <span className="absolute -inset-1 rounded-full bg-cyan-500/20 blur-md opacity-0 transition-opacity duration-300 hover:opacity-100" />
-          </button>
-
-          {/* Desktop Bottom Pill Menu */}
-          <div className="hidden flex-1 items-center justify-center gap-1 lg:flex xl:gap-2">
-            {[
-              "Home",
-              "About",
-              "Education",
-              "Skills",
-              "Projects",
-              "Experience",
-              "Certificates",
-              "Contact",
-            ].map((item) => {
-              const sectionKey = item.toLowerCase();
-              const isActive = activeSection === sectionKey;
-              return (
-                <button
-                  key={item}
-                  onClick={() => scrollToSection(sectionKey)}
-                  className={`rounded-full px-3 py-2 text-xs font-semibold transition-all xl:px-4 ${
-                    isActive
-                      ? "bg-cyan-400 text-slate-950 shadow-lg shadow-cyan-500/25"
-                      : "text-gray-300 hover:bg-white/10 hover:text-cyan-300"
-                  }`}
-                >
-                  {item}
-                </button>
-              );
-            })}
-          </div>
-
-          <button
-            type="button"
-            onClick={handleDownloadPortfolioPdf}
-            className="hidden items-center gap-2 rounded-full bg-gradient-to-r from-cyan-400 to-teal-400 px-4 py-2.5 text-xs font-black text-slate-950 shadow-lg shadow-cyan-500/25 transition-all hover:-translate-y-0.5 hover:shadow-cyan-400/30 lg:flex"
-          >
-            <Download size={16} />
-            Resume
-          </button>
-
-          {/* Mobile Bottom Pill Menu Button */}
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="inline-flex h-10 items-center gap-2 rounded-full bg-white/10 px-4 text-sm font-bold text-gray-100 transition-all hover:bg-cyan-400/15 hover:text-cyan-200 lg:hidden"
-            aria-expanded={isMenuOpen}
-            aria-label="Open navigation menu"
-          >
-            {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
-            Menu
-          </button>
-
-          {/* Mobile Menu opens upward from the bottom pill */}
-          {isMenuOpen && (
-            <div className="absolute bottom-full left-0 right-0 mb-3 rounded-3xl border border-white/10 bg-slate-950/95 p-3 shadow-2xl shadow-black/50 backdrop-blur-2xl animate-slide-up lg:hidden">
-              <div className="grid grid-cols-2 gap-2">
-                {[
-                  "Home",
-                  "About",
-                  "Education",
-                  "Skills",
-                  "Projects",
-                  "Experience",
-                  "Certificates",
-                  "Contact",
-                ].map((item) => {
-                  const sectionKey = item.toLowerCase();
-                  const isActive = activeSection === sectionKey;
-                  return (
-                    <button
-                      key={item}
-                      onClick={() => scrollToSection(sectionKey)}
-                      className={`rounded-2xl px-4 py-3 text-left text-sm font-semibold transition-colors ${
-                        isActive
-                          ? "bg-cyan-400 text-slate-950"
-                          : "text-gray-300 hover:bg-white/10 hover:text-cyan-300"
-                      }`}
-                    >
-                      {item}
-                    </button>
-                  );
-                })}
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  handleDownloadPortfolioPdf();
-                  setIsMenuOpen(false);
-                }}
-                className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-400 to-teal-400 px-4 py-3 font-black text-slate-950"
-              >
-                <Download size={18} />
-                Download Resume PDF
-              </button>
-            </div>
-          )}
-        </div>
-      </nav>
+    <div className="portfolio-glass-theme min-h-screen overflow-x-hidden bg-slate-950 pb-28 text-gray-100">
+      <BottomPillNavbar
+        activeSection={activeSection}
+        onNavigate={navigateToPortfolioSection}
+        onDownload={handleDownloadPortfolioPdf}
+      />
 
       {/* Home Section */}
       <section
         id="home"
-        className="relative flex min-h-screen items-center overflow-hidden bg-transparent px-4 pb-28 pt-12 sm:px-6 lg:px-8 lg:pt-16"
+        className="relative flex min-h-screen items-center overflow-hidden bg-transparent px-4 pb-32 pt-12 sm:px-6 lg:px-8 lg:pt-16"
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_20%,rgba(34,211,238,0.18),transparent_34%),radial-gradient(circle_at_75%_10%,rgba(45,212,191,0.14),transparent_30%),linear-gradient(135deg,rgba(2,6,23,0.96),rgba(15,23,42,0.94))]" />
         <div className="absolute left-1/2 top-24 h-72 w-72 -translate-x-1/2 rounded-full bg-cyan-400/10 blur-3xl" />
@@ -1586,6 +1525,8 @@ type ProjectDetailsPageProps = {
   about: AboutInfo | null;
   contact: ContactInfo | null;
   onBack: () => void;
+  onNavigateSection: (id: string) => void;
+  onDownloadPortfolioPdf: () => void;
   onOpenProject: (projectId: string) => void;
 };
 
@@ -1595,6 +1536,8 @@ function ProjectDetailsPage({
   about,
   contact,
   onBack,
+  onNavigateSection,
+  onDownloadPortfolioPdf,
   onOpenProject,
 }: ProjectDetailsPageProps) {
   const gallery = project
@@ -1685,22 +1628,22 @@ function ProjectDetailsPage({
   }
 
   return (
-    <div className="portfolio-glass-theme min-h-screen bg-slate-950 text-gray-100 overflow-x-hidden">
-      <div className="fixed inset-x-0 top-0 z-50 bg-slate-950/90 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <button type="button" onClick={onBack} className="inline-flex items-center gap-2 text-sm text-gray-300 hover:text-cyan-400 transition-colors">
-            <ArrowLeft size={18} /> Back to Projects
-          </button>
-          <div className="h-8" aria-hidden="true" />
-        </div>
-      </div>
+    <div className="portfolio-glass-theme min-h-screen overflow-x-hidden bg-slate-950 pb-28 text-gray-100">
+      <BottomPillNavbar
+        activeSection="projects"
+        onNavigate={onNavigateSection}
+        onDownload={onDownloadPortfolioPdf}
+      />
 
-      <main className="pt-16 lg:pt-20">
-        <section className="relative overflow-hidden pb-16">
+      <main>
+        <section className="relative overflow-hidden pb-16 pt-10">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(6,182,212,0.18),_transparent_35%),radial-gradient(circle_at_bottom_right,_rgba(20,184,166,0.14),_transparent_32%)]" />
           <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
               <div>
+                <button type="button" onClick={onBack} className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-gray-300 backdrop-blur-xl transition-colors hover:border-cyan-300/40 hover:text-cyan-300">
+                  <ArrowLeft size={18} /> Back to Projects
+                </button>
                 <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-4 py-2 text-sm font-semibold text-cyan-300">
                   <Briefcase size={16} /> {project.category}
                 </div>
