@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { PhoneCall, PhoneOff, Mic, MicOff, Loader2, X } from 'lucide-react';
 import type { Socket } from 'socket.io-client';
 import { createCustomerSocket, getCallConfig } from '../lib/callClient';
@@ -180,7 +181,7 @@ export function CustomerLiveCall({
     setError('');
   };
 
-  return (
+  return createPortal(
     <>
       {!hideFloatingButton && !open && (
         <button
@@ -194,7 +195,7 @@ export function CustomerLiveCall({
       )}
 
       {open && (
-        <div className="live-panel-rise fixed right-3 top-1/2 z-[90] w-[calc(100vw-1.5rem)] max-w-sm sm:right-5">
+        <div className="fixed right-3 top-1/2 z-[60] w-[calc(100vw-1.5rem)] max-w-sm -translate-y-1/2 sm:right-5">
           <div className="w-full rounded-2xl border border-[#452c5d] bg-[#160b24] p-5 shadow-2xl">
             <div className="mb-5 flex items-start justify-between gap-4">
               <div>
@@ -273,6 +274,7 @@ export function CustomerLiveCall({
           </div>
         </div>
       )}
-    </>
+    </>,
+    document.body
   );
 }

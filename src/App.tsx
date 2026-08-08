@@ -763,6 +763,14 @@ function Portfolio() {
         </div>
       </nav>
 
+      {/* Global floating support widgets: rendered outside Contact/Footer layout. */}
+      <VisitorLocationPrompt />
+      <CustomerLiveCall
+        defaultName={formData.name}
+        defaultEmail={formData.email}
+      />
+      <LiveChatWidget />
+
       {/* Home Section */}
       <section
         id="home"
@@ -1551,13 +1559,6 @@ function Portfolio() {
           </div>
         </div>
       </section>
-
-      <VisitorLocationPrompt />
-      <CustomerLiveCall
-        defaultName={formData.name}
-        defaultEmail={formData.email}
-      />
-      <LiveChatWidget />
 
       {/* Footer */}
       <footer className="py-8 border-t border-[#322044] relative overflow-hidden">

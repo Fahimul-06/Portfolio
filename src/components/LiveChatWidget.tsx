@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { io, Socket } from 'socket.io-client';
 import { FileText, ImageIcon, Loader2, MessageCircle, Paperclip, Send, Video, X } from 'lucide-react';
 
@@ -175,7 +176,7 @@ export function LiveChatWidget() {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  return (
+  return createPortal(
     <>
       {!open && (
         <button
@@ -188,7 +189,7 @@ export function LiveChatWidget() {
       )}
 
       {open && (
-        <div className="live-panel-rise fixed right-3 top-1/2 z-[90] flex h-[600px] max-h-[calc(100vh-2rem)] w-[calc(100vw-1.5rem)] max-w-sm flex-col overflow-hidden rounded-2xl border border-violet-400/30 bg-[#0b0614] shadow-2xl shadow-violet-500/20 sm:right-5">
+        <div className="fixed right-3 top-1/2 z-50 flex h-[600px] max-h-[calc(100vh-2rem)] w-[calc(100vw-1.5rem)] max-w-sm -translate-y-1/2 flex-col overflow-hidden rounded-2xl border border-violet-400/30 bg-[#0b0614] shadow-2xl shadow-violet-500/20 sm:right-5">
           <div className="flex items-center justify-between border-b border-[#322044] bg-[#160b24] px-5 py-4">
             <div>
               <h3 className="font-black text-white">Live Chat</h3>
@@ -256,6 +257,7 @@ export function LiveChatWidget() {
           )}
         </div>
       )}
-    </>
+    </>,
+    document.body
   );
 }
