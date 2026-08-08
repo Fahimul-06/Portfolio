@@ -319,6 +319,143 @@ function HeroMediaSlide({
   );
 }
 
+
+function usePortfolioScrollReveal(triggerKey: string) {
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const revealTargets = Array.from(
+      document.querySelectorAll<HTMLElement>(
+        ".portfolio-glass-theme section, .portfolio-glass-theme article, .portfolio-glass-theme form, .portfolio-glass-theme .card-hover, .portfolio-glass-theme .glass-reveal-target",
+      ),
+    );
+
+    revealTargets.forEach((element, index) => {
+      element.classList.add("scroll-reveal");
+      element.style.setProperty("--reveal-delay", `${Math.min(index * 35, 260)}ms`);
+    });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -8% 0px" },
+    );
+
+    revealTargets.forEach((element) => observer.observe(element));
+    return () => observer.disconnect();
+  }, [triggerKey]);
+}
+
+function useTactileUiFeedback(activeSection?: string) {
+  const lastSectionRef = useRef<string | undefined>(undefined);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const windowWithAudio = window as Window & typeof globalThis & {
+      webkitAudioContext?: typeof AudioContext;
+    };
+    let audioContext: AudioContext | null = null;
+    let lastFeedbackAt = 0;
+
+    const isFeedbackEnabled = () =>
+      window.localStorage.getItem("portfolio_tactile_feedback") !== "off";
+
+    const getAudioContext = () => {
+      if (!audioContext) {
+        const AudioContextClass = windowWithAudio.AudioContext || windowWithAudio.webkitAudioContext;
+        if (!AudioContextClass) return null;
+        audioContext = new AudioContextClass();
+      }
+      return audioContext;
+    };
+
+    const vibrate = (duration = 10) => {
+      if (!isFeedbackEnabled()) return;
+      if ("vibrate" in navigator) {
+        try {
+          navigator.vibrate(duration);
+        } catch {
+          // Some browsers expose vibrate but block it silently.
+        }
+      }
+    };
+
+    const playStackSound = (frequency = 540, duration = 0.045, gainValue = 0.035) => {
+      if (!isFeedbackEnabled()) return;
+      try {
+        const context = getAudioContext();
+        if (!context) return;
+        if (context.state === "suspended") void context.resume();
+
+        const oscillator = context.createOscillator();
+        const gain = context.createGain();
+        oscillator.type = "triangle";
+        oscillator.frequency.setValueAtTime(frequency, context.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(
+          Math.max(80, frequency * 0.72),
+          context.currentTime + duration,
+        );
+        gain.gain.setValueAtTime(0.0001, context.currentTime);
+        gain.gain.exponentialRampToValueAtTime(gainValue, context.currentTime + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + duration);
+        oscillator.connect(gain);
+        gain.connect(context.destination);
+        oscillator.start(context.currentTime);
+        oscillator.stop(context.currentTime + duration + 0.01);
+      } catch {
+        // Audio feedback is optional and browser-dependent.
+      }
+    };
+
+    const runFeedback = (kind: "tap" | "section" = "tap") => {
+      const now = Date.now();
+      const minGap = kind === "section" ? 850 : 90;
+      if (now - lastFeedbackAt < minGap) return;
+      lastFeedbackAt = now;
+      vibrate(kind === "section" ? 8 : 12);
+      playStackSound(kind === "section" ? 430 : 620, kind === "section" ? 0.038 : 0.05, kind === "section" ? 0.026 : 0.04);
+    };
+
+    const handlePointerDown = (event: PointerEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (!target) return;
+      if (
+        target.closest(
+          "button, a, input, textarea, select, label, [role='button'], [data-haptic='true']",
+        )
+      ) {
+        runFeedback("tap");
+      }
+    };
+
+    const handleSectionStack = () => runFeedback("section");
+
+    window.addEventListener("pointerdown", handlePointerDown, { capture: true });
+    window.addEventListener("portfolio:section-stack", handleSectionStack);
+
+    return () => {
+      window.removeEventListener("pointerdown", handlePointerDown, { capture: true } as EventListenerOptions);
+      window.removeEventListener("portfolio:section-stack", handleSectionStack);
+      if (audioContext && audioContext.state !== "closed") void audioContext.close();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!activeSection || lastSectionRef.current === activeSection) return;
+    if (lastSectionRef.current) {
+      window.dispatchEvent(new Event("portfolio:section-stack"));
+    }
+    lastSectionRef.current = activeSection;
+  }, [activeSection]);
+}
+
 function Portfolio() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
@@ -344,6 +481,9 @@ function Portfolio() {
   const [contact, setContact] = useState<ContactInfo | null>(null);
   const [dataLoading, setDataLoading] = useState(true);
   const [currentPath, setCurrentPath] = useState(() => window.location.pathname);
+
+  useTactileUiFeedback(activeSection);
+  usePortfolioScrollReveal(`${currentPath}-${dataLoading}-${heroMedia.length}-${skills.length}-${projects.length}-${education.length}-${experiences.length}-${certificates.length}`);
 
   useEffect(() => {
     fetchAllData();
@@ -561,10 +701,10 @@ function Portfolio() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-gray-100 overflow-x-hidden">
+    <div className="portfolio-glass-theme min-h-screen bg-slate-950 text-gray-100 overflow-x-hidden">
       {/* Navigation */}
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        className={`glass-nav fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           scrolled
             ? "bg-slate-950/90 backdrop-blur-xl shadow-lg shadow-slate-900/50 border-b border-slate-800"
             : "bg-transparent"
@@ -680,7 +820,7 @@ function Portfolio() {
         className="relative bg-slate-950 pb-8 pt-24 sm:pb-10 sm:pt-28"
       >
         <div className="w-screen max-w-none">
-          <div className="relative h-[320px] w-screen overflow-hidden rounded-none border-y border-cyan-400/30 bg-slate-900 shadow-2xl shadow-cyan-950/30 ring-1 ring-white/10 sm:h-[420px] lg:h-[520px] xl:h-[560px]">
+          <div className="glass-hero-frame relative h-[320px] w-screen overflow-hidden rounded-none border-y border-cyan-400/30 bg-slate-900 shadow-2xl shadow-cyan-950/30 ring-1 ring-white/10 sm:h-[420px] lg:h-[520px] xl:h-[560px]">
             {heroMedia.length > 0 ? (
               <>
                 {heroMedia.map((item, index) => {
@@ -1648,7 +1788,7 @@ function ProjectDetailsPage({
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-gray-100 overflow-x-hidden">
+    <div className="portfolio-glass-theme min-h-screen bg-slate-950 text-gray-100 overflow-x-hidden">
       <div className="fixed inset-x-0 top-0 z-50 border-b border-slate-800 bg-slate-950/90 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <button type="button" onClick={onBack} className="inline-flex items-center gap-2 text-sm text-gray-300 hover:text-cyan-400 transition-colors">

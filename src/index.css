@@ -646,3 +646,174 @@ body {
 .animation-delay-300 {
   animation-delay: 300ms;
 }
+
+/* Glassy portfolio skin + animated scroll + tactile feedback polish */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 96px;
+  }
+}
+
+@layer utilities {
+  .portfolio-glass-theme {
+    isolation: isolate;
+    position: relative;
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 12% 8%, rgba(34, 211, 238, 0.20), transparent 34%),
+      radial-gradient(circle at 88% 18%, rgba(20, 184, 166, 0.16), transparent 32%),
+      radial-gradient(circle at 50% 98%, rgba(59, 130, 246, 0.14), transparent 40%),
+      linear-gradient(135deg, #020617 0%, #0f172a 42%, #03111d 100%);
+  }
+
+  .portfolio-glass-theme::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: linear-gradient(to bottom, rgba(0,0,0,0.72), rgba(0,0,0,0.08));
+  }
+
+  .portfolio-glass-theme::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.08), transparent 42%);
+    mix-blend-mode: screen;
+  }
+
+  .portfolio-glass-theme > nav,
+  .portfolio-glass-theme > section,
+  .portfolio-glass-theme > div,
+  .portfolio-glass-theme > footer {
+    position: relative;
+    z-index: 1;
+  }
+
+  .portfolio-glass-theme .glass-nav,
+  .portfolio-glass-theme .fixed.inset-x-0.top-0 {
+    background: rgba(2, 6, 23, 0.62) !important;
+    border-color: rgba(255, 255, 255, 0.11) !important;
+    backdrop-filter: blur(22px) saturate(160%);
+    -webkit-backdrop-filter: blur(22px) saturate(160%);
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+
+  .portfolio-glass-theme [class*="bg-slate-900/"],
+  .portfolio-glass-theme [class*="bg-slate-800/"],
+  .portfolio-glass-theme [class*="bg-black/"],
+  .portfolio-glass-theme form,
+  .portfolio-glass-theme article,
+  .portfolio-glass-theme .card-hover {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.64), rgba(30, 41, 59, 0.34)) !important;
+    border-color: rgba(255, 255, 255, 0.13) !important;
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    box-shadow: 0 24px 80px rgba(2, 6, 23, 0.32), inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+
+  .portfolio-glass-theme input,
+  .portfolio-glass-theme textarea,
+  .portfolio-glass-theme select {
+    background: rgba(15, 23, 42, 0.48) !important;
+    border-color: rgba(255, 255, 255, 0.14) !important;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  .portfolio-glass-theme .glass-hero-frame {
+    background: rgba(2, 6, 23, 0.52) !important;
+    border-color: rgba(103, 232, 249, 0.42) !important;
+    backdrop-filter: blur(18px) saturate(150%);
+    -webkit-backdrop-filter: blur(18px) saturate(150%);
+    box-shadow:
+      0 24px 90px rgba(8, 145, 178, 0.22),
+      0 6px 32px rgba(2, 6, 23, 0.48),
+      inset 0 1px 0 rgba(255,255,255,0.16),
+      inset 0 -1px 0 rgba(255,255,255,0.06);
+  }
+
+  .portfolio-glass-theme .glass-hero-frame::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 25;
+    pointer-events: none;
+    background:
+      linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.15) 20%, transparent 38%),
+      radial-gradient(circle at 18% 10%, rgba(255,255,255,0.18), transparent 24%);
+    transform: translateX(-120%);
+    animation: glass-sweep 7s ease-in-out infinite;
+  }
+
+  .portfolio-glass-theme section {
+    scroll-margin-top: 96px;
+  }
+
+  .portfolio-glass-theme section > .absolute.inset-0,
+  .portfolio-glass-theme section .absolute.inset-0.bg-slate-900 {
+    opacity: 0.66;
+  }
+
+  .scroll-reveal {
+    opacity: 0;
+    transform: translate3d(0, 32px, 0) scale(0.985);
+    filter: blur(8px);
+    transition:
+      opacity 780ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 780ms cubic-bezier(0.22, 1, 0.36, 1),
+      filter 780ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+    will-change: opacity, transform, filter;
+  }
+
+  .scroll-reveal.is-visible {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0);
+  }
+
+  .portfolio-glass-theme button,
+  .portfolio-glass-theme a,
+  .portfolio-glass-theme [role="button"] {
+    touch-action: manipulation;
+  }
+
+  .portfolio-glass-theme button:active,
+  .portfolio-glass-theme a:active,
+  .portfolio-glass-theme [role="button"]:active {
+    transform: translateY(1px) scale(0.985);
+  }
+}
+
+@keyframes glass-sweep {
+  0%, 58%, 100% { transform: translateX(-125%); opacity: 0; }
+  68% { opacity: 1; }
+  82% { transform: translateX(125%); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .scroll-reveal,
+  .scroll-reveal.is-visible {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    transition: none !important;
+  }
+
+  .portfolio-glass-theme .glass-hero-frame::before {
+    animation: none !important;
+  }
+}
