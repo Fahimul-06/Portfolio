@@ -409,10 +409,10 @@ function easeRobotProgress(progress: number) {
 
 function useRobotHumanScrollAnimation() {
   const [progress, setProgress] = useState(0);
-  const [direction, setDirection] = useState<'up' | 'down'>('down');
+  const [direction, setDirection] = useState<"up" | "down">("down");
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     let frame = 0;
     let lastScrollY = window.scrollY;
@@ -425,10 +425,10 @@ function useRobotHumanScrollAnimation() {
         window.innerHeight,
       );
       const maxScroll = Math.max(1, documentHeight - window.innerHeight);
-      const activationRange = Math.max(620, Math.min(1400, maxScroll * 0.38));
+      const activationRange = Math.max(720, Math.min(1600, maxScroll * 0.42));
       const nextProgress = clampNumber(scrollY / activationRange, 0, 1);
 
-      setDirection(scrollY >= lastScrollY ? 'down' : 'up');
+      setDirection(scrollY >= lastScrollY ? "down" : "up");
       setProgress(nextProgress);
       lastScrollY = scrollY;
       frame = 0;
@@ -440,12 +440,12 @@ function useRobotHumanScrollAnimation() {
     };
 
     updateProgress();
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleScroll);
 
     return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
       if (frame) window.cancelAnimationFrame(frame);
     };
   }, []);
@@ -456,23 +456,28 @@ function useRobotHumanScrollAnimation() {
 function RobotHumanScrollBackground() {
   const { progress, direction } = useRobotHumanScrollAnimation();
   const robotStyle = {
-    '--head-open': `${-58 * progress}deg`,
-    '--head-lift': `${-20 * progress}px`,
-    '--brain-y': `${-210 * progress}px`,
-    '--brain-x': `${22 * progress}px`,
-    '--brain-scale': `${0.44 + progress * 0.72}`,
-    '--brain-rotate': `${760 * progress}deg`,
-    '--brain-rotate-reverse': `${-760 * progress}deg`,
-    '--brain-opacity': `${0.18 + progress * 0.82}`,
-    '--orbit-opacity': `${clampNumber(progress * 1.55, 0, 1)}`,
-    '--helmet-gap': `${4 + progress * 34}px`,
-    '--scanner-opacity': `${0.42 + progress * 0.58}`,
-    '--chest-glow': `${0.35 + progress * 0.55}`,
-    '--chest-glow-size': `${18 + progress * 44}px`,
+    "--head-open": `${-62 * progress}deg`,
+    "--head-lift": `${-22 * progress}px`,
+    "--brain-y": `${-225 * progress}px`,
+    "--brain-x": `${28 * progress}px`,
+    "--brain-scale": `${0.43 + progress * 0.76}`,
+    "--brain-rotate": `${820 * progress}deg`,
+    "--brain-rotate-reverse": `${-820 * progress}deg`,
+    "--brain-opacity": `${0.16 + progress * 0.84}`,
+    "--orbit-opacity": `${clampNumber(progress * 1.65, 0, 1)}`,
+    "--helmet-gap": `${4 + progress * 38}px`,
+    "--scanner-opacity": `${0.42 + progress * 0.58}`,
+    "--chest-glow": `${0.34 + progress * 0.56}`,
+    "--chest-glow-size": `${18 + progress * 48}px`,
   } as CSSProperties;
 
   return (
-    <div className="robot-human-scroll-bg" style={robotStyle} data-scroll-direction={direction} aria-hidden="true">
+    <div
+      className="robot-human-scroll-bg"
+      style={robotStyle}
+      data-scroll-direction={direction}
+      aria-hidden="true"
+    >
       <div className="robot-human-stage">
         <div className="robot-halo-ring robot-halo-ring-one" />
         <div className="robot-halo-ring robot-halo-ring-two" />

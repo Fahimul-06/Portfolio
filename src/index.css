@@ -830,7 +830,7 @@ body {
   box-shadow: none !important;
 }
 
-/* Scroll-reactive 4D robot-human background */
+/* Scroll-reactive 3D robot-human background */
 .robot-human-scroll-bg {
   position: fixed;
   inset: 0;
@@ -1212,10 +1212,7 @@ body {
 }
 
 @media (max-width: 640px) {
-  .robot-human-scroll-bg {
-    opacity: 0.46;
-  }
-
+  .robot-human-scroll-bg { opacity: 0.46; }
   .robot-human-stage {
     right: -230px;
     top: 58%;
