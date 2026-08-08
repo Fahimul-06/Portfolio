@@ -786,7 +786,7 @@ function Portfolio() {
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center mb-16">
+          <div className="text-center mb-10">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
               <span className="text-gray-100">About </span>
               <span className="text-gradient">Me</span>
@@ -794,23 +794,22 @@ function Portfolio() {
             <div className="w-20 h-1 bg-gradient-to-r from-cyan-500 to-teal-600 mx-auto rounded-full animate-scale-up" />
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-            {/* Profile Image */}
-            <div className="relative order-1 lg:order-none">
-              <div className="relative max-w-xs sm:max-w-sm lg:max-w-md mx-auto">
-                <img
-                  src={
-                    about?.profile_image_url ||
-                    "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=800"
-                  }
-                  alt={about?.name || "Profile"}
-                  className="w-full aspect-square object-cover rounded-2xl shadow-2xl border border-slate-700/70 bg-slate-900"
-                />
-              </div>
+          {/* Profile Image directly below About Me heading */}
+          <div className="relative mb-12">
+            <div className="relative max-w-xs sm:max-w-sm lg:max-w-md mx-auto">
+              <img
+                src={
+                  about?.profile_image_url ||
+                  "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=800"
+                }
+                alt={about?.name || "Profile"}
+                className="w-full aspect-square object-cover rounded-2xl shadow-2xl border border-slate-700/70 bg-slate-900"
+              />
             </div>
+          </div>
 
-            {/* About Content */}
-            <div className="space-y-6">
+          {/* About Content */}
+          <div className="max-w-4xl mx-auto space-y-6">
               <h3 className="text-2xl lg:text-3xl font-semibold text-gray-100">
                 {about?.tagline ||
                   "Passionate about building digital experiences"}
@@ -865,7 +864,6 @@ function Portfolio() {
                   </div>
                 ))}
               </div>
-            </div>
           </div>
         </div>
       </section>
@@ -975,7 +973,7 @@ function Portfolio() {
           </div>
 
           {/* Skills Categories */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16 stagger-children">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 stagger-children">
             {skillCategories.map((cat) => {
               const Icon = cat.icon;
               const categorySkills = skills.filter(
@@ -1020,21 +1018,6 @@ function Portfolio() {
             })}
           </div>
 
-          {/* Skill Tags */}
-          <div className="flex flex-wrap justify-center gap-3">
-            {skills.map((skill, index) => (
-              <span
-                key={skill.id}
-                className="px-4 py-2 glass rounded-full text-sm text-gray-300 hover:text-cyan-400 transition-all duration-300 cursor-default border border-slate-700/50 hover:border-cyan-500/50 hover:scale-105 animate-float"
-                style={{
-                  animationDelay: `${index * 0.1}s`,
-                  animationDuration: `${4 + Math.random() * 2}s`,
-                }}
-              >
-                {skill.name}
-              </span>
-            ))}
-          </div>
         </div>
       </section>
 
