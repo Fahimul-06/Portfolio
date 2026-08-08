@@ -441,7 +441,10 @@ function Portfolio() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
+      const scrollY = window.scrollY;
+      setScrolled(scrollY > 50);
+      document.documentElement.style.setProperty("--portfolio-scroll-y", `${scrollY}px`);
+      document.documentElement.style.setProperty("--portfolio-scroll-ratio", `${Math.min(scrollY / Math.max(document.documentElement.scrollHeight - window.innerHeight, 1), 1)}`);
       const sections = [
         "home",
         "about",
@@ -464,8 +467,13 @@ function Portfolio() {
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      document.documentElement.style.removeProperty("--portfolio-scroll-y");
+      document.documentElement.style.removeProperty("--portfolio-scroll-ratio");
+    };
   }, []);
 
   const fetchAllData = async () => {

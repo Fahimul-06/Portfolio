@@ -814,3 +814,85 @@ body {
 .portfolio-glass-theme .glass-mobile-pill-menu::before {
   content: none;
 }
+
+/* Clear glass navbar + scroll-reactive deep-purple shade movement */
+.portfolio-glass-theme {
+  --shade-scroll: var(--portfolio-scroll-y, 0px);
+  --shade-ratio: var(--portfolio-scroll-ratio, 0);
+  overflow: clip;
+}
+
+.portfolio-glass-theme::before,
+.portfolio-glass-theme::after {
+  content: "" !important;
+  position: fixed;
+  inset: -22vh -18vw;
+  pointer-events: none;
+  z-index: 0;
+  will-change: transform, opacity;
+}
+
+.portfolio-glass-theme::before {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(139, 92, 246, 0.18), transparent 30%),
+    radial-gradient(circle at 78% 34%, rgba(109, 40, 217, 0.15), transparent 32%),
+    radial-gradient(circle at 48% 82%, rgba(192, 132, 252, 0.11), transparent 28%);
+  transform: translate3d(0, calc(var(--shade-scroll) * -0.075), 0) rotate(calc(var(--shade-ratio) * 8deg));
+  opacity: 0.9;
+}
+
+.portfolio-glass-theme::after {
+  background:
+    radial-gradient(circle at 82% 16%, rgba(168, 85, 247, 0.12), transparent 26%),
+    radial-gradient(circle at 24% 62%, rgba(91, 33, 182, 0.17), transparent 34%),
+    radial-gradient(circle at 68% 88%, rgba(124, 58, 237, 0.12), transparent 30%);
+  transform: translate3d(0, calc(var(--shade-scroll) * 0.045), 0) rotate(calc(var(--shade-ratio) * -10deg));
+  opacity: 0.78;
+}
+
+/* Give each section a subtle moving wash while scrolling. */
+.portfolio-glass-theme section {
+  background-image: linear-gradient(
+    118deg,
+    rgba(76, 29, 149, 0.025),
+    rgba(139, 92, 246, 0.055),
+    rgba(30, 12, 52, 0.02)
+  );
+  background-size: 180% 180%;
+  background-position: calc(35% + (var(--shade-ratio) * 30%)) calc(20% + (var(--shade-ratio) * 45%));
+  transition: background-position 120ms linear;
+}
+
+/* Clear, nearly colorless glass pill: blur/refraction without purple fill. */
+.portfolio-glass-theme .glass-pill-nav,
+.portfolio-glass-theme .glass-mobile-pill-menu {
+  background: rgba(255, 255, 255, 0.035) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(145%) !important;
+  backdrop-filter: blur(18px) saturate(145%) !important;
+  box-shadow:
+    0 10px 34px rgba(0, 0, 0, 0.26),
+    inset 0 1px 0 rgba(255, 255, 255, 0.10) !important;
+}
+
+.portfolio-glass-theme .glass-pill-nav::before,
+.portfolio-glass-theme .glass-mobile-pill-menu::before {
+  content: "" !important;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(115deg, rgba(255,255,255,0.10), transparent 32%, transparent 68%, rgba(255,255,255,0.045));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portfolio-glass-theme::before,
+  .portfolio-glass-theme::after {
+    transform: none !important;
+  }
+
+  .portfolio-glass-theme section {
+    background-position: 50% 50% !important;
+    transition: none !important;
+  }
+}
