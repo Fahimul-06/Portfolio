@@ -322,7 +322,7 @@ body {
   }
 
   /* Solid surface */
-  .solid-card {
+  .glass {
     background: #0f172a;
     border: 1px solid #334155;
     backdrop-filter: none;
@@ -652,34 +652,38 @@ body {
 @layer base {
   html {
     scroll-behavior: smooth;
-    scroll-padding-top: 0;
-    scroll-padding-bottom: 96px;
+    scroll-padding-top: 96px;
   }
 }
 
 @layer utilities {
-  .portfolio-solid-theme {
+  .portfolio-glass-theme {
     isolation: isolate;
     position: relative;
     min-height: 100vh;
     background: #020617;
   }
 
-  .portfolio-solid-theme::before,
-  .portfolio-solid-theme::after {
+  .portfolio-glass-theme::before,
+  .portfolio-glass-theme::after {
     content: none;
   }
 
-  .portfolio-solid-theme > nav,
-  .portfolio-solid-theme > section,
-  .portfolio-solid-theme > div,
-  .portfolio-solid-theme > footer {
+  .portfolio-glass-theme > section,
+  .portfolio-glass-theme > div:not(.portfolio-floating-nav),
+  .portfolio-glass-theme > footer {
     position: relative;
     z-index: 1;
   }
 
-  .portfolio-solid-theme .solid-nav,
-  .portfolio-solid-theme .fixed.inset-x-0.top-0 {
+  /* Navbar must float above the page and never consume layout height. */
+  .portfolio-glass-theme > nav {
+    position: fixed !important;
+    z-index: 50 !important;
+  }
+
+  .portfolio-glass-theme .glass-nav,
+  .portfolio-glass-theme .fixed.inset-x-0.top-0 {
     background: transparent !important;
     border: 0 !important;
     box-shadow: none !important;
@@ -687,13 +691,13 @@ body {
     -webkit-backdrop-filter: none !important;
   }
 
-  .portfolio-solid-theme .solid-card,
-  .portfolio-solid-theme [class*="bg-slate-900/"],
-  .portfolio-solid-theme [class*="bg-slate-800/"],
-  .portfolio-solid-theme [class*="bg-black/"],
-  .portfolio-solid-theme form,
-  .portfolio-solid-theme article,
-  .portfolio-solid-theme .card-hover {
+  .portfolio-glass-theme .glass,
+  .portfolio-glass-theme [class*="bg-slate-900/"],
+  .portfolio-glass-theme [class*="bg-slate-800/"],
+  .portfolio-glass-theme [class*="bg-black/"],
+  .portfolio-glass-theme form,
+  .portfolio-glass-theme article,
+  .portfolio-glass-theme .card-hover {
     background: #0f172a !important;
     border-color: #334155 !important;
     backdrop-filter: none !important;
@@ -701,21 +705,21 @@ body {
     box-shadow: 0 12px 32px rgba(2, 6, 23, 0.22);
   }
 
-  .portfolio-solid-theme input,
-  .portfolio-solid-theme textarea,
-  .portfolio-solid-theme select {
+  .portfolio-glass-theme input,
+  .portfolio-glass-theme textarea,
+  .portfolio-glass-theme select {
     background: #0f172a !important;
     border-color: #334155 !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
   }
 
-  .portfolio-solid-theme [class*="backdrop-blur"] {
+  .portfolio-glass-theme [class*="backdrop-blur"] {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
   }
 
-  .portfolio-solid-theme .solid-hero-frame {
+  .portfolio-glass-theme .glass-hero-frame {
     background: #0f172a !important;
     border-color: #334155 !important;
     backdrop-filter: none !important;
@@ -723,13 +727,12 @@ body {
     box-shadow: 0 18px 48px rgba(2, 6, 23, 0.28);
   }
 
-  .portfolio-solid-theme .solid-hero-frame::before {
+  .portfolio-glass-theme .glass-hero-frame::before {
     content: none;
   }
 
-  .portfolio-solid-theme section {
-    scroll-margin-top: 0;
-    scroll-margin-bottom: 96px;
+  .portfolio-glass-theme section {
+    scroll-margin-top: 96px;
   }
 
   .scroll-reveal {
@@ -747,20 +750,20 @@ body {
     transform: translate3d(0, 0, 0) scale(1);
   }
 
-  .portfolio-solid-theme button,
-  .portfolio-solid-theme a,
-  .portfolio-solid-theme [role="button"] {
+  .portfolio-glass-theme button,
+  .portfolio-glass-theme a,
+  .portfolio-glass-theme [role="button"] {
     touch-action: manipulation;
   }
 
-  .portfolio-solid-theme button:active,
-  .portfolio-solid-theme a:active,
-  .portfolio-solid-theme [role="button"]:active {
+  .portfolio-glass-theme button:active,
+  .portfolio-glass-theme a:active,
+  .portfolio-glass-theme [role="button"]:active {
     transform: translateY(1px) scale(0.985);
   }
 }
 
-@keyframes surface-sweep {
+@keyframes glass-sweep {
   0%, 58%, 100% { transform: translateX(-125%); opacity: 0; }
   68% { opacity: 1; }
   82% { transform: translateX(125%); opacity: 0; }
@@ -779,25 +782,25 @@ body {
     transition: none !important;
   }
 
-  .portfolio-solid-theme .solid-hero-frame::before {
+  .portfolio-glass-theme .glass-hero-frame::before {
     animation: none !important;
   }
 }
 
 
 /* Remove the dark line/shadow below the navbar and attach hero media directly under it. */
-.portfolio-solid-theme .solid-nav,
-.portfolio-solid-theme .solid-nav.scrolled,
-.portfolio-solid-theme > nav,
-.portfolio-solid-theme .fixed.inset-x-0.top-0 {
+.portfolio-glass-theme .glass-nav,
+.portfolio-glass-theme .glass-nav.scrolled,
+.portfolio-glass-theme > nav,
+.portfolio-glass-theme .fixed.inset-x-0.top-0 {
   border: 0 !important;
   border-bottom: 0 !important;
   box-shadow: none !important;
 }
 
 /* Small floating solid pill navbar */
-.portfolio-solid-theme .solid-pill-nav,
-.portfolio-solid-theme .solid-mobile-pill-menu {
+.portfolio-glass-theme .glass-pill-nav,
+.portfolio-glass-theme .glass-mobile-pill-menu {
   position: relative;
   overflow: hidden;
   background: #0f172a !important;
@@ -807,29 +810,7 @@ body {
   box-shadow: 0 12px 28px rgba(2, 6, 23, 0.34) !important;
 }
 
-.portfolio-solid-theme .solid-pill-nav::before,
-.portfolio-solid-theme .solid-mobile-pill-menu::before {
+.portfolio-glass-theme .glass-pill-nav::before,
+.portfolio-glass-theme .glass-mobile-pill-menu::before {
   content: none;
-}
-
-/* Final solid portfolio surfaces */
-.portfolio-solid-theme .solid-card,
-.portfolio-solid-theme .card-hover,
-.portfolio-solid-theme form,
-.portfolio-solid-theme article {
-  background-color: #0f172a !important;
-  background-image: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
-.portfolio-solid-theme .solid-pill-nav,
-.portfolio-solid-theme .solid-mobile-pill-menu {
-  background: #0f172a !important;
-  border: 1px solid #334155 !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
-.portfolio-solid-theme [class*="backdrop-blur"] {
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
 }

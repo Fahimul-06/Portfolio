@@ -266,7 +266,7 @@ function usePortfolioScrollReveal(triggerKey: string) {
 
     const revealTargets = Array.from(
       document.querySelectorAll<HTMLElement>(
-        ".portfolio-solid-theme section, .portfolio-solid-theme article, .portfolio-solid-theme form, .portfolio-solid-theme .card-hover, .portfolio-solid-theme .solid-reveal-target",
+        ".portfolio-glass-theme section, .portfolio-glass-theme article, .portfolio-glass-theme form, .portfolio-glass-theme .card-hover, .portfolio-glass-theme .glass-reveal-target",
       ),
     );
 
@@ -618,15 +618,15 @@ function Portfolio() {
   }
 
   return (
-    <div className="portfolio-solid-theme min-h-screen bg-slate-950 text-gray-100 overflow-x-hidden">
+    <div className="portfolio-glass-theme min-h-screen bg-slate-950 text-gray-100 overflow-x-hidden">
       {/* Navigation */}
       <nav
-        className={`fixed bottom-3 left-0 right-0 z-50 px-3 transition-all duration-500 sm:bottom-4 sm:px-4 ${
+        className={`fixed left-0 right-0 top-3 z-50 px-3 transition-all duration-500 sm:top-4 sm:px-4 ${
           scrolled ? "translate-y-0" : "translate-y-0"
         }`}
       >
-        <div className="mx-auto flex w-fit max-w-[calc(100vw-1.5rem)] flex-col-reverse items-center">
-          <div className="solid-pill-nav flex h-12 items-center gap-2 rounded-full px-2.5 py-1.5 shadow-2xl sm:h-14 sm:gap-3 sm:px-3 lg:h-14 lg:gap-4 lg:px-4">
+        <div className="mx-auto flex w-fit max-w-[calc(100vw-1.5rem)] flex-col items-center">
+          <div className="glass-pill-nav flex h-12 items-center gap-2 rounded-full px-2.5 py-1.5 shadow-2xl sm:h-14 sm:gap-3 sm:px-3 lg:h-14 lg:gap-4 lg:px-4">
             <button
               onClick={() => navigateToPortfolioSection("home")}
               className="group relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-slate-800 text-sm font-black text-cyan-100 transition-all hover:scale-105 sm:h-10 sm:w-10"
@@ -641,6 +641,7 @@ function Portfolio() {
               ) : (
                 <span className="text-gradient">FA</span>
               )}
+              <span className="absolute inset-0 rounded-full bg-cyan-300/20 opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-100" />
             </button>
 
             {/* Desktop Menu */}
@@ -660,7 +661,7 @@ function Portfolio() {
                   onClick={() => scrollToSection(item.toLowerCase())}
                   className={`rounded-full px-3 py-2 text-xs font-semibold transition-all duration-300 ${
                     activeSection === item.toLowerCase()
-                      ? "bg-cyan-950 text-cyan-100"
+                      ? "bg-cyan-300/20 text-cyan-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.16)]"
                       : "text-gray-300 hover:bg-slate-800 hover:text-cyan-100"
                   }`}
                 >
@@ -689,7 +690,7 @@ function Portfolio() {
 
           {/* Mobile Menu */}
           {isMenuOpen && (
-            <div className="solid-mobile-pill-menu mb-3 w-[min(92vw,360px)] rounded-[2rem] p-3 shadow-2xl animate-slide-down lg:hidden">
+            <div className="glass-mobile-pill-menu mt-3 w-[min(92vw,360px)] rounded-[2rem] p-3 shadow-2xl animate-slide-down lg:hidden">
               <div className="grid grid-cols-2 gap-2">
                 {[
                   "Home",
@@ -706,7 +707,7 @@ function Portfolio() {
                     onClick={() => scrollToSection(item.toLowerCase())}
                     className={`rounded-full px-3 py-2.5 text-center text-sm font-semibold transition-colors ${
                       activeSection === item.toLowerCase()
-                        ? "bg-cyan-950 text-cyan-100"
+                        ? "bg-cyan-300/20 text-cyan-100"
                         : "text-gray-300 hover:bg-slate-800 hover:text-cyan-100"
                     }`}
                   >
@@ -733,11 +734,13 @@ function Portfolio() {
       {/* Home Section */}
       <section
         id="home"
-        className="relative flex min-h-screen items-center overflow-hidden bg-transparent px-4 pb-28 pt-0 sm:px-6 sm:pb-32 lg:px-8"
+        className="relative flex min-h-[calc(100vh-4rem)] items-center overflow-hidden bg-transparent px-4 pb-16 pt-24 sm:px-6 lg:px-8 lg:pt-28"
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_20%,rgba(34,211,238,0.18),transparent_34%),radial-gradient(circle_at_75%_10%,rgba(45,212,191,0.14),transparent_30%),linear-gradient(135deg,rgba(2,6,23,0.96),rgba(15,23,42,0.94))]" />
+        <div className="absolute left-1/2 top-24 h-72 w-72 -translate-x-1/2 rounded-full bg-cyan-400/10 blur-3xl" />
+        <div className="absolute bottom-10 right-10 h-80 w-80 rounded-full bg-teal-400/10 blur-3xl" />
 
-        <div className="solid-reveal-target relative z-10 mx-auto max-w-6xl text-center">
+        <div className="glass-reveal-target relative z-10 mx-auto max-w-6xl text-center">
           <div className="mb-8 inline-flex items-center gap-3 rounded-full border border-cyan-300/20 bg-slate-900 px-5 py-2 text-sm font-semibold uppercase tracking-[0.35em] text-cyan-200 shadow-2xl shadow-cyan-900/10 ">
             <span className="h-2 w-2 rounded-full bg-cyan-300 shadow-[0_0_18px_rgba(103,232,249,0.9)]" />
             Portfolio Home
@@ -779,6 +782,8 @@ function Portfolio() {
         <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950" />
 
         {/* Decorative elements */}
+        <div className="absolute top-0 left-0 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16">
@@ -845,7 +850,7 @@ function Portfolio() {
                 ].map((stat, index) => (
                   <div
                     key={index}
-                    className="card-hover solid-card rounded-xl p-5 border border-slate-700/50 hover:border-cyan-500/30 transition-all duration-300"
+                    className="card-hover glass rounded-xl p-5 border border-slate-700/50 hover:border-cyan-500/30 transition-all duration-300"
                     style={{ animationDelay: `${index * 0.1}s` }}
                   >
                     <div
@@ -868,6 +873,8 @@ function Portfolio() {
       {/* Education Section */}
       <section id="education" className="py-24 lg:py-32 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950" />
+        <div className="absolute top-20 right-0 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 left-0 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16">
@@ -886,7 +893,7 @@ function Portfolio() {
               {education.map((item, index) => (
                 <div
                   key={item.id}
-                  className="card-hover solid-card rounded-2xl p-6 border border-slate-700/50 hover:border-cyan-500/30 transition-all duration-300 animate-fade-in-up"
+                  className="card-hover glass rounded-2xl p-6 border border-slate-700/50 hover:border-cyan-500/30 transition-all duration-300 animate-fade-in-up"
                   style={{ animationDelay: `${index * 0.12}s` }}
                 >
                   <div className="flex items-start gap-4">
@@ -977,7 +984,7 @@ function Portfolio() {
               return (
                 <div
                   key={cat.key}
-                  className="card-hover solid-card rounded-2xl p-6 border border-slate-700/50 hover:border-cyan-500/30 transition-all duration-300"
+                  className="card-hover glass rounded-2xl p-6 border border-slate-700/50 hover:border-cyan-500/30 transition-all duration-300"
                 >
                   <div className="flex items-center gap-3 mb-6">
                     <div className="p-3 bg-gradient-to-br from-cyan-500/20 to-teal-500/20 rounded-xl animate-pulse-soft">
@@ -1018,7 +1025,7 @@ function Portfolio() {
             {skills.map((skill, index) => (
               <span
                 key={skill.id}
-                className="px-4 py-2 solid-card rounded-full text-sm text-gray-300 hover:text-cyan-400 transition-all duration-300 cursor-default border border-slate-700/50 hover:border-cyan-500/50 hover:scale-105 animate-float"
+                className="px-4 py-2 glass rounded-full text-sm text-gray-300 hover:text-cyan-400 transition-all duration-300 cursor-default border border-slate-700/50 hover:border-cyan-500/50 hover:scale-105 animate-float"
                 style={{
                   animationDelay: `${index * 0.1}s`,
                   animationDuration: `${4 + Math.random() * 2}s`,
@@ -1068,7 +1075,7 @@ function Portfolio() {
                 className={`btn-secondary px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
                   filter === f
                     ? "bg-gradient-to-r from-cyan-500 to-teal-600 text-slate-900 shadow-lg shadow-cyan-500/30"
-                    : "solid-card text-gray-400 border border-slate-700/50 hover:border-cyan-500/50 hover:text-cyan-400"
+                    : "glass text-gray-400 border border-slate-700/50 hover:border-cyan-500/50 hover:text-cyan-400"
                 }`}
               >
                 {f === "all"
@@ -1083,7 +1090,7 @@ function Portfolio() {
             {filteredProjects.map((project) => (
               <div
                 key={project.id}
-                className="card-hover group solid-card rounded-2xl overflow-hidden border border-slate-700/50 hover:border-cyan-500/30 transition-all duration-300"
+                className="card-hover group glass rounded-2xl overflow-hidden border border-slate-700/50 hover:border-cyan-500/30 transition-all duration-300"
               >
                 {/* Project Image */}
                 <button type="button" onClick={() => openProjectPage(project.id)} className="relative h-56 w-full overflow-hidden text-left">
@@ -1192,6 +1199,8 @@ function Portfolio() {
         <div className="absolute inset-0 bg-slate-900" />
 
         {/* Decorative blobs */}
+        <div className="absolute top-1/3 left-10 w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl animate-morph" />
+        <div className="absolute bottom-1/4 right-10 w-80 h-80 bg-teal-500/5 rounded-full blur-3xl animate-morph animation-delay-2000" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16">
@@ -1225,7 +1234,7 @@ function Portfolio() {
 
                   <div className="ml-12 md:ml-0 md:flex-1">
                     <div
-                      className={`card-hover solid-card rounded-2xl p-6 border border-slate-700/50 hover:border-cyan-500/30 transition-all duration-300 ${
+                      className={`card-hover glass rounded-2xl p-6 border border-slate-700/50 hover:border-cyan-500/30 transition-all duration-300 ${
                         index % 2 === 0 ? "md:mr-8" : "md:ml-8"
                       }`}
                     >
@@ -1261,6 +1270,8 @@ function Portfolio() {
 
         {/* Background elements */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+          <div className="absolute top-20 right-10 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl animate-morph" />
+          <div className="absolute bottom-20 left-10 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl animate-morph animation-delay-2000" />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -1281,7 +1292,7 @@ function Portfolio() {
             {certificates.map((certificate) => (
               <div
                 key={certificate.id}
-                className="card-hover group solid-card rounded-2xl overflow-hidden border border-slate-700/50 hover:border-cyan-500/30 transition-all duration-300"
+                className="card-hover group glass rounded-2xl overflow-hidden border border-slate-700/50 hover:border-cyan-500/30 transition-all duration-300"
               >
                 {/* Certificate Image */}
                 <div className="relative h-48 overflow-hidden">
@@ -1358,6 +1369,8 @@ function Portfolio() {
         <div className="absolute inset-0 bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950" />
 
         {/* Background blobs */}
+        <div className="absolute top-1/2 left-1/4 w-80 h-80 bg-cyan-500/5 rounded-full blur-3xl animate-morph" />
+        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-teal-500/5 rounded-full blur-3xl animate-morph animation-delay-1000" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16">
@@ -1384,7 +1397,7 @@ function Portfolio() {
                   <div className="p-4 bg-gradient-to-br from-cyan-500/20 to-teal-500/20 rounded-xl animate-pulse-soft">
                     <item.icon className="text-cyan-400" size={28} />
                   </div>
-                  <div className="card-hover solid-card rounded-xl p-4 flex-1 border border-slate-700/50 hover:border-cyan-500/30 transition-all duration-300">
+                  <div className="card-hover glass rounded-xl p-4 flex-1 border border-slate-700/50 hover:border-cyan-500/30 transition-all duration-300">
                     <h3 className="text-lg font-semibold text-gray-100 mb-1">
                       {item.label}
                     </h3>
@@ -1397,13 +1410,13 @@ function Portfolio() {
               <div className="flex gap-4 pt-4">
                 <a
                   href={contact?.github_url || "#"}
-                  className="icon-bounce p-4 solid-card rounded-xl text-gray-400 hover:text-cyan-400 hover:scale-110 transition-all duration-300 border border-slate-700/50 hover:border-cyan-500/50"
+                  className="icon-bounce p-4 glass rounded-xl text-gray-400 hover:text-cyan-400 hover:scale-110 transition-all duration-300 border border-slate-700/50 hover:border-cyan-500/50"
                 >
                   <Github size={28} />
                 </a>
                 <a
                   href={contact?.linkedin_url || "#"}
-                  className="icon-bounce p-4 solid-card rounded-xl text-gray-400 hover:text-cyan-400 hover:scale-110 transition-all duration-300 border border-slate-700/50 hover:border-cyan-500/50"
+                  className="icon-bounce p-4 glass rounded-xl text-gray-400 hover:text-cyan-400 hover:scale-110 transition-all duration-300 border border-slate-700/50 hover:border-cyan-500/50"
                 >
                   <Linkedin size={28} />
                 </a>
@@ -1413,7 +1426,7 @@ function Portfolio() {
             {/* Contact Form */}
             <form
               onSubmit={handleSubmit}
-              className="solid-card rounded-2xl p-8 border border-slate-700/50"
+              className="glass rounded-2xl p-8 border border-slate-700/50"
             >
               <div className="space-y-6">
                 {[
@@ -1650,7 +1663,7 @@ function ProjectDetailsPage({
   if (!project) {
     return (
       <div className="min-h-screen bg-slate-950 text-gray-100 flex items-center justify-center px-4">
-        <div className="max-w-lg text-center solid-card rounded-3xl border border-slate-700/60 p-8">
+        <div className="max-w-lg text-center glass rounded-3xl border border-slate-700/60 p-8">
           <h1 className="text-3xl font-bold mb-4">Project not found</h1>
           <p className="text-gray-400 mb-6">This project page may have been removed or the link is incorrect.</p>
           <button
@@ -1666,10 +1679,10 @@ function ProjectDetailsPage({
   }
 
   return (
-    <div className="portfolio-solid-theme min-h-screen bg-slate-950 text-gray-100 overflow-x-hidden">
+    <div className="portfolio-glass-theme min-h-screen bg-slate-950 text-gray-100 overflow-x-hidden">
       <div className="fixed left-0 right-0 top-3 z-50 px-3 sm:top-4 sm:px-4">
         <div className="mx-auto flex w-fit max-w-[calc(100vw-1.5rem)] items-center justify-center">
-          <div className="solid-pill-nav flex h-12 items-center rounded-full px-2 py-1.5 shadow-2xl sm:h-14 sm:px-3">
+          <div className="glass-pill-nav flex h-12 items-center rounded-full px-2 py-1.5 shadow-2xl sm:h-14 sm:px-3">
             <button
               type="button"
               onClick={onBack}
@@ -1681,8 +1694,8 @@ function ProjectDetailsPage({
         </div>
       </div>
 
-      <main className="pt-24 lg:pt-28">
-        <section className="relative overflow-hidden pb-16">
+      <main>
+        <section className="relative overflow-hidden pb-16 pt-24 lg:pt-28">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(6,182,212,0.18),_transparent_35%),radial-gradient(circle_at_bottom_right,_rgba(20,184,166,0.14),_transparent_32%)]" />
           <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
@@ -1727,7 +1740,7 @@ function ProjectDetailsPage({
                 </div>
               </div>
 
-              <div className="solid-card overflow-hidden rounded-3xl border border-slate-700/60 shadow-2xl shadow-cyan-950/30">
+              <div className="glass overflow-hidden rounded-3xl border border-slate-700/60 shadow-2xl shadow-cyan-950/30">
                 <img
                   src={project.image_url || gallery[0] || "https://images.pexels.com/photos/230544/pexels-photo-230544.jpeg?auto=compress&cs=tinysrgb&w=1200"}
                   alt={project.title}
@@ -1740,7 +1753,7 @@ function ProjectDetailsPage({
 
         <section className="py-12">
           <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[0.85fr_0.15fr] lg:px-8">
-            <div className="solid-card rounded-3xl border border-slate-700/60 p-6 sm:p-8">
+            <div className="glass rounded-3xl border border-slate-700/60 p-6 sm:p-8">
               <h2 className="mb-6 text-2xl font-bold text-gray-100">Project Details</h2>
               <div className="space-y-5 text-gray-300 leading-relaxed">
                 {(project.detailed_description || project.description)
@@ -1753,7 +1766,7 @@ function ProjectDetailsPage({
               </div>
             </div>
 
-            <div className="solid-card rounded-3xl border border-slate-700/60 p-6">
+            <div className="glass rounded-3xl border border-slate-700/60 p-6">
               <h3 className="mb-4 text-lg font-bold text-gray-100">Summary</h3>
               <div className="space-y-4 text-sm">
                 <div>
@@ -1802,7 +1815,7 @@ function ProjectDetailsPage({
         <section className="py-12">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-              <div className="solid-card rounded-3xl border border-slate-700/60 p-6 sm:p-8">
+              <div className="glass rounded-3xl border border-slate-700/60 p-6 sm:p-8">
                 <h2 className="text-2xl font-bold text-gray-100">Comment on this project</h2>
                 <p className="mt-2 text-sm text-gray-400">Use a valid email address to post your comment. Your email stays private.</p>
 
@@ -1864,7 +1877,7 @@ function ProjectDetailsPage({
                 </form>
               </div>
 
-              <div className="solid-card rounded-3xl border border-slate-700/60 p-6 sm:p-8">
+              <div className="glass rounded-3xl border border-slate-700/60 p-6 sm:p-8">
                 <div className="mb-6 flex items-center justify-between gap-4">
                   <div>
                     <h2 className="text-2xl font-bold text-gray-100">Project Comments</h2>
