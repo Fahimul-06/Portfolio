@@ -621,15 +621,15 @@ function Portfolio() {
     <div className="portfolio-glass-theme min-h-screen bg-slate-950 text-gray-100 overflow-x-hidden">
       {/* Navigation */}
       <nav
-        className={`glass-nav floating-pill-nav fixed left-0 right-0 top-3 z-50 pointer-events-none transition-all duration-500 ${
+        className={`glass-nav floating-pill-navbar fixed left-1/2 top-3 z-50 w-[calc(100%-1rem)] max-w-6xl -translate-x-1/2 transition-all duration-500 ${
           scrolled ? "is-scrolled" : ""
         }`}
       >
-        <div className="pointer-events-auto mx-auto max-w-[calc(100vw-1rem)] px-2 sm:px-0 lg:max-w-fit">
-          <div className="floating-pill-shell flex h-12 items-center justify-between gap-2 rounded-full px-2.5 lg:h-14 lg:gap-3 lg:px-3">
+        <div className="relative px-3 sm:px-4 lg:px-5">
+          <div className="flex h-12 items-center justify-between lg:h-14">
             <button
               onClick={() => navigateToPortfolioSection("home")}
-              className="relative flex h-9 min-w-9 items-center justify-center rounded-full px-2 text-lg font-bold transition-all duration-300 hover:bg-white/10 lg:h-10 lg:min-w-10 lg:text-xl"
+              className="nav-brand-glass relative group flex items-center justify-center"
             >
               {about?.logo_url ? (
                 <img
@@ -638,9 +638,9 @@ function Portfolio() {
                   className="h-8 w-auto rounded-full lg:h-9"
                 />
               ) : (
-                <span className="text-gradient">FA</span>
+                <span className="text-gradient text-lg font-black lg:text-xl">FA</span>
               )}
-              <span className="absolute -inset-2 bg-cyan-500/20 rounded-lg blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <span className="absolute -inset-2 rounded-full bg-cyan-500/20 blur-md opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
             </button>
 
             {/* Desktop Menu */}
@@ -660,8 +660,8 @@ function Portfolio() {
                   onClick={() => scrollToSection(item.toLowerCase())}
                   className={`nav-glass-button ${
                     activeSection === item.toLowerCase()
-                      ? "nav-glass-button-active"
-                      : "text-gray-200 hover:text-white"
+                      ? "is-active"
+                      : ""
                   }`}
                 >
                   {item}
@@ -670,9 +670,9 @@ function Portfolio() {
               <button
                 type="button"
                 onClick={handleDownloadPortfolioPdf}
-                className="nav-glass-button nav-glass-button-resume flex items-center gap-2"
+                className="nav-glass-button nav-glass-cta flex items-center gap-2"
               >
-                <Download size={18} className="animate-bounce-soft" />
+                <Download size={16} className="animate-bounce-soft" />
                 Resume PDF
               </button>
             </div>
@@ -680,16 +680,17 @@ function Portfolio() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="nav-glass-icon-button lg:hidden"
+              className="nav-glass-icon lg:hidden"
+              aria-label="Toggle navigation menu"
             >
-              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
           </div>
 
           {/* Mobile Menu */}
           {isMenuOpen && (
-            <div className="floating-mobile-menu mt-3 rounded-3xl p-3 lg:hidden animate-slide-down">
-              <div className="space-y-2">
+            <div className="floating-pill-mobile-menu lg:hidden animate-slide-down">
+              <div className="grid grid-cols-2 gap-2 px-3 py-3">
                 {[
                   "Home",
                   "About",
@@ -703,10 +704,10 @@ function Portfolio() {
                   <button
                     key={item}
                     onClick={() => scrollToSection(item.toLowerCase())}
-                    className={`block w-full rounded-2xl border px-4 py-3 text-left text-sm font-semibold transition-all ${
+                    className={`nav-glass-button w-full justify-center ${
                       activeSection === item.toLowerCase()
-                        ? "border-cyan-300/40 bg-cyan-300/15 text-cyan-100 shadow-lg shadow-cyan-950/20"
-                        : "border-white/10 bg-white/5 text-gray-200 hover:border-cyan-300/30 hover:bg-cyan-300/10 hover:text-white"
+                        ? "is-active"
+                        : ""
                     }`}
                   >
                     {item}
@@ -718,7 +719,7 @@ function Portfolio() {
                     handleDownloadPortfolioPdf();
                     setIsMenuOpen(false);
                   }}
-                  className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border border-cyan-300/35 bg-cyan-300/15 px-4 py-3 font-bold text-cyan-50 shadow-lg shadow-cyan-950/25 backdrop-blur-xl transition hover:bg-cyan-300/20"
+                  className="nav-glass-button nav-glass-cta col-span-2 flex w-full items-center justify-center gap-2"
                 >
                   <Download size={18} />
                   Download Portfolio PDF
@@ -1657,6 +1658,14 @@ function ProjectDetailsPage({
     }
   };
 
+  const navigateFromProjectPage = (sectionId: string) => {
+    window.history.pushState({}, '', `/#${sectionId}`);
+    window.dispatchEvent(new PopStateEvent('popstate'));
+    window.setTimeout(() => {
+      document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
+    }, 80);
+  };
+
 
   if (!project) {
     return (
@@ -1678,13 +1687,48 @@ function ProjectDetailsPage({
 
   return (
     <div className="portfolio-glass-theme min-h-screen bg-slate-950 text-gray-100 overflow-x-hidden">
-      <div className="project-floating-nav fixed inset-x-0 top-3 z-50 pointer-events-none">
-        <div className="pointer-events-auto mx-auto flex h-12 w-fit items-center justify-between rounded-full px-3 lg:h-14">
-          <button type="button" onClick={onBack} className="nav-glass-button flex items-center gap-2">
-            <ArrowLeft size={18} /> Back to Projects
-          </button>
+      <nav className="glass-nav floating-pill-navbar project-floating-pill fixed left-1/2 top-3 z-50 w-[calc(100%-1rem)] max-w-5xl -translate-x-1/2 transition-all duration-500">
+        <div className="relative px-3 sm:px-4 lg:px-5">
+          <div className="flex h-12 items-center justify-between lg:h-14">
+            <button
+              type="button"
+              onClick={() => navigateFromProjectPage('home')}
+              className="nav-brand-glass relative group flex items-center justify-center"
+              aria-label="Go to home"
+            >
+              {about?.logo_url ? (
+                <img src={about.logo_url} alt="Logo" className="h-8 w-auto rounded-full lg:h-9" />
+              ) : (
+                <span className="text-gradient text-lg font-black lg:text-xl">FA</span>
+              )}
+              <span className="absolute -inset-2 rounded-full bg-cyan-500/20 blur-md opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+            </button>
+
+            <div className="hidden items-center gap-1.5 md:flex">
+              {[
+                ['Home', 'home'],
+                ['About', 'about'],
+                ['Education', 'education'],
+                ['Projects', 'projects'],
+                ['Contact', 'contact'],
+              ].map(([label, sectionId]) => (
+                <button
+                  key={sectionId}
+                  type="button"
+                  onClick={() => navigateFromProjectPage(sectionId)}
+                  className="nav-glass-button"
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            <button type="button" onClick={onBack} className="nav-glass-button nav-glass-cta inline-flex items-center gap-2">
+              <ArrowLeft size={16} /> Projects
+            </button>
+          </div>
         </div>
-      </div>
+      </nav>
 
       <main className="pt-20 lg:pt-24">
         <section className="relative overflow-hidden pb-16">
