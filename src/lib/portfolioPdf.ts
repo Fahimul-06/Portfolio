@@ -159,8 +159,14 @@ export async function downloadPortfolioPdf({
   const lineHeight = (fontSize: number, multiplier = 1.18) => fontSize * multiplier;
 
   const drawTemplate = (pageNo: number) => {
+    // Keep the grey sidebar on every page for visual continuity, but draw the
+    // full CV header (profile image, name, title, and accent bar) only once on
+    // page 1. Continuation pages should start cleanly without repeating the
+    // name/job-title header.
     pdf.setFillColor(...sidebarGrey);
     pdf.rect(0, 0, sidebarWidth, pageHeight, 'F');
+
+    if (pageNo !== 1) return;
 
     pdf.setFillColor(...lightGrey);
     pdf.rect(0, 0, sidebarWidth, 112, 'F');
@@ -168,41 +174,36 @@ export async function downloadPortfolioPdf({
     pdf.setFillColor(...teal);
     pdf.rect(0, 118, pageWidth, 28, 'F');
 
-    if (pageNo === 1) {
-      const imageSize = 104;
-      const cx = sidebarWidth / 2 + 2;
-      const cy = 146;
-      pdf.setFillColor(255, 255, 255);
-      pdf.circle(cx, cy, imageSize / 2 + 11, 'F');
-      if (profileImageDataUrl) {
-        pdf.addImage(profileImageDataUrl, 'PNG', cx - imageSize / 2, cy - imageSize / 2, imageSize, imageSize);
-      } else {
-        pdf.setFillColor(245, 245, 245);
-        pdf.circle(cx, cy, imageSize / 2, 'F');
-        setFont('bold', 35, teal);
-        pdf.text(name.charAt(0).toUpperCase(), cx, cy + 12, { align: 'center' });
-      }
-      pdf.setDrawColor(255, 255, 255);
-      pdf.setLineWidth(3);
-      pdf.circle(cx, cy, imageSize / 2 + 1, 'S');
-
-      setFont('bold', 24, [0, 0, 0]);
-      const nameLines = pdf.splitTextToSize(name, rightWidth);
-      pdf.text(nameLines.slice(0, 2), rightX + 12, 101);
-
-      setFont('normal', 11, teal);
-      const titleLines = pdf.splitTextToSize(title, rightWidth);
-      pdf.text(titleLines.slice(0, 1), rightX + 12, 126);
+    const imageSize = 104;
+    const cx = sidebarWidth / 2 + 2;
+    const cy = 146;
+    pdf.setFillColor(255, 255, 255);
+    pdf.circle(cx, cy, imageSize / 2 + 11, 'F');
+    if (profileImageDataUrl) {
+      pdf.addImage(profileImageDataUrl, 'PNG', cx - imageSize / 2, cy - imageSize / 2, imageSize, imageSize);
     } else {
-      setFont('bold', 14, [0, 0, 0]);
-      pdf.text(name, rightX, 82);
+      pdf.setFillColor(245, 245, 245);
+      pdf.circle(cx, cy, imageSize / 2, 'F');
+      setFont('bold', 35, teal);
+      pdf.text(name.charAt(0).toUpperCase(), cx, cy + 12, { align: 'center' });
     }
+    pdf.setDrawColor(255, 255, 255);
+    pdf.setLineWidth(3);
+    pdf.circle(cx, cy, imageSize / 2 + 1, 'S');
+
+    setFont('bold', 24, [0, 0, 0]);
+    const nameLines = pdf.splitTextToSize(name, rightWidth);
+    pdf.text(nameLines.slice(0, 2), rightX + 12, 101);
+
+    setFont('normal', 11, teal);
+    const titleLines = pdf.splitTextToSize(title, rightWidth);
+    pdf.text(titleLines.slice(0, 1), rightX + 12, 126);
   };
 
   const addPage = () => {
     pdf.addPage();
     drawTemplate(pdf.getNumberOfPages());
-    return { leftY: 70, rightY: 172 };
+    return { leftY: 40, rightY: 48 };
   };
 
   drawTemplate(1);
