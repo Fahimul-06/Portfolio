@@ -352,6 +352,53 @@ function usePortfolioScrollReveal(triggerKey: string) {
   }, [triggerKey]);
 }
 
+
+function use3DGlassMotion() {
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const root = document.documentElement;
+    let frame = 0;
+    let pointerX = 0.5;
+    let pointerY = 0.5;
+
+    const applyMotion = () => {
+      frame = 0;
+      const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      const scrollProgress = Math.min(1, Math.max(0, window.scrollY / maxScroll));
+      root.style.setProperty("--glass-pointer-x", `${Math.round(pointerX * 100)}%`);
+      root.style.setProperty("--glass-pointer-y", `${Math.round(pointerY * 100)}%`);
+      root.style.setProperty("--glass-scroll", `${window.scrollY.toFixed(0)}px`);
+      root.style.setProperty("--glass-scroll-progress", scrollProgress.toFixed(4));
+    };
+
+    const scheduleMotion = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(applyMotion);
+    };
+
+    const handlePointerMove = (event: PointerEvent) => {
+      pointerX = event.clientX / Math.max(1, window.innerWidth);
+      pointerY = event.clientY / Math.max(1, window.innerHeight);
+      scheduleMotion();
+    };
+
+    const handleScroll = () => scheduleMotion();
+
+    applyMotion();
+    window.addEventListener("pointermove", handlePointerMove, { passive: true });
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleScroll, { passive: true });
+
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame);
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+    };
+  }, []);
+}
+
 function useTactileUiFeedback(activeSection?: string) {
   const lastSectionRef = useRef<string | undefined>(undefined);
 
@@ -376,11 +423,11 @@ function useTactileUiFeedback(activeSection?: string) {
       return audioContext;
     };
 
-    const vibrate = (duration = 10) => {
+    const vibrate = (pattern: number | number[] = 14) => {
       if (!isFeedbackEnabled()) return;
       if ("vibrate" in navigator) {
         try {
-          navigator.vibrate(duration);
+          navigator.vibrate(pattern);
         } catch {
           // Some browsers expose vibrate but block it silently.
         }
@@ -416,11 +463,18 @@ function useTactileUiFeedback(activeSection?: string) {
 
     const runFeedback = (kind: "tap" | "section" = "tap") => {
       const now = Date.now();
-      const minGap = kind === "section" ? 850 : 90;
+      const minGap = kind === "section" ? 720 : 70;
       if (now - lastFeedbackAt < minGap) return;
       lastFeedbackAt = now;
-      vibrate(kind === "section" ? 8 : 12);
-      playStackSound(kind === "section" ? 430 : 620, kind === "section" ? 0.038 : 0.05, kind === "section" ? 0.026 : 0.04);
+
+      if (kind === "section") {
+        vibrate([18, 28, 18]);
+        playStackSound(430, 0.052, 0.038);
+        window.setTimeout(() => playStackSound(285, 0.045, 0.026), 58);
+      } else {
+        vibrate([16]);
+        playStackSound(680, 0.05, 0.045);
+      }
     };
 
     const handlePointerDown = (event: PointerEvent) => {
@@ -482,6 +536,7 @@ function Portfolio() {
   const [dataLoading, setDataLoading] = useState(true);
   const [currentPath, setCurrentPath] = useState(() => window.location.pathname);
 
+  use3DGlassMotion();
   useTactileUiFeedback(activeSection);
   usePortfolioScrollReveal(`${currentPath}-${dataLoading}-${heroMedia.length}-${skills.length}-${projects.length}-${education.length}-${experiences.length}-${certificates.length}`);
 
