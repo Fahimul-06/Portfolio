@@ -276,7 +276,7 @@ function HeroMediaSlide({
       <iframe
         src={isActive ? embedUrl : "about:blank"}
         title={item.title || "Hero video"}
-        className="h-full w-full border-0 bg-black object-contain"
+        className="h-full w-full border-0 bg-transparent object-contain"
         allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
         allowFullScreen
       />
@@ -287,7 +287,7 @@ function HeroMediaSlide({
     return (
       <video
         ref={videoRef}
-        className="h-full w-full bg-black object-contain"
+        className="h-full w-full bg-transparent object-contain"
         muted
         loop
         autoPlay
@@ -303,7 +303,7 @@ function HeroMediaSlide({
   }
 
   return (
-    <div className="relative h-full w-full overflow-hidden bg-slate-950">
+    <div className="relative h-full w-full overflow-hidden bg-transparent">
       <img
         src={item.media_url}
         alt=""
@@ -817,10 +817,10 @@ function Portfolio() {
       {/* Hero Section */}
       <section
         id="home"
-        className="relative bg-slate-950 pb-8 pt-24 sm:pb-10 sm:pt-28"
+        className="relative bg-transparent pb-6 pt-16 lg:pt-20"
       >
         <div className="w-screen max-w-none">
-          <div className="relative h-[220px] w-screen overflow-hidden bg-slate-950 sm:h-[280px] lg:h-[340px] xl:h-[380px]">
+          <div className="relative h-[220px] w-screen overflow-hidden bg-transparent sm:h-[280px] lg:h-[340px] xl:h-[380px]">
             {heroMedia.length > 0 ? (
               <>
                 {heroMedia.map((item, index) => {
@@ -861,7 +861,7 @@ function Portfolio() {
                 )}
               </>
             ) : about?.hero_background_url ? (
-              <div className="relative h-full w-full overflow-hidden bg-slate-950">
+              <div className="relative h-full w-full overflow-hidden bg-transparent">
                 <img
                   src={about.hero_background_url}
                   alt=""
