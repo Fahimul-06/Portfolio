@@ -8,6 +8,10 @@ import { VisitorLocationPrompt } from "./components/VisitorLocationPrompt";
 import { LiveChatWidget } from "./components/LiveChatWidget";
 import { isAdminPath, isLegacyAdminPath } from "./lib/adminPath";
 import {
+  Menu,
+  X,
+  Home,
+  UserRound,
   Github,
   Linkedin,
   Mail,
@@ -395,7 +399,9 @@ function useTactileUiFeedback(activeSection?: string) {
 }
 
 function Portfolio() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
+  const [scrolled, setScrolled] = useState(false);
   const [filter, setFilter] = useState("all");
   const [formData, setFormData] = useState({
     name: "",
@@ -431,6 +437,7 @@ function Portfolio() {
 
   useEffect(() => {
     const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
       const sections = [
         "home",
         "about",
@@ -523,6 +530,7 @@ function Portfolio() {
     if (element) {
       element.scrollIntoView({ behavior: "smooth" });
     }
+    setIsMenuOpen(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -583,6 +591,17 @@ function Portfolio() {
     { key: "mobile", label: "Mobile", icon: Smartphone },
   ];
 
+  const navigationItems = [
+    { label: "Home", id: "home", icon: Home },
+    { label: "About", id: "about", icon: UserRound },
+    { label: "Education", id: "education", icon: GraduationCap },
+    { label: "Skills", id: "skills", icon: Code2 },
+    { label: "Projects", id: "projects", icon: Briefcase },
+    { label: "Experience", id: "experience", icon: Star },
+    { label: "Certificates", id: "certificates", icon: Award },
+    { label: "Contact", id: "contact", icon: Mail },
+  ];
+
   if (dataLoading) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center">
@@ -613,74 +632,121 @@ function Portfolio() {
 
   return (
     <div className="portfolio-glass-theme min-h-screen bg-slate-950 text-gray-100 overflow-x-hidden">
-      {/* Left Pill Navigation */}
-      <nav
-        className="fixed left-3 top-1/2 z-50 -translate-y-1/2 sm:left-5"
-        aria-label="Portfolio navigation"
-      >
-        <div className="glass-left-pill flex flex-col items-center gap-2 rounded-full border border-white/10 bg-slate-950/60 p-2 shadow-2xl shadow-black/30 backdrop-blur-2xl">
+      {/* Floating pill navigation */}
+      <nav className="floating-pill-nav fixed left-4 top-4 z-50 hidden lg:block" aria-label="Portfolio navigation">
+        <div className="flex items-center gap-2 rounded-full border border-white/10 bg-slate-950/70 px-3 py-2 shadow-2xl shadow-cyan-950/30 backdrop-blur-2xl">
           <button
+            type="button"
             onClick={() => navigateToPortfolioSection("home")}
-            className="group relative flex h-11 w-11 items-center justify-center rounded-full border border-cyan-300/20 bg-white/10 text-sm font-black text-cyan-200 transition-all hover:bg-cyan-300/20 hover:text-white"
-            title="Home"
+            className="pill-logo group relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border border-cyan-400/25 bg-cyan-400/10 text-sm font-black text-cyan-200 transition-all hover:scale-105 hover:border-cyan-300/70"
+            aria-label="Go to home"
           >
             {about?.logo_url ? (
-              <img
-                src={about.logo_url}
-                alt="Logo"
-                className="h-full w-full rounded-full object-cover"
-              />
+              <img src={about.logo_url} alt="Logo" className="h-full w-full object-cover" />
             ) : (
               <span>FA</span>
             )}
-            <span className="pointer-events-none absolute left-full ml-3 rounded-full border border-cyan-300/20 bg-slate-950/95 px-3 py-1 text-xs font-semibold text-cyan-100 opacity-0 shadow-xl backdrop-blur-xl transition-opacity group-hover:opacity-100 lg:hidden">
-              Home
-            </span>
           </button>
 
-          {[
-            { id: "home", label: "Home", Icon: Star },
-            { id: "about", label: "About", Icon: Heart },
-            { id: "education", label: "Education", Icon: GraduationCap },
-            { id: "skills", label: "Skills", Icon: Code2 },
-            { id: "projects", label: "Projects", Icon: Briefcase },
-            { id: "experience", label: "Experience", Icon: Award },
-            { id: "certificates", label: "Certificates", Icon: Star },
-            { id: "contact", label: "Contact", Icon: Mail },
-          ].map(({ id, label, Icon }) => (
-            <button
-              key={id}
-              onClick={() => navigateToPortfolioSection(id)}
-              className={`group relative flex h-10 w-10 items-center justify-center rounded-full text-gray-300 transition-all duration-300 hover:-translate-y-0.5 hover:bg-cyan-300/15 hover:text-cyan-200 lg:w-auto lg:min-w-[2.5rem] lg:px-3 ${
-                activeSection === id
-                  ? "bg-cyan-300/20 text-cyan-200 shadow-lg shadow-cyan-950/30"
-                  : "bg-white/5"
-              }`}
-              title={label}
-            >
-              <Icon size={17} />
-              <span className="ml-2 hidden text-[11px] font-semibold lg:inline">{label}</span>
-              <span className="pointer-events-none absolute left-full ml-3 rounded-full border border-cyan-300/20 bg-slate-950/95 px-3 py-1 text-xs font-semibold text-cyan-100 opacity-0 shadow-xl backdrop-blur-xl transition-opacity group-hover:opacity-100 lg:hidden">
-                {label}
-              </span>
-            </button>
-          ))}
-
-          <div className="my-1 h-px w-8 bg-white/10" />
+          {navigationItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = activeSection === item.id;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => scrollToSection(item.id)}
+                className={`pill-nav-button group relative flex h-10 w-10 items-center justify-center rounded-full text-sm transition-all duration-300 ${
+                  isActive
+                    ? "bg-cyan-400 text-slate-950 shadow-lg shadow-cyan-400/25"
+                    : "text-gray-300 hover:bg-white/10 hover:text-cyan-300"
+                }`}
+                aria-label={item.label}
+                title={item.label}
+              >
+                <Icon size={18} />
+                <span className="pointer-events-none absolute left-1/2 top-[calc(100%+0.65rem)] -translate-x-1/2 whitespace-nowrap rounded-full border border-white/10 bg-slate-950/90 px-3 py-1.5 text-xs font-semibold text-cyan-100 opacity-0 shadow-xl shadow-slate-950/40 backdrop-blur-xl transition-all duration-200 group-hover:translate-y-1 group-hover:opacity-100">
+                  {item.label}
+                </span>
+              </button>
+            );
+          })}
 
           <button
             type="button"
             onClick={handleDownloadPortfolioPdf}
-            className="group relative flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-cyan-300 to-teal-400 text-slate-950 shadow-lg shadow-cyan-950/30 transition-all hover:-translate-y-0.5 hover:shadow-cyan-400/30 lg:w-auto lg:px-3"
+            className="pill-nav-button group relative flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-cyan-500 to-teal-500 text-slate-950 shadow-lg shadow-cyan-500/25 transition-all duration-300 hover:scale-105"
+            aria-label="Download resume PDF"
             title="Resume PDF"
           >
-            <Download size={17} />
-            <span className="ml-2 hidden text-[11px] font-black lg:inline">PDF</span>
-            <span className="pointer-events-none absolute left-full ml-3 rounded-full border border-cyan-300/20 bg-slate-950/95 px-3 py-1 text-xs font-semibold text-cyan-100 opacity-0 shadow-xl backdrop-blur-xl transition-opacity group-hover:opacity-100 lg:hidden">
+            <Download size={18} />
+            <span className="pointer-events-none absolute left-1/2 top-[calc(100%+0.65rem)] -translate-x-1/2 whitespace-nowrap rounded-full border border-white/10 bg-slate-950/90 px-3 py-1.5 text-xs font-semibold text-cyan-100 opacity-0 shadow-xl shadow-slate-950/40 backdrop-blur-xl transition-all duration-200 group-hover:translate-y-1 group-hover:opacity-100">
               Resume PDF
             </span>
           </button>
         </div>
+      </nav>
+
+      {/* Mobile floating pill navigation */}
+      <nav className="fixed left-3 top-3 z-50 lg:hidden" aria-label="Mobile portfolio navigation">
+        <div className="rounded-full border border-white/10 bg-slate-950/75 p-1.5 shadow-2xl shadow-cyan-950/30 backdrop-blur-2xl">
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => navigateToPortfolioSection("home")}
+              className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-cyan-400/25 bg-cyan-400/10 text-xs font-black text-cyan-200"
+              aria-label="Go to home"
+            >
+              {about?.logo_url ? (
+                <img src={about.logo_url} alt="Logo" className="h-full w-full object-cover" />
+              ) : (
+                "FA"
+              )}
+            </button>
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="flex h-10 w-10 items-center justify-center rounded-full text-gray-200 transition-colors hover:bg-white/10 hover:text-cyan-300"
+              aria-label="Toggle menu"
+            >
+              {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
+            </button>
+          </div>
+        </div>
+
+        {isMenuOpen && (
+          <div className="mt-3 w-64 animate-slide-down rounded-3xl border border-white/10 bg-slate-950/90 p-3 shadow-2xl shadow-cyan-950/30 backdrop-blur-2xl">
+            <div className="grid grid-cols-2 gap-2">
+              {navigationItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => scrollToSection(item.id)}
+                    className={`flex items-center gap-2 rounded-2xl px-3 py-2.5 text-left text-xs font-semibold transition-colors ${
+                      activeSection === item.id
+                        ? "bg-cyan-400 text-slate-950"
+                        : "text-gray-300 hover:bg-white/10 hover:text-cyan-300"
+                    }`}
+                  >
+                    <Icon size={16} />
+                    {item.label}
+                  </button>
+                );
+              })}
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                handleDownloadPortfolioPdf();
+                setIsMenuOpen(false);
+              }}
+              className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-500 to-teal-500 px-4 py-3 text-sm font-bold text-slate-950"
+            >
+              <Download size={18} />
+              Resume PDF
+            </button>
+          </div>
+        )}
       </nav>
 
       {/* Home Section */}
@@ -1632,39 +1698,59 @@ function ProjectDetailsPage({
 
   return (
     <div className="portfolio-glass-theme min-h-screen bg-slate-950 text-gray-100 overflow-x-hidden">
-      <nav
-        className="fixed left-3 top-1/2 z-50 -translate-y-1/2 sm:left-5"
-        aria-label="Project navigation"
-      >
-        <div className="glass-left-pill flex flex-col items-center gap-2 rounded-full border border-white/10 bg-slate-950/60 p-2 shadow-2xl shadow-black/30 backdrop-blur-2xl">
+      <nav className="fixed left-4 top-4 z-50 hidden lg:block" aria-label="Project page navigation">
+        <div className="flex items-center gap-2 rounded-full border border-white/10 bg-slate-950/75 px-3 py-2 shadow-2xl shadow-cyan-950/30 backdrop-blur-2xl">
           <button
             type="button"
             onClick={onBack}
-            className="group relative flex h-11 w-11 items-center justify-center rounded-full bg-cyan-300/15 text-cyan-200 transition-all hover:-translate-x-0.5 hover:bg-cyan-300/25 hover:text-white lg:w-auto lg:px-3"
+            className="group relative flex h-11 w-11 items-center justify-center rounded-full bg-cyan-400 text-slate-950 shadow-lg shadow-cyan-400/25 transition-all hover:scale-105"
+            aria-label="Back to projects"
             title="Back to Projects"
           >
-            <ArrowLeft size={18} />
-            <span className="ml-2 hidden text-[11px] font-bold lg:inline">Projects</span>
-            <span className="pointer-events-none absolute left-full ml-3 rounded-full border border-cyan-300/20 bg-slate-950/95 px-3 py-1 text-xs font-semibold text-cyan-100 opacity-0 shadow-xl backdrop-blur-xl transition-opacity group-hover:opacity-100 lg:hidden">
+            <ArrowLeft size={19} />
+            <span className="pointer-events-none absolute left-1/2 top-[calc(100%+0.65rem)] -translate-x-1/2 whitespace-nowrap rounded-full border border-white/10 bg-slate-950/90 px-3 py-1.5 text-xs font-semibold text-cyan-100 opacity-0 shadow-xl shadow-slate-950/40 backdrop-blur-xl transition-all duration-200 group-hover:translate-y-1 group-hover:opacity-100">
               Back to Projects
             </span>
           </button>
-          <button
-            type="button"
-            onClick={() => { window.history.pushState({}, "", "/#home"); window.location.reload(); }}
-            className="group relative flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-gray-300 transition-all hover:bg-cyan-300/15 hover:text-cyan-200 lg:w-auto lg:px-3"
+
+          <a
+            href="/#home"
+            className="group relative flex h-10 w-10 items-center justify-center rounded-full text-gray-300 transition-all hover:bg-white/10 hover:text-cyan-300"
+            aria-label="Home"
             title="Home"
           >
-            <Star size={17} />
-            <span className="ml-2 hidden text-[11px] font-semibold lg:inline">Home</span>
-            <span className="pointer-events-none absolute left-full ml-3 rounded-full border border-cyan-300/20 bg-slate-950/95 px-3 py-1 text-xs font-semibold text-cyan-100 opacity-0 shadow-xl backdrop-blur-xl transition-opacity group-hover:opacity-100 lg:hidden">
+            <Home size={18} />
+            <span className="pointer-events-none absolute left-1/2 top-[calc(100%+0.65rem)] -translate-x-1/2 whitespace-nowrap rounded-full border border-white/10 bg-slate-950/90 px-3 py-1.5 text-xs font-semibold text-cyan-100 opacity-0 shadow-xl shadow-slate-950/40 backdrop-blur-xl transition-all duration-200 group-hover:translate-y-1 group-hover:opacity-100">
               Home
             </span>
-          </button>
+          </a>
+
+          <a
+            href="/#contact"
+            className="group relative flex h-10 w-10 items-center justify-center rounded-full text-gray-300 transition-all hover:bg-white/10 hover:text-cyan-300"
+            aria-label="Contact"
+            title="Contact"
+          >
+            <Mail size={18} />
+            <span className="pointer-events-none absolute left-1/2 top-[calc(100%+0.65rem)] -translate-x-1/2 whitespace-nowrap rounded-full border border-white/10 bg-slate-950/90 px-3 py-1.5 text-xs font-semibold text-cyan-100 opacity-0 shadow-xl shadow-slate-950/40 backdrop-blur-xl transition-all duration-200 group-hover:translate-y-1 group-hover:opacity-100">
+              Contact
+            </span>
+          </a>
         </div>
       </nav>
 
-      <main>
+      <nav className="fixed left-3 top-3 z-50 lg:hidden" aria-label="Mobile project page navigation">
+        <div className="flex items-center gap-2 rounded-full border border-white/10 bg-slate-950/75 p-1.5 shadow-2xl shadow-cyan-950/30 backdrop-blur-2xl">
+          <button type="button" onClick={onBack} className="flex h-10 items-center gap-2 rounded-full bg-cyan-400 px-4 text-sm font-bold text-slate-950">
+            <ArrowLeft size={18} /> Projects
+          </button>
+          <a href="/#home" className="flex h-10 w-10 items-center justify-center rounded-full text-gray-200 hover:bg-white/10 hover:text-cyan-300" aria-label="Home">
+            <Home size={18} />
+          </a>
+        </div>
+      </nav>
+
+      <main className="pt-16 lg:pt-10">
         <section className="relative overflow-hidden pb-16">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(6,182,212,0.18),_transparent_35%),radial-gradient(circle_at_bottom_right,_rgba(20,184,166,0.14),_transparent_32%)]" />
           <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
