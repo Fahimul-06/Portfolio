@@ -621,11 +621,11 @@ function Portfolio() {
     <div className="portfolio-glass-theme min-h-screen bg-slate-950 text-gray-100 overflow-x-hidden">
       {/* Navigation */}
       <nav
-        className={`fixed left-0 right-0 top-3 z-50 px-3 transition-all duration-500 sm:top-4 sm:px-4 ${
+        className={`fixed bottom-3 left-0 right-0 z-50 px-3 transition-all duration-500 sm:bottom-4 sm:px-4 ${
           scrolled ? "translate-y-0" : "translate-y-0"
         }`}
       >
-        <div className="mx-auto flex w-fit max-w-[calc(100vw-1.5rem)] flex-col items-center">
+        <div className="mx-auto flex w-fit max-w-[calc(100vw-1.5rem)] flex-col-reverse items-center">
           <div className="glass-pill-nav flex h-12 items-center gap-2 rounded-full px-2.5 py-1.5 shadow-2xl sm:h-14 sm:gap-3 sm:px-3 lg:h-14 lg:gap-4 lg:px-4">
             <button
               onClick={() => navigateToPortfolioSection("home")}
@@ -690,7 +690,7 @@ function Portfolio() {
 
           {/* Mobile Menu */}
           {isMenuOpen && (
-            <div className="glass-mobile-pill-menu mt-3 w-[min(92vw,360px)] rounded-[2rem] p-3 shadow-2xl animate-slide-down lg:hidden">
+            <div className="glass-mobile-pill-menu mb-3 w-[min(92vw,360px)] rounded-[2rem] p-3 shadow-2xl animate-slide-down lg:hidden">
               <div className="grid grid-cols-2 gap-2">
                 {[
                   "Home",
@@ -734,7 +734,7 @@ function Portfolio() {
       {/* Home Section */}
       <section
         id="home"
-        className="relative flex min-h-[calc(100vh-4rem)] items-center overflow-hidden bg-transparent px-4 pb-16 pt-24 sm:px-6 lg:px-8 lg:pt-28"
+        className="relative flex min-h-screen items-center overflow-hidden bg-transparent px-4 pb-28 pt-0 sm:px-6 sm:pb-32 lg:px-8"
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_20%,rgba(34,211,238,0.18),transparent_34%),radial-gradient(circle_at_75%_10%,rgba(45,212,191,0.14),transparent_30%),linear-gradient(135deg,rgba(2,6,23,0.96),rgba(15,23,42,0.94))]" />
         <div className="absolute left-1/2 top-24 h-72 w-72 -translate-x-1/2 rounded-full bg-cyan-400/10 blur-3xl" />
