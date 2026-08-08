@@ -276,7 +276,7 @@ function HeroMediaSlide({
       <iframe
         src={isActive ? embedUrl : "about:blank"}
         title={item.title || "Hero video"}
-        className="h-full w-full border-0 bg-transparent object-contain"
+        className="h-full w-full border-0 bg-black object-contain"
         allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
         allowFullScreen
       />
@@ -287,7 +287,7 @@ function HeroMediaSlide({
     return (
       <video
         ref={videoRef}
-        className="h-full w-full bg-transparent object-contain"
+        className="h-full w-full bg-black object-contain"
         muted
         loop
         autoPlay
@@ -303,7 +303,7 @@ function HeroMediaSlide({
   }
 
   return (
-    <div className="relative h-full w-full overflow-hidden bg-transparent">
+    <div className="relative h-full w-full overflow-hidden bg-slate-950">
       <img
         src={item.media_url}
         alt=""
@@ -706,7 +706,7 @@ function Portfolio() {
       <nav
         className={`glass-nav fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           scrolled
-            ? "bg-slate-950/90 backdrop-blur-xl shadow-lg shadow-slate-900/50 border-b border-slate-800"
+            ? "bg-slate-950/90 backdrop-blur-xl"
             : "bg-transparent"
         }`}
       >
@@ -817,7 +817,7 @@ function Portfolio() {
       {/* Hero Section */}
       <section
         id="home"
-        className="relative bg-transparent pb-6 pt-16 lg:pt-20"
+        className="relative bg-transparent pb-0 pt-16 lg:pt-20"
       >
         <div className="w-screen max-w-none">
           <div className="relative h-[220px] w-screen overflow-hidden bg-transparent sm:h-[280px] lg:h-[340px] xl:h-[380px]">
@@ -1786,7 +1786,7 @@ function ProjectDetailsPage({
 
   return (
     <div className="portfolio-glass-theme min-h-screen bg-slate-950 text-gray-100 overflow-x-hidden">
-      <div className="fixed inset-x-0 top-0 z-50 border-b border-slate-800 bg-slate-950/90 backdrop-blur-xl">
+      <div className="fixed inset-x-0 top-0 z-50 bg-slate-950/90 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <button type="button" onClick={onBack} className="inline-flex items-center gap-2 text-sm text-gray-300 hover:text-cyan-400 transition-colors">
             <ArrowLeft size={18} /> Back to Projects
@@ -1795,7 +1795,7 @@ function ProjectDetailsPage({
         </div>
       </div>
 
-      <main className="pt-24">
+      <main className="pt-16 lg:pt-20">
         <section className="relative overflow-hidden pb-16">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(6,182,212,0.18),_transparent_35%),radial-gradient(circle_at_bottom_right,_rgba(20,184,166,0.14),_transparent_32%)]" />
           <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
