@@ -621,17 +621,15 @@ function Portfolio() {
     <div className="portfolio-glass-theme min-h-screen bg-slate-950 text-gray-100 overflow-x-hidden">
       {/* Navigation */}
       <nav
-        className={`glass-nav rounded-glass-navbar fixed top-3 left-3 right-3 z-50 transition-all duration-500 sm:top-4 sm:left-4 sm:right-4 ${
-          scrolled
-            ? "bg-slate-950/72 backdrop-blur-2xl"
-            : "bg-white/5 backdrop-blur-2xl"
+        className={`glass-nav floating-pill-nav fixed left-0 right-0 top-3 z-50 pointer-events-none transition-all duration-500 ${
+          scrolled ? "is-scrolled" : ""
         }`}
       >
-        <div className="mx-auto max-w-7xl px-3 sm:px-5 lg:px-6">
-          <div className="flex h-16 items-center justify-between lg:h-20">
+        <div className="pointer-events-auto mx-auto max-w-[calc(100vw-1rem)] px-2 sm:px-0 lg:max-w-fit">
+          <div className="floating-pill-shell flex h-12 items-center justify-between gap-2 rounded-full px-2.5 lg:h-14 lg:gap-3 lg:px-3">
             <button
               onClick={() => navigateToPortfolioSection("home")}
-              className="group relative flex h-11 min-w-11 items-center justify-center rounded-full border border-white/15 bg-white/10 px-3 text-xl font-bold shadow-lg shadow-slate-950/20 backdrop-blur-xl transition-all hover:border-cyan-300/40 hover:bg-cyan-300/10 lg:h-12 lg:min-w-12 lg:text-2xl"
+              className="relative flex h-9 min-w-9 items-center justify-center rounded-full px-2 text-lg font-bold transition-all duration-300 hover:bg-white/10 lg:h-10 lg:min-w-10 lg:text-xl"
             >
               {about?.logo_url ? (
                 <img
@@ -642,11 +640,11 @@ function Portfolio() {
               ) : (
                 <span className="text-gradient">FA</span>
               )}
-              <span className="absolute -inset-2 rounded-full bg-cyan-400/20 blur-md opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+              <span className="absolute -inset-2 bg-cyan-500/20 rounded-lg blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </button>
 
             {/* Desktop Menu */}
-            <div className="hidden items-center gap-2 lg:flex">
+            <div className="hidden items-center gap-1.5 lg:flex">
               {[
                 "Home",
                 "About",
@@ -660,10 +658,10 @@ function Portfolio() {
                 <button
                   key={item}
                   onClick={() => scrollToSection(item.toLowerCase())}
-                  className={`rounded-full border px-4 py-2 text-sm font-semibold shadow-lg shadow-slate-950/10 backdrop-blur-xl transition-all duration-300 ${
+                  className={`nav-glass-button ${
                     activeSection === item.toLowerCase()
-                      ? "border-cyan-300/45 bg-cyan-300/18 text-cyan-100 shadow-cyan-950/20"
-                      : "border-white/10 bg-white/[0.06] text-gray-200 hover:-translate-y-0.5 hover:border-cyan-300/35 hover:bg-cyan-300/10 hover:text-cyan-100"
+                      ? "nav-glass-button-active"
+                      : "text-gray-200 hover:text-white"
                   }`}
                 >
                   {item}
@@ -672,7 +670,7 @@ function Portfolio() {
               <button
                 type="button"
                 onClick={handleDownloadPortfolioPdf}
-                className="flex items-center gap-2 rounded-full border border-cyan-200/40 bg-cyan-300/18 px-5 py-2.5 font-bold text-cyan-50 shadow-lg shadow-cyan-950/20 backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:bg-cyan-300/25 hover:shadow-cyan-400/20"
+                className="nav-glass-button nav-glass-button-resume flex items-center gap-2"
               >
                 <Download size={18} className="animate-bounce-soft" />
                 Resume PDF
@@ -682,7 +680,7 @@ function Portfolio() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="rounded-full border border-white/15 bg-white/10 p-2 text-gray-200 shadow-lg shadow-slate-950/20 backdrop-blur-xl transition-all hover:border-cyan-300/40 hover:bg-cyan-300/10 hover:text-cyan-100 lg:hidden"
+              className="nav-glass-icon-button lg:hidden"
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -690,8 +688,8 @@ function Portfolio() {
 
           {/* Mobile Menu */}
           {isMenuOpen && (
-            <div className="animate-slide-down pb-3 lg:hidden">
-              <div className="mt-2 space-y-2 rounded-3xl border border-white/12 bg-slate-950/72 p-3 shadow-2xl shadow-slate-950/35 backdrop-blur-2xl">
+            <div className="floating-mobile-menu mt-3 rounded-3xl p-3 lg:hidden animate-slide-down">
+              <div className="space-y-2">
                 {[
                   "Home",
                   "About",
@@ -705,10 +703,10 @@ function Portfolio() {
                   <button
                     key={item}
                     onClick={() => scrollToSection(item.toLowerCase())}
-                    className={`block w-full rounded-2xl border px-4 py-3 text-left font-semibold transition-all ${
+                    className={`block w-full rounded-2xl border px-4 py-3 text-left text-sm font-semibold transition-all ${
                       activeSection === item.toLowerCase()
-                        ? "border-cyan-300/40 bg-cyan-300/15 text-cyan-100"
-                        : "border-white/10 bg-white/[0.05] text-gray-200 hover:border-cyan-300/30 hover:bg-cyan-300/10"
+                        ? "border-cyan-300/40 bg-cyan-300/15 text-cyan-100 shadow-lg shadow-cyan-950/20"
+                        : "border-white/10 bg-white/5 text-gray-200 hover:border-cyan-300/30 hover:bg-cyan-300/10 hover:text-white"
                     }`}
                   >
                     {item}
@@ -720,7 +718,7 @@ function Portfolio() {
                     handleDownloadPortfolioPdf();
                     setIsMenuOpen(false);
                   }}
-                  className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border border-cyan-200/35 bg-cyan-300/20 px-4 py-3 font-bold text-cyan-50 shadow-lg shadow-cyan-950/25 backdrop-blur-xl"
+                  className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border border-cyan-300/35 bg-cyan-300/15 px-4 py-3 font-bold text-cyan-50 shadow-lg shadow-cyan-950/25 backdrop-blur-xl transition hover:bg-cyan-300/20"
                 >
                   <Download size={18} />
                   Download Portfolio PDF
@@ -1680,16 +1678,15 @@ function ProjectDetailsPage({
 
   return (
     <div className="portfolio-glass-theme min-h-screen bg-slate-950 text-gray-100 overflow-x-hidden">
-      <div className="glass-nav rounded-glass-navbar fixed left-3 right-3 top-3 z-50 bg-slate-950/72 shadow-2xl shadow-slate-950/30 backdrop-blur-2xl sm:left-4 sm:right-4 sm:top-4">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-3 sm:px-5 lg:h-20 lg:px-6">
-          <button type="button" onClick={onBack} className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-4 py-2 text-sm font-semibold text-gray-200 shadow-lg shadow-slate-950/15 backdrop-blur-xl transition-all hover:-translate-y-0.5 hover:border-cyan-300/35 hover:bg-cyan-300/10 hover:text-cyan-100">
+      <div className="project-floating-nav fixed inset-x-0 top-3 z-50 pointer-events-none">
+        <div className="pointer-events-auto mx-auto flex h-12 w-fit items-center justify-between rounded-full px-3 lg:h-14">
+          <button type="button" onClick={onBack} className="nav-glass-button flex items-center gap-2">
             <ArrowLeft size={18} /> Back to Projects
           </button>
-          <div className="h-8" aria-hidden="true" />
         </div>
       </div>
 
-      <main className="pt-24 lg:pt-28">
+      <main className="pt-20 lg:pt-24">
         <section className="relative overflow-hidden pb-16">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(6,182,212,0.18),_transparent_35%),radial-gradient(circle_at_bottom_right,_rgba(20,184,166,0.14),_transparent_32%)]" />
           <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
