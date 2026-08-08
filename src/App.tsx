@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, type CSSProperties } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "./lib/supabase";
 import { downloadPortfolioPdf } from "./lib/portfolioPdf";
 import { AdminLogin } from "./components/AdminLogin";
@@ -396,142 +396,6 @@ function useTactileUiFeedback(activeSection?: string) {
   }, [activeSection]);
 }
 
-
-function clampNumber(value: number, min: number, max: number) {
-  return Math.min(Math.max(value, min), max);
-}
-
-function easeRobotProgress(progress: number) {
-  return progress < 0.5
-    ? 4 * progress * progress * progress
-    : 1 - Math.pow(-2 * progress + 2, 3) / 2;
-}
-
-function useRobotHumanScrollAnimation() {
-  const [progress, setProgress] = useState(0);
-  const [direction, setDirection] = useState<"up" | "down">("down");
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    let frame = 0;
-    let lastScrollY = window.scrollY;
-
-    const updateProgress = () => {
-      const scrollY = window.scrollY;
-      const documentHeight = Math.max(
-        document.documentElement.scrollHeight,
-        document.body.scrollHeight,
-        window.innerHeight,
-      );
-      const maxScroll = Math.max(1, documentHeight - window.innerHeight);
-      const activationRange = Math.max(720, Math.min(1600, maxScroll * 0.42));
-      const nextProgress = clampNumber(scrollY / activationRange, 0, 1);
-
-      setDirection(scrollY >= lastScrollY ? "down" : "up");
-      setProgress(nextProgress);
-      lastScrollY = scrollY;
-      frame = 0;
-    };
-
-    const handleScroll = () => {
-      if (frame) return;
-      frame = window.requestAnimationFrame(updateProgress);
-    };
-
-    updateProgress();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("resize", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("resize", handleScroll);
-      if (frame) window.cancelAnimationFrame(frame);
-    };
-  }, []);
-
-  return { progress: easeRobotProgress(progress), direction };
-}
-
-function RobotHumanScrollBackground() {
-  const { progress, direction } = useRobotHumanScrollAnimation();
-  const robotStyle = {
-    "--head-open": `${-62 * progress}deg`,
-    "--head-lift": `${-22 * progress}px`,
-    "--brain-y": `${-225 * progress}px`,
-    "--brain-x": `${28 * progress}px`,
-    "--brain-scale": `${0.43 + progress * 0.76}`,
-    "--brain-rotate": `${820 * progress}deg`,
-    "--brain-rotate-reverse": `${-820 * progress}deg`,
-    "--brain-opacity": `${0.16 + progress * 0.84}`,
-    "--orbit-opacity": `${clampNumber(progress * 1.65, 0, 1)}`,
-    "--helmet-gap": `${4 + progress * 38}px`,
-    "--scanner-opacity": `${0.42 + progress * 0.58}`,
-    "--chest-glow": `${0.34 + progress * 0.56}`,
-    "--chest-glow-size": `${18 + progress * 48}px`,
-  } as CSSProperties;
-
-  return (
-    <div
-      className="robot-human-scroll-bg"
-      style={robotStyle}
-      data-scroll-direction={direction}
-      aria-hidden="true"
-    >
-      <div className="robot-human-stage">
-        <div className="robot-halo-ring robot-halo-ring-one" />
-        <div className="robot-halo-ring robot-halo-ring-two" />
-
-        <div className="robot-brain-orbit">
-          <span className="robot-orbit-dot robot-orbit-dot-one" />
-          <span className="robot-orbit-dot robot-orbit-dot-two" />
-          <span className="robot-orbit-dot robot-orbit-dot-three" />
-        </div>
-
-        <div className="robot-brain-core">
-          <span className="brain-lobe brain-lobe-one" />
-          <span className="brain-lobe brain-lobe-two" />
-          <span className="brain-lobe brain-lobe-three" />
-          <span className="brain-lobe brain-lobe-four" />
-          <span className="brain-stem" />
-          <span className="brain-spark brain-spark-one" />
-          <span className="brain-spark brain-spark-two" />
-          <span className="brain-spark brain-spark-three" />
-        </div>
-
-        <div className="robot-human-model">
-          <div className="robot-shoulders">
-            <span className="robot-shoulder robot-shoulder-left" />
-            <span className="robot-shoulder robot-shoulder-right" />
-          </div>
-          <div className="robot-torso">
-            <span className="robot-chest-core" />
-            <span className="robot-torso-line robot-torso-line-one" />
-            <span className="robot-torso-line robot-torso-line-two" />
-          </div>
-          <div className="robot-neck" />
-          <div className="robot-head">
-            <div className="robot-head-back" />
-            <div className="robot-head-face">
-              <span className="robot-eye robot-eye-left" />
-              <span className="robot-eye robot-eye-right" />
-              <span className="robot-nose-bridge" />
-              <span className="robot-mouth" />
-            </div>
-            <div className="robot-head-top">
-              <span className="robot-top-panel-line" />
-              <span className="robot-top-panel-glow" />
-            </div>
-            <div className="robot-head-side-panel" />
-            <div className="robot-ear robot-ear-left" />
-            <div className="robot-ear robot-ear-right" />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function Portfolio() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
@@ -755,35 +619,34 @@ function Portfolio() {
 
   return (
     <div className="portfolio-glass-theme min-h-screen bg-slate-950 text-gray-100 overflow-x-hidden">
-      <RobotHumanScrollBackground />
       {/* Navigation */}
       <nav
-        className={`glass-nav fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        className={`glass-nav rounded-glass-navbar fixed top-3 left-3 right-3 z-50 transition-all duration-500 sm:top-4 sm:left-4 sm:right-4 ${
           scrolled
-            ? "bg-slate-950/90 backdrop-blur-xl"
-            : "bg-transparent"
+            ? "bg-slate-950/72 backdrop-blur-2xl"
+            : "bg-white/5 backdrop-blur-2xl"
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 lg:h-20">
+        <div className="mx-auto max-w-7xl px-3 sm:px-5 lg:px-6">
+          <div className="flex h-16 items-center justify-between lg:h-20">
             <button
               onClick={() => navigateToPortfolioSection("home")}
-              className="text-xl lg:text-2xl font-bold relative group"
+              className="group relative flex h-11 min-w-11 items-center justify-center rounded-full border border-white/15 bg-white/10 px-3 text-xl font-bold shadow-lg shadow-slate-950/20 backdrop-blur-xl transition-all hover:border-cyan-300/40 hover:bg-cyan-300/10 lg:h-12 lg:min-w-12 lg:text-2xl"
             >
               {about?.logo_url ? (
                 <img
                   src={about.logo_url}
                   alt="Logo"
-                  className="h-10 lg:h-12 w-auto rounded-lg"
+                  className="h-8 w-auto rounded-full lg:h-9"
                 />
               ) : (
                 <span className="text-gradient">FA</span>
               )}
-              <span className="absolute -inset-2 bg-cyan-500/20 rounded-lg blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <span className="absolute -inset-2 rounded-full bg-cyan-400/20 blur-md opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
             </button>
 
             {/* Desktop Menu */}
-            <div className="hidden lg:flex items-center space-x-8">
+            <div className="hidden items-center gap-2 lg:flex">
               {[
                 "Home",
                 "About",
@@ -797,10 +660,10 @@ function Portfolio() {
                 <button
                   key={item}
                   onClick={() => scrollToSection(item.toLowerCase())}
-                  className={`text-sm font-medium link-underline transition-colors ${
+                  className={`rounded-full border px-4 py-2 text-sm font-semibold shadow-lg shadow-slate-950/10 backdrop-blur-xl transition-all duration-300 ${
                     activeSection === item.toLowerCase()
-                      ? "text-cyan-400"
-                      : "text-gray-300 hover:text-cyan-400"
+                      ? "border-cyan-300/45 bg-cyan-300/18 text-cyan-100 shadow-cyan-950/20"
+                      : "border-white/10 bg-white/[0.06] text-gray-200 hover:-translate-y-0.5 hover:border-cyan-300/35 hover:bg-cyan-300/10 hover:text-cyan-100"
                   }`}
                 >
                   {item}
@@ -809,7 +672,7 @@ function Portfolio() {
               <button
                 type="button"
                 onClick={handleDownloadPortfolioPdf}
-                className="btn-primary flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-teal-600 text-slate-900 font-semibold rounded-xl hover:shadow-lg hover:shadow-cyan-500/30 transition-all duration-300"
+                className="flex items-center gap-2 rounded-full border border-cyan-200/40 bg-cyan-300/18 px-5 py-2.5 font-bold text-cyan-50 shadow-lg shadow-cyan-950/20 backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:bg-cyan-300/25 hover:shadow-cyan-400/20"
               >
                 <Download size={18} className="animate-bounce-soft" />
                 Resume PDF
@@ -819,7 +682,7 @@ function Portfolio() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="lg:hidden p-2 text-gray-300 hover:text-cyan-400 transition-colors"
+              className="rounded-full border border-white/15 bg-white/10 p-2 text-gray-200 shadow-lg shadow-slate-950/20 backdrop-blur-xl transition-all hover:border-cyan-300/40 hover:bg-cyan-300/10 hover:text-cyan-100 lg:hidden"
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -827,8 +690,8 @@ function Portfolio() {
 
           {/* Mobile Menu */}
           {isMenuOpen && (
-            <div className="lg:hidden bg-slate-900/95 backdrop-blur-xl border-t border-slate-800 animate-slide-down">
-              <div className="px-4 py-4 space-y-2">
+            <div className="animate-slide-down pb-3 lg:hidden">
+              <div className="mt-2 space-y-2 rounded-3xl border border-white/12 bg-slate-950/72 p-3 shadow-2xl shadow-slate-950/35 backdrop-blur-2xl">
                 {[
                   "Home",
                   "About",
@@ -842,10 +705,10 @@ function Portfolio() {
                   <button
                     key={item}
                     onClick={() => scrollToSection(item.toLowerCase())}
-                    className={`block w-full text-left px-4 py-3 rounded-lg transition-colors ${
+                    className={`block w-full rounded-2xl border px-4 py-3 text-left font-semibold transition-all ${
                       activeSection === item.toLowerCase()
-                        ? "bg-cyan-500/10 text-cyan-400"
-                        : "text-gray-300 hover:bg-slate-800"
+                        ? "border-cyan-300/40 bg-cyan-300/15 text-cyan-100"
+                        : "border-white/10 bg-white/[0.05] text-gray-200 hover:border-cyan-300/30 hover:bg-cyan-300/10"
                     }`}
                   >
                     {item}
@@ -857,7 +720,7 @@ function Portfolio() {
                     handleDownloadPortfolioPdf();
                     setIsMenuOpen(false);
                   }}
-                  className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-cyan-500 to-teal-600 px-4 py-3 font-semibold text-slate-900"
+                  className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border border-cyan-200/35 bg-cyan-300/20 px-4 py-3 font-bold text-cyan-50 shadow-lg shadow-cyan-950/25 backdrop-blur-xl"
                 >
                   <Download size={18} />
                   Download Portfolio PDF
@@ -1817,17 +1680,16 @@ function ProjectDetailsPage({
 
   return (
     <div className="portfolio-glass-theme min-h-screen bg-slate-950 text-gray-100 overflow-x-hidden">
-      <RobotHumanScrollBackground />
-      <div className="fixed inset-x-0 top-0 z-50 bg-slate-950/90 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <button type="button" onClick={onBack} className="inline-flex items-center gap-2 text-sm text-gray-300 hover:text-cyan-400 transition-colors">
+      <div className="glass-nav rounded-glass-navbar fixed left-3 right-3 top-3 z-50 bg-slate-950/72 shadow-2xl shadow-slate-950/30 backdrop-blur-2xl sm:left-4 sm:right-4 sm:top-4">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-3 sm:px-5 lg:h-20 lg:px-6">
+          <button type="button" onClick={onBack} className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.06] px-4 py-2 text-sm font-semibold text-gray-200 shadow-lg shadow-slate-950/15 backdrop-blur-xl transition-all hover:-translate-y-0.5 hover:border-cyan-300/35 hover:bg-cyan-300/10 hover:text-cyan-100">
             <ArrowLeft size={18} /> Back to Projects
           </button>
           <div className="h-8" aria-hidden="true" />
         </div>
       </div>
 
-      <main className="pt-16 lg:pt-20">
+      <main className="pt-24 lg:pt-28">
         <section className="relative overflow-hidden pb-16">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(6,182,212,0.18),_transparent_35%),radial-gradient(circle_at_bottom_right,_rgba(20,184,166,0.14),_transparent_32%)]" />
           <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
