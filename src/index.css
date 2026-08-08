@@ -830,146 +830,43 @@ body {
   box-shadow: none !important;
 }
 
-/* Floating pill glass navbar used on every public page. */
-.portfolio-glass-theme .floating-pill-navbar {
-  overflow: visible;
-  border-radius: 9999px !important;
-  border: 1px solid rgba(255, 255, 255, 0.16) !important;
-  background:
-    linear-gradient(135deg, rgba(15, 23, 42, 0.58), rgba(2, 6, 23, 0.38)),
-    rgba(2, 6, 23, 0.42) !important;
-  backdrop-filter: blur(26px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(26px) saturate(180%) !important;
-  box-shadow:
-    0 24px 80px rgba(2, 6, 23, 0.36),
-    0 10px 30px rgba(6, 182, 212, 0.10),
-    inset 0 1px 0 rgba(255, 255, 255, 0.16) !important;
-}
-
-.portfolio-glass-theme .floating-pill-navbar::before {
-  content: "";
-  position: absolute;
-  inset: 1px;
-  z-index: -1;
-  border-radius: inherit;
-  background: linear-gradient(90deg, rgba(34, 211, 238, 0.20), transparent 32%, rgba(20, 184, 166, 0.16));
-  opacity: 0.74;
-  pointer-events: none;
-}
-
-.portfolio-glass-theme .floating-pill-navbar.is-scrolled {
-  transform: translateX(-50%) translateY(2px) scale(0.985);
-  background:
-    linear-gradient(135deg, rgba(15, 23, 42, 0.76), rgba(2, 6, 23, 0.58)),
-    rgba(2, 6, 23, 0.58) !important;
-}
-
-.portfolio-glass-theme .project-floating-pill {
-  max-width: min(960px, calc(100vw - 1rem));
-}
-
-.portfolio-glass-theme .nav-brand-glass {
-  min-width: 2.25rem;
-  min-height: 2.25rem;
-  border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
-  backdrop-filter: blur(18px) saturate(160%);
-  -webkit-backdrop-filter: blur(18px) saturate(160%);
-}
-
-.portfolio-glass-theme .nav-glass-button,
-.portfolio-glass-theme .nav-glass-icon {
+/* Compact left-side pill navigation */
+.glass-left-pill {
   position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 2.25rem;
-  border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.115), rgba(255, 255, 255, 0.045));
-  color: rgba(226, 232, 240, 0.94);
-  padding: 0.48rem 0.78rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  line-height: 1;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.14),
-    0 10px 24px rgba(2, 6, 23, 0.16);
-  backdrop-filter: blur(16px) saturate(165%);
-  -webkit-backdrop-filter: blur(16px) saturate(165%);
-  transition:
-    transform 180ms ease,
-    border-color 180ms ease,
-    background 180ms ease,
-    color 180ms ease,
-    box-shadow 180ms ease;
+  isolation: isolate;
+  animation: left-pill-in 0.55s ease-out both;
 }
 
-.portfolio-glass-theme .nav-glass-button:hover,
-.portfolio-glass-theme .nav-glass-icon:hover,
-.portfolio-glass-theme .nav-glass-button.is-active {
-  color: rgb(165, 243, 252);
-  border-color: rgba(103, 232, 249, 0.36);
-  background: linear-gradient(135deg, rgba(34, 211, 238, 0.18), rgba(20, 184, 166, 0.10));
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.18),
-    0 14px 30px rgba(6, 182, 212, 0.14);
-  transform: translateY(-1px);
-}
-
-.portfolio-glass-theme .nav-glass-button.is-active::after {
+.glass-left-pill::before {
   content: "";
   position: absolute;
-  left: 50%;
-  bottom: 0.26rem;
-  width: 0.28rem;
-  height: 0.28rem;
-  border-radius: 9999px;
-  background: rgb(103, 232, 249);
-  box-shadow: 0 0 14px rgba(103, 232, 249, 0.9);
-  transform: translateX(-50%);
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(103, 232, 249, 0.18), rgba(45, 212, 191, 0.08), rgba(255, 255, 255, 0.04));
+  opacity: 0.75;
+  z-index: -1;
 }
 
-.portfolio-glass-theme .nav-glass-cta {
-  color: rgb(3, 7, 18);
-  background: linear-gradient(135deg, rgba(103, 232, 249, 0.94), rgba(45, 212, 191, 0.92));
-  border-color: rgba(255, 255, 255, 0.32);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.28),
-    0 16px 34px rgba(34, 211, 238, 0.22);
+@keyframes left-pill-in {
+  from {
+    opacity: 0;
+    transform: translateX(-24px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
 }
 
-.portfolio-glass-theme .nav-glass-icon {
-  width: 2.35rem;
-  padding: 0;
-}
-
-.portfolio-glass-theme .floating-pill-mobile-menu {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: calc(100% + 0.55rem);
-  border-radius: 1.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background:
-    linear-gradient(135deg, rgba(15, 23, 42, 0.88), rgba(2, 6, 23, 0.74)),
-    rgba(2, 6, 23, 0.78);
-  box-shadow: 0 24px 70px rgba(2, 6, 23, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(24px) saturate(170%);
-  -webkit-backdrop-filter: blur(24px) saturate(170%);
-}
-
-@media (max-width: 420px) {
-  .portfolio-glass-theme .floating-pill-navbar {
-    top: 0.55rem;
-    width: calc(100% - 0.7rem);
+@media (max-width: 640px) {
+  .glass-left-pill {
+    max-height: calc(100vh - 1.5rem);
+    overflow-y: auto;
+    scrollbar-width: none;
   }
 
-  .portfolio-glass-theme .nav-glass-button {
-    padding-inline: 0.58rem;
-    font-size: 0.68rem;
+  .glass-left-pill::-webkit-scrollbar {
+    display: none;
   }
 }

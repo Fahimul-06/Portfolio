@@ -8,8 +8,6 @@ import { VisitorLocationPrompt } from "./components/VisitorLocationPrompt";
 import { LiveChatWidget } from "./components/LiveChatWidget";
 import { isAdminPath, isLegacyAdminPath } from "./lib/adminPath";
 import {
-  Menu,
-  X,
   Github,
   Linkedin,
   Mail,
@@ -397,9 +395,7 @@ function useTactileUiFeedback(activeSection?: string) {
 }
 
 function Portfolio() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
-  const [scrolled, setScrolled] = useState(false);
   const [filter, setFilter] = useState("all");
   const [formData, setFormData] = useState({
     name: "",
@@ -435,7 +431,6 @@ function Portfolio() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
       const sections = [
         "home",
         "about",
@@ -528,7 +523,6 @@ function Portfolio() {
     if (element) {
       element.scrollIntoView({ behavior: "smooth" });
     }
-    setIsMenuOpen(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -619,114 +613,73 @@ function Portfolio() {
 
   return (
     <div className="portfolio-glass-theme min-h-screen bg-slate-950 text-gray-100 overflow-x-hidden">
-      {/* Navigation */}
+      {/* Left Pill Navigation */}
       <nav
-        className={`glass-nav floating-pill-navbar fixed left-1/2 top-3 z-50 w-[calc(100%-1rem)] max-w-6xl -translate-x-1/2 transition-all duration-500 ${
-          scrolled ? "is-scrolled" : ""
-        }`}
+        className="fixed left-3 top-1/2 z-50 -translate-y-1/2 sm:left-5"
+        aria-label="Portfolio navigation"
       >
-        <div className="relative px-3 sm:px-4 lg:px-5">
-          <div className="flex h-12 items-center justify-between lg:h-14">
+        <div className="glass-left-pill flex flex-col items-center gap-2 rounded-full border border-white/10 bg-slate-950/60 p-2 shadow-2xl shadow-black/30 backdrop-blur-2xl">
+          <button
+            onClick={() => navigateToPortfolioSection("home")}
+            className="group relative flex h-11 w-11 items-center justify-center rounded-full border border-cyan-300/20 bg-white/10 text-sm font-black text-cyan-200 transition-all hover:bg-cyan-300/20 hover:text-white"
+            title="Home"
+          >
+            {about?.logo_url ? (
+              <img
+                src={about.logo_url}
+                alt="Logo"
+                className="h-full w-full rounded-full object-cover"
+              />
+            ) : (
+              <span>FA</span>
+            )}
+            <span className="pointer-events-none absolute left-full ml-3 rounded-full border border-cyan-300/20 bg-slate-950/95 px-3 py-1 text-xs font-semibold text-cyan-100 opacity-0 shadow-xl backdrop-blur-xl transition-opacity group-hover:opacity-100 lg:hidden">
+              Home
+            </span>
+          </button>
+
+          {[
+            { id: "home", label: "Home", Icon: Star },
+            { id: "about", label: "About", Icon: Heart },
+            { id: "education", label: "Education", Icon: GraduationCap },
+            { id: "skills", label: "Skills", Icon: Code2 },
+            { id: "projects", label: "Projects", Icon: Briefcase },
+            { id: "experience", label: "Experience", Icon: Award },
+            { id: "certificates", label: "Certificates", Icon: Star },
+            { id: "contact", label: "Contact", Icon: Mail },
+          ].map(({ id, label, Icon }) => (
             <button
-              onClick={() => navigateToPortfolioSection("home")}
-              className="nav-brand-glass relative group flex items-center justify-center"
+              key={id}
+              onClick={() => navigateToPortfolioSection(id)}
+              className={`group relative flex h-10 w-10 items-center justify-center rounded-full text-gray-300 transition-all duration-300 hover:-translate-y-0.5 hover:bg-cyan-300/15 hover:text-cyan-200 lg:w-auto lg:min-w-[2.5rem] lg:px-3 ${
+                activeSection === id
+                  ? "bg-cyan-300/20 text-cyan-200 shadow-lg shadow-cyan-950/30"
+                  : "bg-white/5"
+              }`}
+              title={label}
             >
-              {about?.logo_url ? (
-                <img
-                  src={about.logo_url}
-                  alt="Logo"
-                  className="h-8 w-auto rounded-full lg:h-9"
-                />
-              ) : (
-                <span className="text-gradient text-lg font-black lg:text-xl">FA</span>
-              )}
-              <span className="absolute -inset-2 rounded-full bg-cyan-500/20 blur-md opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+              <Icon size={17} />
+              <span className="ml-2 hidden text-[11px] font-semibold lg:inline">{label}</span>
+              <span className="pointer-events-none absolute left-full ml-3 rounded-full border border-cyan-300/20 bg-slate-950/95 px-3 py-1 text-xs font-semibold text-cyan-100 opacity-0 shadow-xl backdrop-blur-xl transition-opacity group-hover:opacity-100 lg:hidden">
+                {label}
+              </span>
             </button>
+          ))}
 
-            {/* Desktop Menu */}
-            <div className="hidden items-center gap-1.5 lg:flex">
-              {[
-                "Home",
-                "About",
-                "Education",
-                "Skills",
-                "Projects",
-                "Experience",
-                "Certificates",
-                "Contact",
-              ].map((item) => (
-                <button
-                  key={item}
-                  onClick={() => scrollToSection(item.toLowerCase())}
-                  className={`nav-glass-button ${
-                    activeSection === item.toLowerCase()
-                      ? "is-active"
-                      : ""
-                  }`}
-                >
-                  {item}
-                </button>
-              ))}
-              <button
-                type="button"
-                onClick={handleDownloadPortfolioPdf}
-                className="nav-glass-button nav-glass-cta flex items-center gap-2"
-              >
-                <Download size={16} className="animate-bounce-soft" />
-                Resume PDF
-              </button>
-            </div>
+          <div className="my-1 h-px w-8 bg-white/10" />
 
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="nav-glass-icon lg:hidden"
-              aria-label="Toggle navigation menu"
-            >
-              {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
-            </button>
-          </div>
-
-          {/* Mobile Menu */}
-          {isMenuOpen && (
-            <div className="floating-pill-mobile-menu lg:hidden animate-slide-down">
-              <div className="grid grid-cols-2 gap-2 px-3 py-3">
-                {[
-                  "Home",
-                  "About",
-                  "Education",
-                  "Skills",
-                  "Projects",
-                  "Experience",
-                  "Certificates",
-                  "Contact",
-                ].map((item) => (
-                  <button
-                    key={item}
-                    onClick={() => scrollToSection(item.toLowerCase())}
-                    className={`nav-glass-button w-full justify-center ${
-                      activeSection === item.toLowerCase()
-                        ? "is-active"
-                        : ""
-                    }`}
-                  >
-                    {item}
-                  </button>
-                ))}
-                <button
-                  type="button"
-                  onClick={() => {
-                    handleDownloadPortfolioPdf();
-                    setIsMenuOpen(false);
-                  }}
-                  className="nav-glass-button nav-glass-cta col-span-2 flex w-full items-center justify-center gap-2"
-                >
-                  <Download size={18} />
-                  Download Portfolio PDF
-                </button>
-              </div>
-            </div>
-          )}
+          <button
+            type="button"
+            onClick={handleDownloadPortfolioPdf}
+            className="group relative flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-cyan-300 to-teal-400 text-slate-950 shadow-lg shadow-cyan-950/30 transition-all hover:-translate-y-0.5 hover:shadow-cyan-400/30 lg:w-auto lg:px-3"
+            title="Resume PDF"
+          >
+            <Download size={17} />
+            <span className="ml-2 hidden text-[11px] font-black lg:inline">PDF</span>
+            <span className="pointer-events-none absolute left-full ml-3 rounded-full border border-cyan-300/20 bg-slate-950/95 px-3 py-1 text-xs font-semibold text-cyan-100 opacity-0 shadow-xl backdrop-blur-xl transition-opacity group-hover:opacity-100 lg:hidden">
+              Resume PDF
+            </span>
+          </button>
         </div>
       </nav>
 
@@ -1658,14 +1611,6 @@ function ProjectDetailsPage({
     }
   };
 
-  const navigateFromProjectPage = (sectionId: string) => {
-    window.history.pushState({}, '', `/#${sectionId}`);
-    window.dispatchEvent(new PopStateEvent('popstate'));
-    window.setTimeout(() => {
-      document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
-    }, 80);
-  };
-
 
   if (!project) {
     return (
@@ -1687,50 +1632,39 @@ function ProjectDetailsPage({
 
   return (
     <div className="portfolio-glass-theme min-h-screen bg-slate-950 text-gray-100 overflow-x-hidden">
-      <nav className="glass-nav floating-pill-navbar project-floating-pill fixed left-1/2 top-3 z-50 w-[calc(100%-1rem)] max-w-5xl -translate-x-1/2 transition-all duration-500">
-        <div className="relative px-3 sm:px-4 lg:px-5">
-          <div className="flex h-12 items-center justify-between lg:h-14">
-            <button
-              type="button"
-              onClick={() => navigateFromProjectPage('home')}
-              className="nav-brand-glass relative group flex items-center justify-center"
-              aria-label="Go to home"
-            >
-              {about?.logo_url ? (
-                <img src={about.logo_url} alt="Logo" className="h-8 w-auto rounded-full lg:h-9" />
-              ) : (
-                <span className="text-gradient text-lg font-black lg:text-xl">FA</span>
-              )}
-              <span className="absolute -inset-2 rounded-full bg-cyan-500/20 blur-md opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-            </button>
-
-            <div className="hidden items-center gap-1.5 md:flex">
-              {[
-                ['Home', 'home'],
-                ['About', 'about'],
-                ['Education', 'education'],
-                ['Projects', 'projects'],
-                ['Contact', 'contact'],
-              ].map(([label, sectionId]) => (
-                <button
-                  key={sectionId}
-                  type="button"
-                  onClick={() => navigateFromProjectPage(sectionId)}
-                  className="nav-glass-button"
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-
-            <button type="button" onClick={onBack} className="nav-glass-button nav-glass-cta inline-flex items-center gap-2">
-              <ArrowLeft size={16} /> Projects
-            </button>
-          </div>
+      <nav
+        className="fixed left-3 top-1/2 z-50 -translate-y-1/2 sm:left-5"
+        aria-label="Project navigation"
+      >
+        <div className="glass-left-pill flex flex-col items-center gap-2 rounded-full border border-white/10 bg-slate-950/60 p-2 shadow-2xl shadow-black/30 backdrop-blur-2xl">
+          <button
+            type="button"
+            onClick={onBack}
+            className="group relative flex h-11 w-11 items-center justify-center rounded-full bg-cyan-300/15 text-cyan-200 transition-all hover:-translate-x-0.5 hover:bg-cyan-300/25 hover:text-white lg:w-auto lg:px-3"
+            title="Back to Projects"
+          >
+            <ArrowLeft size={18} />
+            <span className="ml-2 hidden text-[11px] font-bold lg:inline">Projects</span>
+            <span className="pointer-events-none absolute left-full ml-3 rounded-full border border-cyan-300/20 bg-slate-950/95 px-3 py-1 text-xs font-semibold text-cyan-100 opacity-0 shadow-xl backdrop-blur-xl transition-opacity group-hover:opacity-100 lg:hidden">
+              Back to Projects
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={() => { window.history.pushState({}, "", "/#home"); window.location.reload(); }}
+            className="group relative flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-gray-300 transition-all hover:bg-cyan-300/15 hover:text-cyan-200 lg:w-auto lg:px-3"
+            title="Home"
+          >
+            <Star size={17} />
+            <span className="ml-2 hidden text-[11px] font-semibold lg:inline">Home</span>
+            <span className="pointer-events-none absolute left-full ml-3 rounded-full border border-cyan-300/20 bg-slate-950/95 px-3 py-1 text-xs font-semibold text-cyan-100 opacity-0 shadow-xl backdrop-blur-xl transition-opacity group-hover:opacity-100 lg:hidden">
+              Home
+            </span>
+          </button>
         </div>
       </nav>
 
-      <main className="pt-20 lg:pt-24">
+      <main>
         <section className="relative overflow-hidden pb-16">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(6,182,212,0.18),_transparent_35%),radial-gradient(circle_at_bottom_right,_rgba(20,184,166,0.14),_transparent_32%)]" />
           <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
