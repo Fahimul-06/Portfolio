@@ -46,6 +46,35 @@ import type {
 
 type View = "portfolio" | "admin";
 
+
+function ScrollRootsOverlay() {
+  const rootPaths = [
+    "M52 0 C54 90 44 155 61 236 C72 291 108 322 103 391 C98 454 57 494 69 565 C78 620 113 652 108 720 C103 790 71 841 84 930",
+    "M52 142 C31 170 18 208 7 252",
+    "M56 222 C82 248 103 282 119 331",
+    "M62 342 C38 373 25 413 14 462",
+    "M66 448 C91 476 111 515 122 564",
+    "M70 570 C42 604 24 646 10 699",
+    "M78 681 C101 716 116 756 124 806",
+    "M81 803 C53 840 34 882 23 936",
+    "M79 895 C98 918 111 948 118 982",
+  ];
+
+  return (
+    <div className="scroll-roots-layer" aria-hidden="true">
+      <svg className="scroll-roots scroll-roots-left" viewBox="0 0 130 1000" preserveAspectRatio="none">
+        {rootPaths.map((d, index) => (
+          <path key={`left-${index}`} d={d} pathLength="1" className={`scroll-root-path root-delay-${index}`} />
+        ))}
+      </svg>
+      <svg className="scroll-roots scroll-roots-right" viewBox="0 0 130 1000" preserveAspectRatio="none">
+        {rootPaths.map((d, index) => (
+          <path key={`right-${index}`} d={d} pathLength="1" className={`scroll-root-path root-delay-${index}`} />
+        ))}
+      </svg>
+    </div>
+  );
+}
 function App() {
   const [view, setView] = useState<View>(() =>
     isAdminPath(window.location.pathname) ? "admin" : "portfolio",
@@ -660,6 +689,7 @@ function Portfolio() {
 
   return (
     <div className="portfolio-glass-theme min-h-screen bg-[#0b0614] text-gray-100 overflow-x-hidden">
+      <ScrollRootsOverlay />
       {/* Navigation */}
       <nav
         className={`fixed left-0 right-0 top-3 z-50 px-3 transition-all duration-500 sm:top-4 sm:px-4 ${
@@ -1638,6 +1668,7 @@ function ResearchPage({
 
   return (
     <div className="portfolio-glass-theme min-h-screen bg-[#0b0614] text-gray-100">
+      <ScrollRootsOverlay />
       <nav className="fixed left-0 right-0 top-3 z-50 px-3 sm:top-4 sm:px-4">
         <div className="mx-auto flex w-fit items-center gap-2 rounded-full border border-[#452c5d] bg-[#160b24] px-2.5 py-1.5 shadow-2xl sm:px-3">
           <button
@@ -1821,6 +1852,7 @@ function ProjectDetailsPage({
 
   return (
     <div className="portfolio-glass-theme min-h-screen bg-[#0b0614] text-gray-100 overflow-x-hidden">
+      <ScrollRootsOverlay />
       <div className="fixed left-0 right-0 top-3 z-50 px-3 sm:top-4 sm:px-4">
         <div className="mx-auto flex w-fit max-w-[calc(100vw-1.5rem)] items-center justify-center">
           <div className="glass-pill-nav flex h-12 items-center rounded-full px-2 py-1.5 shadow-2xl sm:h-14 sm:px-3">

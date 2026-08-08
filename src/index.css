@@ -896,3 +896,86 @@ body {
     transition: none !important;
   }
 }
+
+/* Scroll-linked growing / winding root network */
+.scroll-roots-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0.58;
+  filter: drop-shadow(0 0 7px rgba(168, 85, 247, 0.14));
+}
+
+.scroll-roots {
+  position: absolute;
+  top: -2vh;
+  width: clamp(86px, 10vw, 150px);
+  height: 104vh;
+  overflow: visible;
+}
+
+.scroll-roots-left {
+  left: -8px;
+}
+
+.scroll-roots-right {
+  right: -8px;
+  transform: scaleX(-1);
+}
+
+.scroll-root-path {
+  fill: none;
+  stroke: rgba(192, 132, 252, 0.34);
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 1;
+  stroke-dashoffset: clamp(0, calc(1 - (var(--portfolio-scroll-ratio, 0) * 1.36)), 1);
+  transition: stroke-dashoffset 70ms linear, opacity 180ms ease;
+  will-change: stroke-dashoffset;
+}
+
+.scroll-root-path:nth-child(2n) {
+  stroke: rgba(139, 92, 246, 0.30);
+  stroke-width: 1;
+}
+
+.scroll-root-path:nth-child(3n) {
+  stroke: rgba(216, 180, 254, 0.25);
+  stroke-width: 0.85;
+}
+
+/* Stagger side branches so they sprout after the main root reaches them. */
+.scroll-root-path.root-delay-1 { stroke-dashoffset: clamp(0, calc(1.20 - (var(--portfolio-scroll-ratio, 0) * 1.65)), 1); }
+.scroll-root-path.root-delay-2 { stroke-dashoffset: clamp(0, calc(1.34 - (var(--portfolio-scroll-ratio, 0) * 1.72)), 1); }
+.scroll-root-path.root-delay-3 { stroke-dashoffset: clamp(0, calc(1.48 - (var(--portfolio-scroll-ratio, 0) * 1.82)), 1); }
+.scroll-root-path.root-delay-4 { stroke-dashoffset: clamp(0, calc(1.62 - (var(--portfolio-scroll-ratio, 0) * 1.90)), 1); }
+.scroll-root-path.root-delay-5 { stroke-dashoffset: clamp(0, calc(1.78 - (var(--portfolio-scroll-ratio, 0) * 2.02)), 1); }
+.scroll-root-path.root-delay-6 { stroke-dashoffset: clamp(0, calc(1.92 - (var(--portfolio-scroll-ratio, 0) * 2.12)), 1); }
+.scroll-root-path.root-delay-7 { stroke-dashoffset: clamp(0, calc(2.08 - (var(--portfolio-scroll-ratio, 0) * 2.22)), 1); }
+.scroll-root-path.root-delay-8 { stroke-dashoffset: clamp(0, calc(2.22 - (var(--portfolio-scroll-ratio, 0) * 2.34)), 1); }
+
+/* Keep actual page content above the decorative roots. */
+.portfolio-glass-theme > nav,
+.portfolio-glass-theme > main,
+.portfolio-glass-theme > section,
+.portfolio-glass-theme > footer,
+.portfolio-glass-theme > div:not(.scroll-roots-layer) {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 640px) {
+  .scroll-roots-layer { opacity: 0.42; }
+  .scroll-roots { width: 82px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-root-path {
+    stroke-dashoffset: 0.55 !important;
+    transition: none !important;
+  }
+}
