@@ -194,7 +194,7 @@ export function CustomerLiveCall({
       )}
 
       {open && (
-        <div className="fixed bottom-5 right-3 z-[60] max-h-[calc(100vh-2rem)] w-[calc(100vw-1.5rem)] max-w-sm overflow-y-auto sm:right-5">
+        <div className="live-panel-rise fixed right-3 top-1/2 z-[90] w-[calc(100vw-1.5rem)] max-w-sm sm:right-5">
           <div className="w-full rounded-2xl border border-[#452c5d] bg-[#160b24] p-5 shadow-2xl">
             <div className="mb-5 flex items-start justify-between gap-4">
               <div>
