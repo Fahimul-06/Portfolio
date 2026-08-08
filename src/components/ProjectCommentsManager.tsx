@@ -73,7 +73,7 @@ export function ProjectCommentsManager() {
           type="button"
           onClick={loadComments}
           disabled={loading}
-          className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-gray-300 transition-colors hover:border-amber-500 hover:text-amber-400 disabled:opacity-60"
+          className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#452c5d] bg-[#160b24] px-4 py-3 text-gray-300 transition-colors hover:border-amber-500 hover:text-amber-400 disabled:opacity-60"
         >
           <RefreshCw size={18} className={loading ? 'animate-spin' : ''} /> Refresh
         </button>
@@ -85,7 +85,7 @@ export function ProjectCommentsManager() {
         </div>
       )}
 
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/60 overflow-hidden">
+      <div className="rounded-2xl border border-[#322044] bg-[#160b24]/60 overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center gap-3 p-10 text-gray-400">
             <RefreshCw size={22} className="animate-spin text-amber-400" /> Loading project comments...
@@ -106,7 +106,7 @@ export function ProjectCommentsManager() {
                         {comment.is_approved ? 'Visible' : 'Hidden'}
                       </span>
                     </div>
-                    <p className="mt-1 text-sm text-cyan-300">{comment.project_title || 'Project'}</p>
+                    <p className="mt-1 text-sm text-violet-300">{comment.project_title || 'Project'}</p>
                     <div className="mt-2 flex flex-wrap gap-3 text-xs text-gray-500">
                       <span className="inline-flex items-center gap-1"><Mail size={13} /> {comment.email}</span>
                       <span className="inline-flex items-center gap-1"><Calendar size={13} /> {new Date(comment.created_at).toLocaleString()}</span>
@@ -119,7 +119,7 @@ export function ProjectCommentsManager() {
                       type="button"
                       onClick={() => toggleApproval(comment)}
                       disabled={actionLoading === comment.id}
-                      className="inline-flex items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-sm text-gray-300 transition-colors hover:border-amber-500 hover:text-amber-400 disabled:opacity-60"
+                      className="inline-flex items-center gap-2 rounded-lg border border-[#452c5d] px-3 py-2 text-sm text-gray-300 transition-colors hover:border-amber-500 hover:text-amber-400 disabled:opacity-60"
                     >
                       {comment.is_approved ? <EyeOff size={16} /> : <Eye size={16} />}
                       {comment.is_approved ? 'Hide' : 'Show'}
@@ -135,7 +135,7 @@ export function ProjectCommentsManager() {
                   </div>
                 </div>
 
-                <p className="whitespace-pre-wrap rounded-xl border border-slate-800 bg-slate-950/60 p-4 text-sm leading-relaxed text-gray-300">
+                <p className="whitespace-pre-wrap rounded-xl border border-[#322044] bg-[#0b0614]/60 p-4 text-sm leading-relaxed text-gray-300">
                   {comment.comment}
                 </p>
               </div>

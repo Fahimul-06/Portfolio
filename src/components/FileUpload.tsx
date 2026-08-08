@@ -102,13 +102,13 @@ export function FileUpload({ value, onChange, accept, label, folder }: FileUploa
       {value ? (
         <div className="relative group">
           {isImage(value) ? (
-            <div className="relative w-full h-48 bg-slate-800 rounded-xl overflow-hidden border border-slate-700">
+            <div className="relative w-full h-48 bg-[#211032] rounded-xl overflow-hidden border border-[#452c5d]">
               <img
                 src={value}
                 alt="Uploaded"
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+              <div className="absolute inset-0 bg-[#160b24]/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   className="p-3 bg-amber-500 rounded-lg text-slate-900 hover:bg-amber-400 transition-colors"
@@ -124,7 +124,7 @@ export function FileUpload({ value, onChange, accept, label, folder }: FileUploa
               </div>
             </div>
           ) : (
-            <div className="flex items-center gap-4 p-4 bg-slate-800 rounded-xl border border-slate-700">
+            <div className="flex items-center gap-4 p-4 bg-[#211032] rounded-xl border border-[#452c5d]">
               <div className="p-3 bg-red-500/20 rounded-lg">
                 <FileText className="text-red-400" size={24} />
               </div>
@@ -163,7 +163,7 @@ export function FileUpload({ value, onChange, accept, label, folder }: FileUploa
             transition-all duration-200
             ${isDragging
               ? 'border-amber-500 bg-amber-500/10'
-              : 'border-slate-700 bg-slate-800/50 hover:border-slate-600 hover:bg-slate-800'
+              : 'border-[#452c5d] bg-[#211032]/50 hover:border-[#5a3b73] hover:bg-[#211032]'
             }
           `}
           onDragOver={handleDragOver}

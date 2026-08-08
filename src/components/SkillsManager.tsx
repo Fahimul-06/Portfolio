@@ -160,7 +160,7 @@ export function SkillsManager() {
       </div>
 
       {showForm && (
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
+        <div className="bg-[#160b24] border border-[#322044] rounded-xl p-6">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-gray-100">
               {editingId ? 'Edit Skill' : 'Add New Skill'}
@@ -181,7 +181,7 @@ export function SkillsManager() {
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+                  className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
                   placeholder="React.js"
                   required
                 />
@@ -192,7 +192,7 @@ export function SkillsManager() {
                 <select
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value as Category })}
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+                  className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
                 >
                   {categories.map((cat) => (
                     <option key={cat} value={cat}>
@@ -224,7 +224,7 @@ export function SkillsManager() {
                   type="number"
                   value={formData.display_order}
                   onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) || 0 })}
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+                  className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
                 />
               </div>
             </div>
@@ -233,7 +233,7 @@ export function SkillsManager() {
               <button
                 type="button"
                 onClick={resetForm}
-                className="px-4 py-2 border border-slate-700 text-gray-300 rounded-lg hover:bg-slate-800 transition-colors"
+                className="px-4 py-2 border border-[#452c5d] text-gray-300 rounded-lg hover:bg-[#211032] transition-colors"
               >
                 Cancel
               </button>
@@ -249,10 +249,10 @@ export function SkillsManager() {
         </div>
       )}
 
-      <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+      <div className="bg-[#160b24] border border-[#322044] rounded-xl overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-slate-800">
+            <tr className="border-b border-[#322044]">
               <th className="text-left px-6 py-4 text-sm font-medium text-gray-400">Skill</th>
               <th className="text-left px-6 py-4 text-sm font-medium text-gray-400">Category</th>
               <th className="text-left px-6 py-4 text-sm font-medium text-gray-400">Level</th>
@@ -262,7 +262,7 @@ export function SkillsManager() {
           </thead>
           <tbody>
             {skills.map((skill) => (
-              <tr key={skill.id} className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+              <tr key={skill.id} className="border-b border-[#322044]/50 hover:bg-[#211032]/30 transition-colors">
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-amber-500/10 rounded-lg">
@@ -272,7 +272,7 @@ export function SkillsManager() {
                   </div>
                 </td>
                 <td className="px-6 py-4">
-                  <span className="px-3 py-1 bg-slate-800 text-gray-300 rounded-md text-sm capitalize">
+                  <span className="px-3 py-1 bg-[#211032] text-gray-300 rounded-md text-sm capitalize">
                     {skill.category}
                   </span>
                 </td>
@@ -292,13 +292,13 @@ export function SkillsManager() {
                   <div className="flex items-center justify-end gap-2">
                     <button
                       onClick={() => handleEdit(skill)}
-                      className="p-2 text-gray-400 hover:text-amber-400 hover:bg-slate-800 rounded-lg transition-colors"
+                      className="p-2 text-gray-400 hover:text-amber-400 hover:bg-[#211032] rounded-lg transition-colors"
                     >
                       <Edit size={18} />
                     </button>
                     <button
                       onClick={() => handleDelete(skill.id)}
-                      className="p-2 text-gray-400 hover:text-red-400 hover:bg-slate-800 rounded-lg transition-colors"
+                      className="p-2 text-gray-400 hover:text-red-400 hover:bg-[#211032] rounded-lg transition-colors"
                     >
                       <Trash2 size={18} />
                     </button>

@@ -89,8 +89,8 @@ export function ContactManager() {
         </div>
       )}
 
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-6">
-        <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
+      <div className="bg-[#160b24] border border-[#322044] rounded-xl p-6 space-y-6">
+        <div className="flex items-center gap-3 pb-4 border-b border-[#322044]">
           <Mail className="text-amber-500" size={24} />
           <h2 className="text-lg font-semibold text-gray-100">Contact Information</h2>
         </div>
@@ -104,7 +104,7 @@ export function ContactManager() {
                 type="email"
                 value={contact.email}
                 onChange={(e) => setContact({ ...contact, email: e.target.value })}
-                className="w-full pl-12 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+                className="w-full pl-12 pr-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
                 placeholder="fahimul.arefin@email.com"
               />
             </div>
@@ -118,7 +118,7 @@ export function ContactManager() {
                 type="text"
                 value={contact.phone}
                 onChange={(e) => setContact({ ...contact, phone: e.target.value })}
-                className="w-full pl-12 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+                className="w-full pl-12 pr-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
                 placeholder="+1 (555) 123-4567"
               />
             </div>
@@ -133,15 +133,15 @@ export function ContactManager() {
               type="text"
               value={contact.location}
               onChange={(e) => setContact({ ...contact, location: e.target.value })}
-              className="w-full pl-12 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+              className="w-full pl-12 pr-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
               placeholder="Available Remote Worldwide"
             />
           </div>
         </div>
       </div>
 
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-6">
-        <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
+      <div className="bg-[#160b24] border border-[#322044] rounded-xl p-6 space-y-6">
+        <div className="flex items-center gap-3 pb-4 border-b border-[#322044]">
           <Linkedin className="text-amber-500" size={24} />
           <h2 className="text-lg font-semibold text-gray-100">Social Links</h2>
         </div>
@@ -154,7 +154,7 @@ export function ContactManager() {
               type="url"
               value={contact.github_url}
               onChange={(e) => setContact({ ...contact, github_url: e.target.value })}
-              className="w-full pl-12 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+              className="w-full pl-12 pr-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
               placeholder="https://github.com/username"
             />
           </div>
@@ -168,7 +168,7 @@ export function ContactManager() {
               type="url"
               value={contact.linkedin_url}
               onChange={(e) => setContact({ ...contact, linkedin_url: e.target.value })}
-              className="w-full pl-12 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+              className="w-full pl-12 pr-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
               placeholder="https://linkedin.com/in/username"
             />
           </div>

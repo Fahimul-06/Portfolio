@@ -185,7 +185,7 @@ export function CertificatesManager() {
       </div>
 
       {showForm && (
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
+        <div className="bg-[#160b24] border border-[#322044] rounded-xl p-6">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-gray-100">
               {editingId ? 'Edit Certificate' : 'Add New Certificate'}
@@ -203,7 +203,7 @@ export function CertificatesManager() {
                   type="text"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+                  className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
                   placeholder="e.g., AWS Certified Solutions Architect"
                   required
                 />
@@ -215,7 +215,7 @@ export function CertificatesManager() {
                   type="text"
                   value={formData.issuer}
                   onChange={(e) => setFormData({ ...formData, issuer: e.target.value })}
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+                  className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
                   placeholder="e.g., Amazon Web Services"
                   required
                 />
@@ -228,7 +228,7 @@ export function CertificatesManager() {
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 rows={3}
-                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors resize-none"
+                className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors resize-none"
                 placeholder="Brief description of the certification..."
               />
             </div>
@@ -240,7 +240,7 @@ export function CertificatesManager() {
                   type="text"
                   value={formData.issue_date}
                   onChange={(e) => setFormData({ ...formData, issue_date: e.target.value })}
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+                  className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
                   placeholder="e.g., March 2023"
                   required
                 />
@@ -252,7 +252,7 @@ export function CertificatesManager() {
                   type="text"
                   value={formData.credential_id}
                   onChange={(e) => setFormData({ ...formData, credential_id: e.target.value })}
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+                  className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
                   placeholder="e.g., AWS-SAA-C03"
                 />
               </div>
@@ -264,12 +264,12 @@ export function CertificatesManager() {
                 type="url"
                 value={formData.credential_url}
                 onChange={(e) => setFormData({ ...formData, credential_url: e.target.value })}
-                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+                className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
                 placeholder="https://..."
               />
             </div>
 
-            <div className="bg-slate-800/30 border border-slate-700/50 rounded-xl p-4 space-y-4">
+            <div className="bg-[#211032]/30 border border-[#452c5d]/50 rounded-xl p-4 space-y-4">
               <div className="flex items-center gap-2 text-sm text-gray-400">
                 <ImageIcon size={16} />
                 <span>Certificate Image</span>
@@ -288,7 +288,7 @@ export function CertificatesManager() {
                     type="url"
                     value={formData.image_url}
                     onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                    className="flex-1 px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors text-sm"
+                    className="flex-1 px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors text-sm"
                     placeholder="https://..."
                   />
                 </div>
@@ -303,7 +303,7 @@ export function CertificatesManager() {
                 onChange={(e) =>
                   setFormData({ ...formData, display_order: parseInt(e.target.value) || 0 })
                 }
-                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+                className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
               />
             </div>
 
@@ -311,7 +311,7 @@ export function CertificatesManager() {
               <button
                 type="button"
                 onClick={resetForm}
-                className="px-4 py-2 border border-slate-700 text-gray-300 rounded-lg hover:bg-slate-800 transition-colors"
+                className="px-4 py-2 border border-[#452c5d] text-gray-300 rounded-lg hover:bg-[#211032] transition-colors"
               >
                 Cancel
               </button>
@@ -331,7 +331,7 @@ export function CertificatesManager() {
         {certificates.map((certificate) => (
           <div
             key={certificate.id}
-            className="bg-slate-900 border border-slate-800 rounded-xl p-6 hover:border-slate-700 transition-colors"
+            className="bg-[#160b24] border border-[#322044] rounded-xl p-6 hover:border-[#452c5d] transition-colors"
           >
             <div className="flex gap-4">
               {certificate.image_url && (
@@ -351,13 +351,13 @@ export function CertificatesManager() {
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <button
                       onClick={() => handleEdit(certificate)}
-                      className="p-2 text-gray-400 hover:text-amber-400 hover:bg-slate-800 rounded-lg transition-colors"
+                      className="p-2 text-gray-400 hover:text-amber-400 hover:bg-[#211032] rounded-lg transition-colors"
                     >
                       <Edit size={18} />
                     </button>
                     <button
                       onClick={() => handleDelete(certificate.id)}
-                      className="p-2 text-gray-400 hover:text-red-400 hover:bg-slate-800 rounded-lg transition-colors"
+                      className="p-2 text-gray-400 hover:text-red-400 hover:bg-[#211032] rounded-lg transition-colors"
                     >
                       <Trash2 size={18} />
                     </button>
@@ -368,7 +368,7 @@ export function CertificatesManager() {
                 )}
                 <div className="flex flex-wrap items-center gap-2 mt-3">
                   {certificate.credential_id && (
-                    <span className="px-2 py-1 bg-slate-800 text-gray-400 text-xs rounded">
+                    <span className="px-2 py-1 bg-[#211032] text-gray-400 text-xs rounded">
                       ID: {certificate.credential_id}
                     </span>
                   )}
@@ -377,7 +377,7 @@ export function CertificatesManager() {
                       href={certificate.credential_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-2 py-1 bg-cyan-500/10 text-cyan-400 text-xs rounded hover:bg-cyan-500/20 transition-colors flex items-center gap-1"
+                      className="px-2 py-1 bg-violet-500/10 text-violet-400 text-xs rounded hover:bg-violet-500/20 transition-colors flex items-center gap-1"
                     >
                       <ExternalLinkIcon size={12} />
                       View Credential

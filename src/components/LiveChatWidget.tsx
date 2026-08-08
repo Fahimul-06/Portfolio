@@ -46,7 +46,7 @@ function AttachmentPreview({ message }: { message: ChatMessage }) {
 
   if (message.message_type === 'image') {
     return (
-      <a href={message.file_url} target="_blank" rel="noreferrer" className="mt-2 block overflow-hidden rounded-xl border border-slate-700/70">
+      <a href={message.file_url} target="_blank" rel="noreferrer" className="mt-2 block overflow-hidden rounded-xl border border-[#452c5d]/70">
         <img src={message.file_url} alt={message.file_name || 'chat photo'} className="max-h-52 w-full object-cover" />
       </a>
     );
@@ -54,12 +54,12 @@ function AttachmentPreview({ message }: { message: ChatMessage }) {
 
   if (message.message_type === 'video') {
     return (
-      <video src={message.file_url} controls playsInline className="mt-2 max-h-52 w-full rounded-xl border border-slate-700/70 bg-black" />
+      <video src={message.file_url} controls playsInline className="mt-2 max-h-52 w-full rounded-xl border border-[#452c5d]/70 bg-black" />
     );
   }
 
   return (
-    <a href={message.file_url} target="_blank" rel="noreferrer" className="mt-2 flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-950/60 p-3 text-xs text-cyan-200 hover:border-cyan-400/60">
+    <a href={message.file_url} target="_blank" rel="noreferrer" className="mt-2 flex items-center gap-2 rounded-xl border border-[#452c5d] bg-[#0b0614]/60 p-3 text-xs text-violet-200 hover:border-violet-400/60">
       <FileText size={18} />
       <span className="min-w-0 flex-1 truncate">{message.file_name || 'Download file'}</span>
       <span className="text-gray-500">{formatFileSize(message.file_size)}</span>
@@ -180,7 +180,7 @@ export function LiveChatWidget() {
       {!open && (
         <button
           onClick={() => setOpen(true)}
-          className="fixed bottom-16 right-5 z-40 flex items-center gap-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 px-3.5 py-2.5 text-sm font-bold text-white shadow-lg shadow-cyan-500/20 transition hover:scale-105"
+          className="fixed bottom-16 right-5 z-40 flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-500 to-purple-600 px-3.5 py-2.5 text-sm font-bold text-white shadow-lg shadow-violet-500/20 transition hover:scale-105"
         >
           <MessageCircle size={18} />
           Live Chat
@@ -188,26 +188,26 @@ export function LiveChatWidget() {
       )}
 
       {open && (
-        <div className="fixed right-3 top-1/2 z-50 flex h-[600px] max-h-[calc(100vh-2rem)] w-[calc(100vw-1.5rem)] max-w-sm -translate-y-1/2 flex-col overflow-hidden rounded-2xl border border-cyan-400/30 bg-slate-950 shadow-2xl shadow-cyan-500/20 sm:right-5">
-          <div className="flex items-center justify-between border-b border-slate-800 bg-slate-900 px-5 py-4">
+        <div className="fixed right-3 top-1/2 z-50 flex h-[600px] max-h-[calc(100vh-2rem)] w-[calc(100vw-1.5rem)] max-w-sm -translate-y-1/2 flex-col overflow-hidden rounded-2xl border border-violet-400/30 bg-[#0b0614] shadow-2xl shadow-violet-500/20 sm:right-5">
+          <div className="flex items-center justify-between border-b border-[#322044] bg-[#160b24] px-5 py-4">
             <div>
               <h3 className="font-black text-white">Live Chat</h3>
               <p className="text-xs text-gray-400">Send text, photos, videos, or files</p>
             </div>
-            <button onClick={() => setOpen(false)} className="rounded-full p-2 text-gray-400 hover:bg-slate-800 hover:text-white">
+            <button onClick={() => setOpen(false)} className="rounded-full p-2 text-gray-400 hover:bg-[#211032] hover:text-white">
               <X size={20} />
             </button>
           </div>
 
           {!started ? (
             <div className="flex flex-1 flex-col justify-center gap-4 p-5">
-              <div className="rounded-2xl border border-cyan-400/20 bg-cyan-400/10 p-4 text-sm text-cyan-100">
+              <div className="rounded-2xl border border-violet-400/20 bg-violet-400/10 p-4 text-sm text-violet-100">
                 Start a realtime chat with the admin. You can also attach a photo, video, PDF, or document after chat starts.
               </div>
-              <input value={visitorName} onChange={(e) => setVisitorName(e.target.value)} placeholder="Your name" className="rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-white outline-none focus:border-cyan-400" />
-              <input value={visitorEmail} onChange={(e) => setVisitorEmail(e.target.value)} placeholder="Email or phone optional" className="rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-white outline-none focus:border-cyan-400" />
+              <input value={visitorName} onChange={(e) => setVisitorName(e.target.value)} placeholder="Your name" className="rounded-xl border border-[#452c5d] bg-[#160b24] px-4 py-3 text-white outline-none focus:border-violet-400" />
+              <input value={visitorEmail} onChange={(e) => setVisitorEmail(e.target.value)} placeholder="Email or phone optional" className="rounded-xl border border-[#452c5d] bg-[#160b24] px-4 py-3 text-white outline-none focus:border-violet-400" />
               {error && <p className="text-sm text-red-300">{error}</p>}
-              <button onClick={startChat} className="rounded-xl bg-cyan-500 px-4 py-3 font-bold text-white transition hover:bg-cyan-400">
+              <button onClick={startChat} className="rounded-xl bg-violet-500 px-4 py-3 font-bold text-white transition hover:bg-violet-400">
                 Start Chat
               </button>
             </div>
@@ -215,7 +215,7 @@ export function LiveChatWidget() {
             <>
               <div className="flex-1 space-y-3 overflow-y-auto p-4">
                 {messages.length === 0 && (
-                  <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 text-center text-sm text-gray-400">
+                  <div className="rounded-2xl border border-[#322044] bg-[#160b24]/70 p-4 text-center text-sm text-gray-400">
                     No messages yet. Send the first message.
                   </div>
                 )}
@@ -223,10 +223,10 @@ export function LiveChatWidget() {
                   const mine = message.sender === 'visitor';
                   return (
                     <div key={message.id} className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-[82%] rounded-2xl px-4 py-3 text-sm ${mine ? 'bg-cyan-500 text-white' : 'bg-slate-800 text-gray-100'}`}>
+                      <div className={`max-w-[82%] rounded-2xl px-4 py-3 text-sm ${mine ? 'bg-violet-500 text-white' : 'bg-[#211032] text-gray-100'}`}>
                         {message.text && <p className="whitespace-pre-wrap break-words">{message.text}</p>}
                         <AttachmentPreview message={message} />
-                        <p className={`mt-2 text-[10px] ${mine ? 'text-cyan-100' : 'text-gray-500'}`}>{new Date(message.created_at).toLocaleTimeString()}</p>
+                        <p className={`mt-2 text-[10px] ${mine ? 'text-violet-100' : 'text-gray-500'}`}>{new Date(message.created_at).toLocaleTimeString()}</p>
                       </div>
                     </div>
                   );
@@ -235,14 +235,14 @@ export function LiveChatWidget() {
               </div>
 
               {error && <p className="px-4 pb-2 text-xs text-red-300">{error}</p>}
-              <form onSubmit={(event) => sendMessage(event)} className="border-t border-slate-800 bg-slate-900 p-3">
+              <form onSubmit={(event) => sendMessage(event)} className="border-t border-[#322044] bg-[#160b24] p-3">
                 <div className="flex items-end gap-2">
                   <input ref={fileInputRef} type="file" className="hidden" accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip" onChange={(e) => handleFile(e.target.files?.[0])} />
-                  <button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploading} className="rounded-xl border border-slate-700 p-3 text-gray-300 hover:border-cyan-400 hover:text-cyan-300 disabled:opacity-50">
+                  <button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploading} className="rounded-xl border border-[#452c5d] p-3 text-gray-300 hover:border-violet-400 hover:text-violet-300 disabled:opacity-50">
                     {uploading ? <Loader2 size={20} className="animate-spin" /> : <Paperclip size={20} />}
                   </button>
-                  <textarea value={input} onChange={(e) => setInput(e.target.value)} placeholder="Write a message..." rows={1} className="max-h-28 flex-1 resize-none rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-cyan-400" />
-                  <button type="submit" disabled={sending || (!input.trim() && !uploading)} className="rounded-xl bg-cyan-500 p-3 text-white hover:bg-cyan-400 disabled:opacity-50">
+                  <textarea value={input} onChange={(e) => setInput(e.target.value)} placeholder="Write a message..." rows={1} className="max-h-28 flex-1 resize-none rounded-xl border border-[#452c5d] bg-[#0b0614] px-4 py-3 text-sm text-white outline-none focus:border-violet-400" />
+                  <button type="submit" disabled={sending || (!input.trim() && !uploading)} className="rounded-xl bg-violet-500 p-3 text-white hover:bg-violet-400 disabled:opacity-50">
                     {sending ? <Loader2 size={20} className="animate-spin" /> : <Send size={20} />}
                   </button>
                 </div>

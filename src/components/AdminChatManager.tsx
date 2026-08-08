@@ -70,18 +70,18 @@ function AttachmentPreview({ message }: { message: ChatMessage }) {
 
   if (message.message_type === 'image') {
     return (
-      <a href={message.file_url} target="_blank" rel="noreferrer" className="mt-2 block overflow-hidden rounded-xl border border-slate-700/70">
+      <a href={message.file_url} target="_blank" rel="noreferrer" className="mt-2 block overflow-hidden rounded-xl border border-[#452c5d]/70">
         <img src={message.file_url} alt={message.file_name || 'chat photo'} className="max-h-64 w-full object-cover" />
       </a>
     );
   }
 
   if (message.message_type === 'video') {
-    return <video src={message.file_url} controls playsInline className="mt-2 max-h-64 w-full rounded-xl border border-slate-700/70 bg-black" />;
+    return <video src={message.file_url} controls playsInline className="mt-2 max-h-64 w-full rounded-xl border border-[#452c5d]/70 bg-black" />;
   }
 
   return (
-    <a href={message.file_url} target="_blank" rel="noreferrer" className="mt-2 flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-950/60 p-3 text-xs text-cyan-200 hover:border-cyan-400/60">
+    <a href={message.file_url} target="_blank" rel="noreferrer" className="mt-2 flex items-center gap-2 rounded-xl border border-[#452c5d] bg-[#0b0614]/60 p-3 text-xs text-violet-200 hover:border-violet-400/60">
       <FileText size={18} />
       <span className="min-w-0 flex-1 truncate">{message.file_name || 'Download file'}</span>
       <span className="text-gray-500">{formatFileSize(message.file_size)}</span>
@@ -240,34 +240,34 @@ export function AdminChatManager() {
   return (
     <div className="space-y-6">
       <div className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+        <div className="rounded-2xl border border-[#322044] bg-[#160b24] p-5">
           <p className="text-sm text-gray-400">Total Chats</p>
           <p className="mt-2 text-3xl font-black text-white">{sessions.length}</p>
         </div>
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+        <div className="rounded-2xl border border-[#322044] bg-[#160b24] p-5">
           <p className="text-sm text-gray-400">Open Chats</p>
           <p className="mt-2 text-3xl font-black text-green-300">{openCount}</p>
         </div>
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+        <div className="rounded-2xl border border-[#322044] bg-[#160b24] p-5">
           <p className="text-sm text-gray-400">Unread</p>
           <p className="mt-2 text-3xl font-black text-amber-300">{unreadCount}</p>
         </div>
       </div>
 
       <div className="flex flex-wrap gap-3">
-        <button onClick={loadSessions} className="inline-flex items-center gap-2 rounded-xl border border-slate-700 px-4 py-2 text-sm font-semibold text-gray-200 hover:border-cyan-400">
+        <button onClick={loadSessions} className="inline-flex items-center gap-2 rounded-xl border border-[#452c5d] px-4 py-2 text-sm font-semibold text-gray-200 hover:border-violet-400">
           <RefreshCw size={16} /> Refresh
         </button>
-        <button onClick={requestNotifications} className="inline-flex items-center gap-2 rounded-xl border border-cyan-400/40 bg-cyan-400/10 px-4 py-2 text-sm font-semibold text-cyan-200 hover:bg-cyan-400/20">
+        <button onClick={requestNotifications} className="inline-flex items-center gap-2 rounded-xl border border-violet-400/40 bg-violet-400/10 px-4 py-2 text-sm font-semibold text-violet-200 hover:bg-violet-400/20">
           <MessageCircle size={16} /> Enable Chat Notifications
         </button>
       </div>
 
       {error && <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-200">{error}</div>}
 
-      <div className="grid min-h-[680px] overflow-hidden rounded-3xl border border-slate-800 bg-slate-900 lg:grid-cols-[340px_1fr]">
-        <aside className="border-b border-slate-800 lg:border-b-0 lg:border-r">
-          <div className="border-b border-slate-800 p-4">
+      <div className="grid min-h-[680px] overflow-hidden rounded-3xl border border-[#322044] bg-[#160b24] lg:grid-cols-[340px_1fr]">
+        <aside className="border-b border-[#322044] lg:border-b-0 lg:border-r">
+          <div className="border-b border-[#322044] p-4">
             <h2 className="font-bold text-white">Visitor Chat Inbox</h2>
             <p className="text-xs text-gray-500">Realtime messages, photos, videos and files</p>
           </div>
@@ -277,13 +277,13 @@ export function AdminChatManager() {
             ) : sessions.length === 0 ? (
               <div className="p-5 text-sm text-gray-500">No visitor chats yet.</div>
             ) : sessions.map((session) => (
-              <button key={session.id} onClick={() => setSelectedId(session.id)} className={`w-full border-b border-slate-800 p-4 text-left transition hover:bg-slate-800/70 ${selectedId === session.id ? 'bg-cyan-500/10' : ''}`}>
+              <button key={session.id} onClick={() => setSelectedId(session.id)} className={`w-full border-b border-[#322044] p-4 text-left transition hover:bg-[#211032]/70 ${selectedId === session.id ? 'bg-violet-500/10' : ''}`}>
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="truncate font-semibold text-white">{session.visitor_name || 'Website visitor'}</p>
                     <p className="truncate text-xs text-gray-500">{session.visitor_email || session.ip_address || 'No contact info'}</p>
                   </div>
-                  {session.unread_admin_count > 0 && <span className="rounded-full bg-amber-400 px-2 py-0.5 text-xs font-black text-slate-950">{session.unread_admin_count}</span>}
+                  {session.unread_admin_count > 0 && <span className="rounded-full bg-amber-400 px-2 py-0.5 text-xs font-black text-[#0b0614]">{session.unread_admin_count}</span>}
                 </div>
                 <p className="mt-2 line-clamp-2 text-sm text-gray-400">{session.last_message || 'Chat started'}</p>
                 <div className="mt-2 flex items-center justify-between text-[11px] text-gray-600">
@@ -302,27 +302,27 @@ export function AdminChatManager() {
             </div>
           ) : (
             <>
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 p-4">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#322044] p-4">
                 <div>
                   <h3 className="font-black text-white">{selectedSession.visitor_name || 'Website visitor'}</h3>
                   <p className="text-xs text-gray-500">{selectedSession.visitor_email || 'No email/phone'} • {selectedSession.ip_address || 'No IP'}</p>
                 </div>
-                <button onClick={closeSession} className="inline-flex items-center gap-2 rounded-xl border border-slate-700 px-4 py-2 text-sm font-semibold text-gray-200 hover:border-red-400 hover:text-red-200">
+                <button onClick={closeSession} className="inline-flex items-center gap-2 rounded-xl border border-[#452c5d] px-4 py-2 text-sm font-semibold text-gray-200 hover:border-red-400 hover:text-red-200">
                   <XCircle size={16} /> {selectedSession.status === 'closed' ? 'Reopen' : 'Close'} Chat
                 </button>
               </div>
 
-              <div className="flex-1 space-y-3 overflow-y-auto bg-slate-950/50 p-4">
+              <div className="flex-1 space-y-3 overflow-y-auto bg-[#0b0614]/50 p-4">
                 {messagesLoading ? (
                   <div className="flex items-center gap-2 text-gray-400"><Loader2 className="animate-spin" size={18} /> Loading messages...</div>
                 ) : messages.map((message) => {
                   const mine = message.sender === 'admin';
                   return (
                     <div key={message.id} className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-[82%] rounded-2xl px-4 py-3 text-sm ${mine ? 'bg-cyan-500 text-white' : 'bg-slate-800 text-gray-100'}`}>
+                      <div className={`max-w-[82%] rounded-2xl px-4 py-3 text-sm ${mine ? 'bg-violet-500 text-white' : 'bg-[#211032] text-gray-100'}`}>
                         {message.text && <p className="whitespace-pre-wrap break-words">{message.text}</p>}
                         <AttachmentPreview message={message} />
-                        <p className={`mt-2 text-[10px] ${mine ? 'text-cyan-100' : 'text-gray-500'}`}>{shortDate(message.created_at)}</p>
+                        <p className={`mt-2 text-[10px] ${mine ? 'text-violet-100' : 'text-gray-500'}`}>{shortDate(message.created_at)}</p>
                       </div>
                     </div>
                   );
@@ -330,14 +330,14 @@ export function AdminChatManager() {
                 <div ref={endRef} />
               </div>
 
-              <form onSubmit={(event) => sendMessage(event)} className="border-t border-slate-800 bg-slate-900 p-4">
+              <form onSubmit={(event) => sendMessage(event)} className="border-t border-[#322044] bg-[#160b24] p-4">
                 <div className="flex items-end gap-2">
                   <input ref={fileInputRef} type="file" className="hidden" accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip" onChange={(e) => handleFile(e.target.files?.[0])} />
-                  <button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploading} className="rounded-xl border border-slate-700 p-3 text-gray-300 hover:border-cyan-400 hover:text-cyan-300 disabled:opacity-50">
+                  <button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploading} className="rounded-xl border border-[#452c5d] p-3 text-gray-300 hover:border-violet-400 hover:text-violet-300 disabled:opacity-50">
                     {uploading ? <Loader2 size={20} className="animate-spin" /> : <Paperclip size={20} />}
                   </button>
-                  <textarea value={input} onChange={(e) => setInput(e.target.value)} placeholder="Reply to visitor..." rows={1} className="max-h-32 flex-1 resize-none rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-cyan-400" />
-                  <button type="submit" disabled={sending || (!input.trim() && !uploading)} className="rounded-xl bg-cyan-500 p-3 text-white hover:bg-cyan-400 disabled:opacity-50">
+                  <textarea value={input} onChange={(e) => setInput(e.target.value)} placeholder="Reply to visitor..." rows={1} className="max-h-32 flex-1 resize-none rounded-xl border border-[#452c5d] bg-[#0b0614] px-4 py-3 text-sm text-white outline-none focus:border-violet-400" />
+                  <button type="submit" disabled={sending || (!input.trim() && !uploading)} className="rounded-xl bg-violet-500 p-3 text-white hover:bg-violet-400 disabled:opacity-50">
                     {sending ? <Loader2 size={20} className="animate-spin" /> : <Send size={20} />}
                   </button>
                 </div>

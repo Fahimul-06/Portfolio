@@ -251,7 +251,7 @@ export function ProjectsManager() {
       </div>
 
       {showForm && (
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
+        <div className="bg-[#160b24] border border-[#322044] rounded-xl p-6">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-gray-100">
               {editingId ? 'Edit Project' : 'Add New Project'}
@@ -269,7 +269,7 @@ export function ProjectsManager() {
                   type="text"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+                  className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
                   placeholder="Project name"
                   required
                 />
@@ -280,7 +280,7 @@ export function ProjectsManager() {
                 <select
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value as Category })}
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+                  className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
                 >
                   {categories.map((cat) => (
                     <option key={cat} value={cat}>
@@ -297,7 +297,7 @@ export function ProjectsManager() {
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 rows={3}
-                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors resize-none"
+                className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors resize-none"
                 placeholder="Short summary shown on the project card..."
                 required
               />
@@ -309,7 +309,7 @@ export function ProjectsManager() {
                 value={formData.detailed_description}
                 onChange={(e) => setFormData({ ...formData, detailed_description: e.target.value })}
                 rows={7}
-                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+                className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
                 placeholder="Write full project details paragraph-wise. Use blank lines between paragraphs."
               />
               <p className="mt-2 text-xs text-gray-500">This text appears on the dedicated project details page.</p>
@@ -323,13 +323,13 @@ export function ProjectsManager() {
                 type="text"
                 value={formData.tech}
                 onChange={(e) => setFormData({ ...formData, tech: e.target.value })}
-                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+                className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
                 placeholder="React, Node.js, MongoDB"
                 required
               />
             </div>
 
-            <div className="bg-slate-800/30 border border-slate-700/50 rounded-xl p-4 space-y-4">
+            <div className="bg-[#211032]/30 border border-[#452c5d]/50 rounded-xl p-4 space-y-4">
               <div className="flex items-center gap-2 text-sm text-gray-400">
                 <ImageIcon size={16} />
                 <span>Main Project Image</span>
@@ -348,14 +348,14 @@ export function ProjectsManager() {
                     type="url"
                     value={formData.image_url}
                     onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                    className="flex-1 px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors text-sm"
+                    className="flex-1 px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors text-sm"
                     placeholder="https://..."
                   />
                 </div>
               </div>
             </div>
 
-            <div className="bg-slate-800/30 border border-slate-700/50 rounded-xl p-4 space-y-4">
+            <div className="bg-[#211032]/30 border border-[#452c5d]/50 rounded-xl p-4 space-y-4">
               <div className="flex items-center gap-2 text-sm text-gray-400">
                 <Images size={16} />
                 <span>Project Gallery Photos</span>
@@ -365,7 +365,7 @@ export function ProjectsManager() {
                 multiple
                 accept="image/*"
                 onChange={(e) => handleGalleryUpload(e.target.files)}
-                className="block w-full text-sm text-gray-400 file:mr-4 file:rounded-lg file:border-0 file:bg-amber-500 file:px-4 file:py-2 file:font-medium file:text-slate-950 hover:file:bg-amber-400"
+                className="block w-full text-sm text-gray-400 file:mr-4 file:rounded-lg file:border-0 file:bg-amber-500 file:px-4 file:py-2 file:font-medium file:text-[#0b0614] hover:file:bg-amber-400"
               />
               {uploadingGallery && (
                 <div className="flex items-center gap-2 text-amber-400 text-sm">
@@ -376,7 +376,7 @@ export function ProjectsManager() {
               {formData.gallery_urls.length > 0 && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {formData.gallery_urls.map((url, index) => (
-                    <div key={`${url}-${index}`} className="relative group rounded-lg overflow-hidden border border-slate-700 bg-slate-900">
+                    <div key={`${url}-${index}`} className="relative group rounded-lg overflow-hidden border border-[#452c5d] bg-[#160b24]">
                       <img src={url} alt={`Gallery ${index + 1}`} className="h-28 w-full object-cover" />
                       <button
                         type="button"
@@ -400,7 +400,7 @@ export function ProjectsManager() {
                   type="url"
                   value={formData.live_url}
                   onChange={(e) => setFormData({ ...formData, live_url: e.target.value })}
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+                  className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
                   placeholder="https://..."
                 />
               </div>
@@ -411,10 +411,10 @@ export function ProjectsManager() {
                   type="url"
                   value={formData.github_url}
                   onChange={(e) => setFormData({ ...formData, github_url: e.target.value })}
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+                  className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
                   placeholder="https://github.com/..."
                 />
-                <label className="mt-3 flex cursor-pointer items-start gap-3 rounded-lg border border-slate-700/70 bg-slate-800/50 p-3 text-sm text-gray-300 hover:border-amber-500/60 transition-colors">
+                <label className="mt-3 flex cursor-pointer items-start gap-3 rounded-lg border border-[#452c5d]/70 bg-[#211032]/50 p-3 text-sm text-gray-300 hover:border-amber-500/60 transition-colors">
                   <input
                     type="checkbox"
                     checked={formData.github_url_public}
@@ -440,7 +440,7 @@ export function ProjectsManager() {
                   onChange={(e) =>
                     setFormData({ ...formData, display_order: parseInt(e.target.value) || 0 })
                   }
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+                  className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
                 />
               </div>
 
@@ -462,7 +462,7 @@ export function ProjectsManager() {
               <button
                 type="button"
                 onClick={resetForm}
-                className="px-4 py-2 border border-slate-700 text-gray-300 rounded-lg hover:bg-slate-800 transition-colors"
+                className="px-4 py-2 border border-[#452c5d] text-gray-300 rounded-lg hover:bg-[#211032] transition-colors"
               >
                 Cancel
               </button>
@@ -482,7 +482,7 @@ export function ProjectsManager() {
         {projects.map((project) => (
           <div
             key={project.id}
-            className="bg-slate-900 border border-slate-800 rounded-xl p-6 hover:border-slate-700 transition-colors"
+            className="bg-[#160b24] border border-[#322044] rounded-xl p-6 hover:border-[#452c5d] transition-colors"
           >
             <div className="flex gap-4">
               {project.image_url && (
@@ -501,20 +501,20 @@ export function ProjectsManager() {
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <button
                       onClick={() => window.open(`/projects/${project.id}`, '_blank')}
-                      className="p-2 text-gray-400 hover:text-cyan-400 hover:bg-slate-800 rounded-lg transition-colors"
+                      className="p-2 text-gray-400 hover:text-violet-400 hover:bg-[#211032] rounded-lg transition-colors"
                       title="Open project page"
                     >
                       <LinkIcon size={18} />
                     </button>
                     <button
                       onClick={() => handleEdit(project)}
-                      className="p-2 text-gray-400 hover:text-amber-400 hover:bg-slate-800 rounded-lg transition-colors"
+                      className="p-2 text-gray-400 hover:text-amber-400 hover:bg-[#211032] rounded-lg transition-colors"
                     >
                       <Edit size={18} />
                     </button>
                     <button
                       onClick={() => handleDelete(project.id)}
-                      className="p-2 text-gray-400 hover:text-red-400 hover:bg-slate-800 rounded-lg transition-colors"
+                      className="p-2 text-gray-400 hover:text-red-400 hover:bg-[#211032] rounded-lg transition-colors"
                     >
                       <Trash2 size={18} />
                     </button>
@@ -525,12 +525,12 @@ export function ProjectsManager() {
                     {project.category}
                   </span>
                   {project.tech.slice(0, 4).map((tech) => (
-                    <span key={tech} className="px-2 py-1 bg-slate-800 text-gray-400 text-xs rounded">
+                    <span key={tech} className="px-2 py-1 bg-[#211032] text-gray-400 text-xs rounded">
                       {tech}
                     </span>
                   ))}
                   {project.gallery_urls?.length ? (
-                    <span className="px-2 py-1 bg-cyan-500/10 text-cyan-400 text-xs rounded">
+                    <span className="px-2 py-1 bg-violet-500/10 text-violet-400 text-xs rounded">
                       {project.gallery_urls.length} gallery photo{project.gallery_urls.length > 1 ? 's' : ''}
                     </span>
                   ) : null}
@@ -572,7 +572,7 @@ function GalleryUrlInput({ onAdd }: { onAdd: (url: string) => void }) {
           type="url"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          className="flex-1 px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors text-sm"
+          className="flex-1 px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors text-sm"
           placeholder="https://..."
         />
         <button
@@ -581,7 +581,7 @@ function GalleryUrlInput({ onAdd }: { onAdd: (url: string) => void }) {
             onAdd(url);
             setUrl('');
           }}
-          className="px-4 py-3 rounded-lg border border-slate-700 text-gray-300 hover:border-amber-500 hover:text-amber-400 transition-colors"
+          className="px-4 py-3 rounded-lg border border-[#452c5d] text-gray-300 hover:border-amber-500 hover:text-amber-400 transition-colors"
         >
           Add
         </button>

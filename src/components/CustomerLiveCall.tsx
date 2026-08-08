@@ -186,7 +186,7 @@ export function CustomerLiveCall({
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="fixed bottom-5 right-5 z-40 flex items-center gap-2 rounded-full bg-gradient-to-r from-green-400 to-emerald-600 px-3.5 py-2.5 text-sm font-bold text-slate-950 shadow-lg shadow-green-500/20 transition-all hover:scale-105"
+          className="fixed bottom-5 right-5 z-40 flex items-center gap-2 rounded-full bg-gradient-to-r from-green-400 to-emerald-600 px-3.5 py-2.5 text-sm font-bold text-[#0b0614] shadow-lg shadow-green-500/20 transition-all hover:scale-105"
         >
           <PhoneCall size={18} />
           Live Call
@@ -195,14 +195,14 @@ export function CustomerLiveCall({
 
       {open && (
         <div className="fixed right-3 top-1/2 z-[60] w-[calc(100vw-1.5rem)] max-w-sm -translate-y-1/2 sm:right-5">
-          <div className="w-full rounded-2xl border border-slate-700 bg-slate-900 p-5 shadow-2xl">
+          <div className="w-full rounded-2xl border border-[#452c5d] bg-[#160b24] p-5 shadow-2xl">
             <div className="mb-5 flex items-start justify-between gap-4">
               <div>
                 <h3 className="text-2xl font-bold text-gray-100">{title}</h3>
                 <p className="mt-1 text-sm text-gray-400">{description}</p>
               </div>
               {!lockedOpen && (
-                <button type="button" onClick={closePanel} className="rounded-lg p-2 text-gray-400 hover:bg-slate-800 hover:text-white">
+                <button type="button" onClick={closePanel} className="rounded-lg p-2 text-gray-400 hover:bg-[#211032] hover:text-white">
                   <X size={20} />
                 </button>
               )}
@@ -214,20 +214,20 @@ export function CustomerLiveCall({
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
                   placeholder="Your name"
-                  className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-gray-100 outline-none focus:border-green-400"
+                  className="w-full rounded-xl border border-[#452c5d] bg-[#211032] px-4 py-3 text-gray-100 outline-none focus:border-green-400"
                 />
                 <input
                   value={customerEmail}
                   onChange={(e) => setCustomerEmail(e.target.value)}
                   placeholder="Your email or phone, optional"
-                  className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-gray-100 outline-none focus:border-green-400"
+                  className="w-full rounded-xl border border-[#452c5d] bg-[#211032] px-4 py-3 text-gray-100 outline-none focus:border-green-400"
                 />
                 {error && <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-300">{error}</div>}
                 {status === 'ended' && <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-300">Call ended.</div>}
                 <button
                   type="button"
                   onClick={startCall}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-green-400 to-emerald-600 px-5 py-4 font-bold text-slate-950 hover:shadow-lg hover:shadow-green-500/30"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-green-400 to-emerald-600 px-5 py-4 font-bold text-[#0b0614] hover:shadow-lg hover:shadow-green-500/30"
                 >
                   <PhoneCall size={20} />
                   Start Live Call
@@ -252,7 +252,7 @@ export function CustomerLiveCall({
                   <button
                     type="button"
                     onClick={toggleMute}
-                    className="flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-gray-100 hover:bg-slate-700"
+                    className="flex items-center justify-center gap-2 rounded-xl border border-[#452c5d] bg-[#211032] px-4 py-3 text-gray-100 hover:bg-slate-700"
                   >
                     {muted ? <MicOff size={18} /> : <Mic size={18} />}
                     {muted ? 'Unmute' : 'Mute'}

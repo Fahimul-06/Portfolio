@@ -78,7 +78,7 @@ async function resizeHeroImageForUpload(file: File): Promise<File> {
 
 function fittedHeroImage(src: string, alt: string, className = "h-48") {
   return (
-    <div className={`relative w-full overflow-hidden rounded-xl border border-slate-700 bg-slate-950 ${className}`}>
+    <div className={`relative w-full overflow-hidden rounded-xl border border-[#452c5d] bg-[#0b0614] ${className}`}>
       <img
         src={src}
         alt=""
@@ -159,7 +159,7 @@ function mediaPreview(item: {
 }) {
   if (!item.media_url) {
     return (
-      <div className="flex h-48 items-center justify-center rounded-xl border border-dashed border-slate-700 bg-slate-800/60 text-slate-500">
+      <div className="flex h-48 items-center justify-center rounded-xl border border-dashed border-[#452c5d] bg-[#211032]/60 text-slate-500">
         No media selected
       </div>
     );
@@ -174,7 +174,7 @@ function mediaPreview(item: {
       <iframe
         src={embedUrl}
         title={item.title || "Hero video preview"}
-        className="h-48 w-full rounded-xl border border-slate-700 bg-black"
+        className="h-48 w-full rounded-xl border border-[#452c5d] bg-black"
         allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
         allowFullScreen
       />
@@ -184,7 +184,7 @@ function mediaPreview(item: {
   if (shouldRenderVideo) {
     return (
       <video
-        className="h-48 w-full rounded-xl border border-slate-700 bg-black object-cover"
+        className="h-48 w-full rounded-xl border border-[#452c5d] bg-black object-cover"
         muted
         loop
         controls
@@ -362,7 +362,7 @@ export function HeroMediaManager() {
 
       <form
         onSubmit={handleSubmit}
-        className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 shadow-xl shadow-black/20"
+        className="rounded-2xl border border-[#322044] bg-[#160b24]/70 p-6 shadow-xl shadow-black/20"
       >
         <div className="mb-6 flex items-center justify-between gap-4">
           <div>
@@ -377,7 +377,7 @@ export function HeroMediaManager() {
             <button
               type="button"
               onClick={resetForm}
-              className="flex items-center gap-2 rounded-lg bg-slate-800 px-4 py-2 text-sm text-gray-300 hover:bg-slate-700"
+              className="flex items-center gap-2 rounded-lg bg-[#211032] px-4 py-2 text-sm text-gray-300 hover:bg-slate-700"
             >
               <X size={16} /> Cancel
             </button>
@@ -395,7 +395,7 @@ export function HeroMediaManager() {
                 onChange={(e) =>
                   setForm((prev) => ({ ...prev, title: e.target.value }))
                 }
-                className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-gray-100 outline-none focus:border-amber-500"
+                className="w-full rounded-xl border border-[#452c5d] bg-[#211032] px-4 py-3 text-gray-100 outline-none focus:border-amber-500"
                 placeholder="Hero slide 1"
               />
             </div>
@@ -416,7 +416,7 @@ export function HeroMediaManager() {
                     ),
                   }))
                 }
-                className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-gray-100 outline-none focus:border-amber-500"
+                className="w-full rounded-xl border border-[#452c5d] bg-[#211032] px-4 py-3 text-gray-100 outline-none focus:border-amber-500"
                 placeholder="Upload file or paste image/video URL"
               />
             </div>
@@ -434,7 +434,7 @@ export function HeroMediaManager() {
                       media_type: e.target.value as "image" | "video",
                     }))
                   }
-                  className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-gray-100 outline-none focus:border-amber-500"
+                  className="w-full rounded-xl border border-[#452c5d] bg-[#211032] px-4 py-3 text-gray-100 outline-none focus:border-amber-500"
                 >
                   <option value="image">Photo</option>
                   <option value="video">Video</option>
@@ -453,7 +453,7 @@ export function HeroMediaManager() {
                       display_order: Number(e.target.value),
                     }))
                   }
-                  className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-gray-100 outline-none focus:border-amber-500"
+                  className="w-full rounded-xl border border-[#452c5d] bg-[#211032] px-4 py-3 text-gray-100 outline-none focus:border-amber-500"
                 />
               </div>
               <div>
@@ -468,7 +468,7 @@ export function HeroMediaManager() {
                   className={`flex w-full items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-medium ${
                     form.is_active
                       ? "border-green-500/40 bg-green-500/10 text-green-300"
-                      : "border-slate-700 bg-slate-800 text-gray-400"
+                      : "border-[#452c5d] bg-[#211032] text-gray-400"
                   }`}
                 >
                   {form.is_active ? <Eye size={16} /> : <EyeOff size={16} />}
@@ -493,7 +493,7 @@ export function HeroMediaManager() {
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploading}
-                className="flex items-center gap-2 rounded-xl bg-slate-800 px-5 py-3 font-medium text-gray-200 hover:bg-slate-700 disabled:opacity-60"
+                className="flex items-center gap-2 rounded-xl bg-[#211032] px-5 py-3 font-medium text-gray-200 hover:bg-slate-700 disabled:opacity-60"
               >
                 {uploading ? (
                   <Loader2 size={18} className="animate-spin" />
@@ -505,7 +505,7 @@ export function HeroMediaManager() {
               <button
                 type="submit"
                 disabled={saving || uploading}
-                className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-5 py-3 font-semibold text-slate-950 hover:from-amber-400 hover:to-orange-400 disabled:opacity-60"
+                className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-5 py-3 font-semibold text-[#0b0614] hover:from-amber-400 hover:to-orange-400 disabled:opacity-60"
               >
                 {saving ? (
                   <Loader2 size={18} className="animate-spin" />
@@ -528,12 +528,12 @@ export function HeroMediaManager() {
         </div>
       </form>
 
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6">
+      <div className="rounded-2xl border border-[#322044] bg-[#160b24]/70 p-6">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-gray-100">
             Hero Media List
           </h2>
-          <span className="rounded-full bg-slate-800 px-3 py-1 text-sm text-gray-400">
+          <span className="rounded-full bg-[#211032] px-3 py-1 text-sm text-gray-400">
             {items.length} items
           </span>
         </div>
@@ -543,7 +543,7 @@ export function HeroMediaManager() {
             <Loader2 className="animate-spin text-amber-400" size={32} />
           </div>
         ) : items.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-slate-700 p-10 text-center text-gray-500">
+          <div className="rounded-xl border border-dashed border-[#452c5d] p-10 text-center text-gray-500">
             No hero media added yet.
           </div>
         ) : (
@@ -551,7 +551,7 @@ export function HeroMediaManager() {
             {items.map((item) => (
               <div
                 key={item.id}
-                className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-950/70"
+                className="overflow-hidden rounded-2xl border border-[#322044] bg-[#0b0614]/70"
               >
                 <div className="relative">
                   {item.media_type === "video" ? (
@@ -564,7 +564,7 @@ export function HeroMediaManager() {
                       controls
                     />
                   ) : (
-                    <div className="relative h-48 w-full overflow-hidden bg-slate-950">
+                    <div className="relative h-48 w-full overflow-hidden bg-[#0b0614]">
                       <img
                         src={item.media_url}
                         alt=""
@@ -587,7 +587,7 @@ export function HeroMediaManager() {
                     {item.media_type === "video" ? "Video" : "Photo"}
                   </div>
                   <div
-                    className={`absolute right-3 top-3 rounded-full px-3 py-1 text-xs font-medium ${item.is_active ? "bg-green-500 text-slate-950" : "bg-slate-700 text-gray-300"}`}
+                    className={`absolute right-3 top-3 rounded-full px-3 py-1 text-xs font-medium ${item.is_active ? "bg-green-500 text-[#0b0614]" : "bg-slate-700 text-gray-300"}`}
                   >
                     {item.is_active ? "Active" : "Hidden"}
                   </div>
@@ -607,7 +607,7 @@ export function HeroMediaManager() {
                   <div className="grid grid-cols-3 gap-2">
                     <button
                       onClick={() => toggleActive(item)}
-                      className="rounded-lg bg-slate-800 px-3 py-2 text-sm text-gray-300 hover:bg-slate-700"
+                      className="rounded-lg bg-[#211032] px-3 py-2 text-sm text-gray-300 hover:bg-slate-700"
                     >
                       {item.is_active ? "Hide" : "Show"}
                     </button>

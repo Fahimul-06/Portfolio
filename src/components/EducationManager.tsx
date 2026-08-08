@@ -170,7 +170,7 @@ export function EducationManager() {
       </div>
 
       {showForm && (
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
+        <div className="bg-[#160b24] border border-[#322044] rounded-xl p-6">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-gray-100">
               {editingId ? 'Edit Education' : 'Add New Education'}
@@ -188,7 +188,7 @@ export function EducationManager() {
                   type="text"
                   value={formData.degree}
                   onChange={(e) => setFormData({ ...formData, degree: e.target.value })}
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+                  className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
                   placeholder="B.Sc. in Computer Science & Engineering"
                   required
                 />
@@ -200,7 +200,7 @@ export function EducationManager() {
                   type="text"
                   value={formData.institution}
                   onChange={(e) => setFormData({ ...formData, institution: e.target.value })}
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+                  className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
                   placeholder="University / College / Institute"
                   required
                 />
@@ -214,7 +214,7 @@ export function EducationManager() {
                   type="text"
                   value={formData.period}
                   onChange={(e) => setFormData({ ...formData, period: e.target.value })}
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+                  className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
                   placeholder="2018 - 2022"
                   required
                 />
@@ -226,7 +226,7 @@ export function EducationManager() {
                   type="text"
                   value={formData.location}
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+                  className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
                   placeholder="Dhaka, Bangladesh"
                 />
               </div>
@@ -237,7 +237,7 @@ export function EducationManager() {
                   type="number"
                   value={formData.display_order}
                   onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) || 0 })}
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+                  className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
                 />
               </div>
             </div>
@@ -248,7 +248,7 @@ export function EducationManager() {
                 type="text"
                 value={formData.result}
                 onChange={(e) => setFormData({ ...formData, result: e.target.value })}
-                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+                className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
                 placeholder="CGPA: 3.80/4.00, First Class, GPA: 5.00"
               />
             </div>
@@ -259,7 +259,7 @@ export function EducationManager() {
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 rows={4}
-                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors resize-none"
+                className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors resize-none"
                 placeholder="Major subjects, achievements, thesis, projects, or relevant coursework..."
               />
             </div>
@@ -275,7 +275,7 @@ export function EducationManager() {
               <button
                 type="button"
                 onClick={resetForm}
-                className="px-6 py-3 bg-slate-800 text-gray-300 rounded-lg hover:bg-slate-700 transition-colors"
+                className="px-6 py-3 bg-[#211032] text-gray-300 rounded-lg hover:bg-slate-700 transition-colors"
               >
                 Cancel
               </button>
@@ -286,7 +286,7 @@ export function EducationManager() {
 
       <div className="grid gap-4">
         {education.map((item) => (
-          <div key={item.id} className="bg-slate-900 border border-slate-800 rounded-xl p-6 hover:border-amber-500/30 transition-colors">
+          <div key={item.id} className="bg-[#160b24] border border-[#322044] rounded-xl p-6 hover:border-amber-500/30 transition-colors">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
               <div className="flex gap-4">
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
@@ -303,7 +303,7 @@ export function EducationManager() {
                         {item.location}
                       </span>
                     )}
-                    {item.result && <span className="rounded-full bg-slate-800 px-3 py-1 text-gray-300">{item.result}</span>}
+                    {item.result && <span className="rounded-full bg-[#211032] px-3 py-1 text-gray-300">{item.result}</span>}
                   </div>
                   {item.description && <p className="mt-3 text-gray-400 leading-relaxed whitespace-pre-line">{item.description}</p>}
                 </div>
@@ -322,7 +322,7 @@ export function EducationManager() {
         ))}
 
         {education.length === 0 && (
-          <div className="rounded-xl border border-dashed border-slate-700 bg-slate-900/50 p-10 text-center text-gray-500">
+          <div className="rounded-xl border border-dashed border-[#452c5d] bg-[#160b24]/50 p-10 text-center text-gray-500">
             No education records added yet.
           </div>
         )}

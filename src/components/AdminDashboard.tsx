@@ -136,11 +136,11 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-[#0b0614]">
       <AdminGlobalCallRinger activeSection={activeSection} onOpenCalls={openLiveCalls} />
       {/* Sidebar - Desktop */}
       <aside className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-72 lg:flex-col">
-        <div className="flex flex-col flex-grow bg-slate-900 border-r border-slate-800 pt-6 overflow-y-auto">
+        <div className="flex flex-col flex-grow bg-[#160b24] border-r border-[#322044] pt-6 overflow-y-auto">
           <div className="px-6 mb-8">
             <a href="/" className="flex items-center gap-3 text-gray-100 hover:text-amber-400 transition-colors">
               <Home size={20} />
@@ -159,7 +159,7 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                     isActive
                       ? 'bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-400 border border-amber-500/30'
-                      : 'text-gray-400 hover:text-gray-100 hover:bg-slate-800'
+                      : 'text-gray-400 hover:text-gray-100 hover:bg-[#211032]'
                   }`}
                 >
                   <Icon size={20} />
@@ -170,14 +170,14 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
             })}
           </nav>
 
-          <div className="p-4 border-t border-slate-800">
+          <div className="p-4 border-t border-[#322044]">
             <div className="px-4 py-3 mb-4">
               <p className="text-sm text-gray-500">Logged in as</p>
               <p className="text-sm text-gray-300 truncate">{userEmail}</p>
             </div>
             <button
               onClick={handleLogout}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-slate-800 text-gray-300 rounded-lg hover:bg-slate-700 hover:text-gray-100 transition-colors"
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#211032] text-gray-300 rounded-lg hover:bg-slate-700 hover:text-gray-100 transition-colors"
             >
               <LogOut size={20} />
               <span className="font-medium">Sign Out</span>
@@ -187,7 +187,7 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
       </aside>
 
       {/* Mobile Header */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur-md border-b border-slate-800">
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-[#160b24]/95 backdrop-blur-md border-b border-[#322044]">
         <div className="flex items-center justify-between px-4 h-16">
           <button
             onClick={() => setActiveSection('about')}
@@ -212,7 +212,7 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
         </div>
 
         {mobileMenuOpen && (
-          <div className="bg-slate-900 border-t border-slate-800 p-4 space-y-1">
+          <div className="bg-[#160b24] border-t border-[#322044] p-4 space-y-1">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeSection === item.id;
@@ -234,7 +234,7 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
                 </button>
               );
             })}
-            <div className="pt-4 border-t border-slate-800 mt-4">
+            <div className="pt-4 border-t border-[#322044] mt-4">
               <button
                 onClick={handleLogout}
                 className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-gray-100 transition-colors"

@@ -158,7 +158,7 @@ export function ExperienceManager() {
       </div>
 
       {showForm && (
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
+        <div className="bg-[#160b24] border border-[#322044] rounded-xl p-6">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-gray-100">
               {editingId ? 'Edit Position' : 'Add New Position'}
@@ -176,7 +176,7 @@ export function ExperienceManager() {
                   type="text"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+                  className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
                   placeholder="Senior Full Stack Developer"
                   required
                 />
@@ -188,7 +188,7 @@ export function ExperienceManager() {
                   type="text"
                   value={formData.company}
                   onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+                  className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
                   placeholder="TechCorp Solutions"
                   required
                 />
@@ -202,7 +202,7 @@ export function ExperienceManager() {
                   type="text"
                   value={formData.period}
                   onChange={(e) => setFormData({ ...formData, period: e.target.value })}
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+                  className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
                   placeholder="2022 - Present"
                   required
                 />
@@ -216,7 +216,7 @@ export function ExperienceManager() {
                   onChange={(e) =>
                     setFormData({ ...formData, display_order: parseInt(e.target.value) || 0 })
                   }
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+                  className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
                 />
               </div>
             </div>
@@ -227,7 +227,7 @@ export function ExperienceManager() {
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 rows={4}
-                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors resize-none"
+                className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors resize-none"
                 placeholder="Describe your responsibilities and achievements..."
                 required
               />
@@ -237,7 +237,7 @@ export function ExperienceManager() {
               <button
                 type="button"
                 onClick={resetForm}
-                className="px-4 py-2 border border-slate-700 text-gray-300 rounded-lg hover:bg-slate-800 transition-colors"
+                className="px-4 py-2 border border-[#452c5d] text-gray-300 rounded-lg hover:bg-[#211032] transition-colors"
               >
                 Cancel
               </button>
@@ -257,7 +257,7 @@ export function ExperienceManager() {
         {experiences.map((exp) => (
           <div
             key={exp.id}
-            className="bg-slate-900 border border-slate-800 rounded-xl p-6 hover:border-slate-700 transition-colors"
+            className="bg-[#160b24] border border-[#322044] rounded-xl p-6 hover:border-[#452c5d] transition-colors"
           >
             <div className="flex items-start justify-between gap-4">
               <div className="flex gap-4">
@@ -274,13 +274,13 @@ export function ExperienceManager() {
               <div className="flex items-center gap-2 flex-shrink-0">
                 <button
                   onClick={() => handleEdit(exp)}
-                  className="p-2 text-gray-400 hover:text-amber-400 hover:bg-slate-800 rounded-lg transition-colors"
+                  className="p-2 text-gray-400 hover:text-amber-400 hover:bg-[#211032] rounded-lg transition-colors"
                 >
                   <Edit size={18} />
                 </button>
                 <button
                   onClick={() => handleDelete(exp.id)}
-                  className="p-2 text-gray-400 hover:text-red-400 hover:bg-slate-800 rounded-lg transition-colors"
+                  className="p-2 text-gray-400 hover:text-red-400 hover:bg-[#211032] rounded-lg transition-colors"
                 >
                   <Trash2 size={18} />
                 </button>

@@ -32,7 +32,7 @@ export function AdminLogin({ onLogin }: AdminLoginProps) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#0b0614] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl mb-4">
@@ -42,7 +42,7 @@ export function AdminLogin({ onLogin }: AdminLoginProps) {
           <p className="text-gray-500 mt-2">Access the portfolio dashboard</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-slate-900 border border-slate-800 rounded-2xl p-8">
+        <form onSubmit={handleSubmit} className="bg-[#160b24] border border-[#322044] rounded-2xl p-8">
           {error && (
             <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center gap-3 text-red-400">
               <AlertCircle size={20} />
@@ -59,7 +59,7 @@ export function AdminLogin({ onLogin }: AdminLoginProps) {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 placeholder-gray-500 focus:outline-none focus:border-amber-500 transition-colors"
+                  className="w-full pl-12 pr-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 placeholder-gray-500 focus:outline-none focus:border-amber-500 transition-colors"
                   placeholder="admin@email.com"
                   required
                 />
@@ -74,7 +74,7 @@ export function AdminLogin({ onLogin }: AdminLoginProps) {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 placeholder-gray-500 focus:outline-none focus:border-amber-500 transition-colors"
+                  className="w-full pl-12 pr-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 placeholder-gray-500 focus:outline-none focus:border-amber-500 transition-colors"
                   placeholder="Enter password"
                   required
                 />

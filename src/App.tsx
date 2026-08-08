@@ -78,11 +78,11 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-[#0b0614] flex items-center justify-center">
         <div className="relative">
-          <div className="w-16 h-16 border-4 border-cyan-500/20 rounded-full animate-spin-slow" />
+          <div className="w-16 h-16 border-4 border-violet-500/20 rounded-full animate-spin-slow" />
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-8 h-8 border-4 border-transparent border-t-cyan-500 rounded-full animate-spin" />
+            <div className="w-8 h-8 border-4 border-transparent border-t-violet-500 rounded-full animate-spin" />
           </div>
         </div>
       </div>
@@ -95,7 +95,7 @@ function App() {
         <div className="fixed top-4 left-4 z-50">
           <button
             onClick={openPortfolio}
-            className="px-4 py-2 bg-slate-800 text-gray-300 rounded-lg hover:bg-slate-700 transition-colors text-sm"
+            className="px-4 py-2 bg-[#211032] text-gray-300 rounded-lg hover:bg-slate-700 transition-colors text-sm"
           >
             Back to Portfolio
           </button>
@@ -111,7 +111,7 @@ function App() {
         <div className="fixed top-4 right-4 z-50">
           <button
             onClick={openPortfolio}
-            className="px-4 py-2 bg-slate-800 text-gray-300 rounded-lg hover:bg-slate-700 transition-colors text-sm"
+            className="px-4 py-2 bg-[#211032] text-gray-300 rounded-lg hover:bg-slate-700 transition-colors text-sm"
           >
             View Portfolio
           </button>
@@ -126,13 +126,13 @@ function App() {
 
 function NotFoundPage() {
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4 text-center text-gray-100">
-      <div className="max-w-md rounded-3xl border border-slate-800 bg-slate-900 p-8 shadow-2xl">
-        <h1 className="text-4xl font-black text-white">404</h1>
+    <div className="min-h-screen bg-[#0b0614] flex items-center justify-center px-4 text-center text-gray-100">
+      <div className="max-w-md rounded-3xl border border-[#322044] bg-[#160b24] p-8 shadow-2xl">
+        <h1 className="text-3xl font-black text-white">404</h1>
         <p className="mt-3 text-gray-300">This page is not available.</p>
         <button
           onClick={() => { window.history.pushState(null, '', '/'); window.location.reload(); }}
-          className="mt-6 rounded-xl bg-cyan-500 px-5 py-3 font-bold text-slate-950 transition hover:bg-cyan-400"
+          className="mt-6 rounded-xl bg-violet-500 px-5 py-3 font-bold text-[#0b0614] transition hover:bg-violet-400"
         >
           Go Home
         </button>
@@ -143,21 +143,21 @@ function NotFoundPage() {
 
 function DirectCallPage() {
   return (
-    <div className="min-h-screen overflow-hidden bg-slate-950 text-gray-100">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(34,197,94,0.20),_transparent_42%),radial-gradient(circle_at_bottom_right,_rgba(6,182,212,0.16),_transparent_36%)]" />
+    <div className="min-h-screen overflow-hidden bg-[#0b0614] text-gray-100">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(34,197,94,0.20),_transparent_42%),radial-gradient(circle_at_bottom_right,_rgba(124,58,237,0.16),_transparent_36%)]" />
       <div className="relative z-10 mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center px-4 py-10 text-center">
         <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-green-400/30 bg-green-400/10 px-4 py-2 text-sm font-semibold text-green-200">
           <PhoneCall size={18} />
           Direct Live Call Link
         </div>
-        <h1 className="text-4xl font-black leading-tight text-white sm:text-5xl">
+        <h1 className="text-3xl font-black leading-tight text-white sm:text-4xl">
           Start a live browser call
         </h1>
-        <p className="mt-4 max-w-2xl text-base text-gray-300 sm:text-lg">
+        <p className="mt-4 max-w-2xl text-base text-gray-300 sm:text-base">
           This secure link was shared by the admin. Tap the button below, allow
           microphone access, and the admin phone/dashboard will ring.
         </p>
-        <div className="mt-8 rounded-2xl border border-slate-700/70 bg-slate-900 p-5 text-left text-sm text-gray-300 shadow-2xl">
+        <div className="mt-8 rounded-2xl border border-[#452c5d]/70 bg-[#160b24] p-5 text-left text-sm text-gray-300 shadow-2xl">
           <p className="font-semibold text-gray-100">Before you call:</p>
           <p className="mt-2">
             Keep this page open during the call. Use Chrome/Safari/Edge and
@@ -241,7 +241,7 @@ function AnimatedHomeTitle({ titles }: { titles: string[] }) {
       <span className="shrink-0 text-white">I AM</span>
       <span className="inline-flex items-center">
         <span>{visibleText || "\u00a0"}</span>
-        <span className="ml-2 h-[1em] w-[3px] rounded-full bg-cyan-300 animate-pulse" aria-hidden="true" />
+        <span className="ml-2 h-[1em] w-[3px] rounded-full bg-violet-300 animate-pulse" aria-hidden="true" />
       </span>
     </span>
   );
@@ -258,7 +258,7 @@ function renderBioParagraphs(bio?: string | null) {
     .map((paragraph) => paragraph.trim())
     .filter(Boolean)
     .map((paragraph, index) => (
-      <p key={index} className="text-gray-400 leading-relaxed text-lg whitespace-pre-line">
+      <p key={index} className="text-gray-400 leading-relaxed text-base whitespace-pre-line">
         {paragraph}
       </p>
     ));
@@ -610,9 +610,9 @@ function Portfolio() {
 
   if (dataLoading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-[#0b0614] flex items-center justify-center">
         <div className="flex items-center gap-3">
-          <Loader2 className="animate-spin text-cyan-500" size={32} />
+          <Loader2 className="animate-spin text-violet-500" size={32} />
           <span className="text-gray-400 animate-pulse">Loading...</span>
         </div>
       </div>
@@ -651,7 +651,7 @@ function Portfolio() {
   }
 
   return (
-    <div className="portfolio-glass-theme min-h-screen bg-slate-950 text-gray-100 overflow-x-hidden">
+    <div className="portfolio-glass-theme min-h-screen bg-[#0b0614] text-gray-100 overflow-x-hidden">
       {/* Navigation */}
       <nav
         className={`fixed left-0 right-0 top-3 z-50 px-3 transition-all duration-500 sm:top-4 sm:px-4 ${
@@ -662,7 +662,7 @@ function Portfolio() {
           <div className="glass-pill-nav flex h-12 items-center gap-2 rounded-full px-2.5 py-1.5 shadow-2xl sm:h-14 sm:gap-3 sm:px-3 lg:h-14 lg:gap-4 lg:px-4">
             <button
               onClick={() => navigateToPortfolioSection("home")}
-              className="group relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-slate-800 text-sm font-black text-cyan-100 transition-all hover:scale-105 sm:h-10 sm:w-10"
+              className="group relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-[#211032] text-sm font-black text-violet-100 transition-all hover:scale-105 sm:h-10 sm:w-10"
               aria-label="Go to home"
             >
               {about?.logo_url ? (
@@ -674,7 +674,7 @@ function Portfolio() {
               ) : (
                 <span className="text-gradient">FA</span>
               )}
-              <span className="absolute inset-0 rounded-full bg-cyan-300/20 opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-100" />
+              <span className="absolute inset-0 rounded-full bg-violet-300/20 opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-100" />
             </button>
 
             {/* Desktop Menu */}
@@ -694,8 +694,8 @@ function Portfolio() {
                   onClick={() => scrollToSection(item.toLowerCase())}
                   className={`rounded-full px-3 py-2 text-xs font-semibold transition-all duration-300 ${
                     activeSection === item.toLowerCase()
-                      ? "bg-cyan-300/20 text-cyan-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.16)]"
-                      : "text-gray-300 hover:bg-slate-800 hover:text-cyan-100"
+                      ? "bg-violet-300/20 text-violet-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.16)]"
+                      : "text-gray-300 hover:bg-[#211032] hover:text-violet-100"
                   }`}
                 >
                   {item}
@@ -704,7 +704,7 @@ function Portfolio() {
               <button
                 type="button"
                 onClick={handleDownloadPortfolioPdf}
-                className="ml-1 flex items-center gap-2 rounded-full bg-gradient-to-r from-cyan-300 to-teal-300 px-4 py-2 text-xs font-black text-slate-950 shadow-lg shadow-cyan-500/20 transition-all duration-300 hover:scale-[1.03] hover:shadow-cyan-500/35"
+                className="ml-1 flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-300 to-purple-300 px-4 py-2 text-xs font-black text-[#0b0614] shadow-lg shadow-violet-500/20 transition-all duration-300 hover:scale-[1.03] hover:shadow-violet-500/35"
               >
                 <Download size={15} className="animate-bounce-soft" />
                 Resume
@@ -714,7 +714,7 @@ function Portfolio() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-slate-800 text-gray-200 transition-colors hover:text-cyan-200 lg:hidden"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-[#211032] text-gray-200 transition-colors hover:text-violet-200 lg:hidden"
               aria-label="Toggle menu"
             >
               {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -740,8 +740,8 @@ function Portfolio() {
                     onClick={() => scrollToSection(item.toLowerCase())}
                     className={`rounded-full px-3 py-2.5 text-center text-sm font-semibold transition-colors ${
                       activeSection === item.toLowerCase()
-                        ? "bg-cyan-300/20 text-cyan-100"
-                        : "text-gray-300 hover:bg-slate-800 hover:text-cyan-100"
+                        ? "bg-violet-300/20 text-violet-100"
+                        : "text-gray-300 hover:bg-[#211032] hover:text-violet-100"
                     }`}
                   >
                     {item}
@@ -753,7 +753,7 @@ function Portfolio() {
                     handleDownloadPortfolioPdf();
                     setIsMenuOpen(false);
                   }}
-                  className="col-span-2 mt-1 flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-300 to-teal-300 px-4 py-3 text-sm font-black text-slate-950"
+                  className="col-span-2 mt-1 flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-violet-300 to-purple-300 px-4 py-3 text-sm font-black text-[#0b0614]"
                 >
                   <Download size={17} />
                   Resume PDF
@@ -769,46 +769,46 @@ function Portfolio() {
         id="home"
         className="relative flex min-h-[calc(100vh-4rem)] items-center overflow-hidden bg-transparent px-4 pb-16 pt-24 sm:px-6 lg:px-8 lg:pt-28"
       >
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_20%,rgba(34,211,238,0.18),transparent_34%),radial-gradient(circle_at_75%_10%,rgba(45,212,191,0.14),transparent_30%),linear-gradient(135deg,rgba(2,6,23,0.96),rgba(15,23,42,0.94))]" />
-        <div className="absolute left-1/2 top-24 h-72 w-72 -translate-x-1/2 rounded-full bg-cyan-400/10 blur-3xl" />
-        <div className="absolute bottom-10 right-10 h-80 w-80 rounded-full bg-teal-400/10 blur-3xl" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_20%,rgba(139,92,246,0.18),transparent_34%),radial-gradient(circle_at_75%_10%,rgba(126,34,206,0.14),transparent_30%),linear-gradient(135deg,rgba(2,6,23,0.96),rgba(15,23,42,0.94))]" />
+        <div className="absolute left-1/2 top-24 h-72 w-72 -translate-x-1/2 rounded-full bg-violet-400/10 blur-3xl" />
+        <div className="absolute bottom-10 right-10 h-80 w-80 rounded-full bg-purple-400/10 blur-3xl" />
 
         <div className="glass-reveal-target relative z-10 mx-auto max-w-6xl text-center">
-          <div className="mb-8 inline-flex items-center gap-3 rounded-full border border-cyan-300/20 bg-slate-900 px-5 py-2 text-sm font-semibold uppercase tracking-[0.35em] text-cyan-200 shadow-2xl shadow-cyan-900/10 ">
-            <span className="h-2 w-2 rounded-full bg-cyan-300 shadow-[0_0_18px_rgba(103,232,249,0.9)]" />
+          <div className="mb-8 inline-flex items-center gap-3 rounded-full border border-violet-300/20 bg-[#160b24] px-5 py-2 text-sm font-semibold uppercase tracking-[0.35em] text-violet-200 shadow-2xl shadow-violet-900/10 ">
+            <span className="h-2 w-2 rounded-full bg-violet-300 shadow-[0_0_18px_rgba(103,232,249,0.9)]" />
             Portfolio Home
           </div>
 
-          <h1 className="text-4xl font-black leading-tight text-white sm:text-6xl lg:text-8xl">
+          <h1 className="text-3xl font-black leading-tight text-white sm:text-5xl lg:text-7xl">
             {about?.name || "Fahimul Arefin"}
           </h1>
 
-          <div className="mt-6 min-h-[4rem] text-2xl font-extrabold leading-tight text-gradient sm:text-4xl lg:text-5xl">
+          <div className="mt-6 min-h-[4rem] text-xl font-extrabold leading-tight text-gradient sm:text-3xl lg:text-4xl">
             <AnimatedHomeTitle titles={homeTitles} />
           </div>
 
-          <p className="mx-auto mt-8 max-w-4xl text-base leading-8 text-slate-300 sm:text-lg lg:text-xl">
+          <p className="mx-auto mt-8 max-w-4xl text-base leading-8 text-slate-300 sm:text-base lg:text-lg">
             {homeShortDescription}
           </p>
 
           <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
             <button
               onClick={() => scrollToSection("projects")}
-              className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-cyan-400 to-teal-400 px-5 py-2.5 text-sm font-bold text-slate-950 shadow-lg shadow-cyan-900/20 transition-all hover:-translate-y-0.5"
+              className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-400 to-purple-400 px-5 py-2.5 text-sm font-bold text-[#0b0614] shadow-lg shadow-violet-900/20 transition-all hover:-translate-y-0.5"
             >
               View Projects
               <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
             </button>
             <button
               onClick={() => scrollToSection("contact")}
-              className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-slate-900 px-5 py-2.5 text-sm font-bold text-white transition-all hover:-translate-y-0.5 hover:border-cyan-300/40 hover:bg-slate-800"
+              className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-[#160b24] px-5 py-2.5 text-sm font-bold text-white transition-all hover:-translate-y-0.5 hover:border-violet-300/40 hover:bg-[#211032]"
             >
               Contact Me
               <Mail size={16} />
             </button>
             <button
               onClick={openResearchPage}
-              className="inline-flex items-center gap-2 rounded-full border border-cyan-300/25 bg-slate-900 px-5 py-2.5 text-sm font-bold text-cyan-100 transition-all hover:-translate-y-0.5 hover:border-cyan-300/50 hover:bg-slate-800"
+              className="inline-flex items-center gap-2 rounded-full border border-violet-300/25 bg-[#160b24] px-5 py-2.5 text-sm font-bold text-violet-100 transition-all hover:-translate-y-0.5 hover:border-violet-300/50 hover:bg-[#211032]"
             >
               Research
               <BookOpen size={16} />
@@ -819,19 +819,19 @@ function Portfolio() {
 
       {/* About Section */}
       <section id="about" className="py-24 lg:py-32 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0b0614] via-[#160b24] to-[#0b0614]" />
 
         {/* Decorative elements */}
-        <div className="absolute top-0 left-0 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl" />
+        <div className="absolute top-0 left-0 w-96 h-96 bg-violet-500/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
+          <div className="text-left mb-10">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">
               <span className="text-gray-100">About </span>
               <span className="text-gradient">Me</span>
             </h2>
-            <div className="w-20 h-1 bg-gradient-to-r from-cyan-500 to-teal-600 mx-auto rounded-full animate-scale-up" />
+            <div className="w-20 h-1 bg-gradient-to-r from-violet-500 to-purple-600 rounded-full animate-scale-up" />
           </div>
 
           {/* Profile Image directly below About Me heading */}
@@ -843,14 +843,14 @@ function Portfolio() {
                   "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=800"
                 }
                 alt={about?.name || "Profile"}
-                className="w-full aspect-square object-cover rounded-2xl shadow-2xl border border-slate-700/70 bg-slate-900"
+                className="w-full aspect-square object-cover rounded-2xl shadow-2xl border border-[#452c5d]/70 bg-[#160b24]"
               />
             </div>
           </div>
 
           {/* About Content */}
           <div className="max-w-4xl mx-auto space-y-6">
-              <h3 className="text-2xl lg:text-3xl font-semibold text-gray-100">
+              <h3 className="text-xl lg:text-2xl font-semibold text-gray-100">
                 {about?.tagline ||
                   "Passionate about building digital experiences"}
               </h3>
@@ -866,30 +866,30 @@ function Portfolio() {
                     icon: Award,
                     value: about?.years_experience || 5,
                     label: "Years Experience",
-                    color: "from-cyan-500 to-teal-600",
+                    color: "from-violet-500 to-purple-600",
                   },
                   {
                     icon: Briefcase,
                     value: about?.projects_completed || 50,
                     label: "Projects Completed",
-                    color: "from-teal-500 to-red-500",
+                    color: "from-purple-500 to-red-500",
                   },
                   {
                     icon: GraduationCap,
                     value: skills.length,
                     label: "Technologies",
-                    color: "from-cyan-400 to-teal-500",
+                    color: "from-violet-400 to-purple-500",
                   },
                   {
                     icon: Code2,
                     value: "10K+",
                     label: "Lines of Code",
-                    color: "from-teal-400 to-cyan-500",
+                    color: "from-purple-400 to-violet-500",
                   },
                 ].map((stat, index) => (
                   <div
                     key={index}
-                    className="card-hover glass rounded-xl p-5 border border-slate-700/50 hover:border-cyan-500/30 transition-all duration-300"
+                    className="card-hover glass rounded-xl p-5 border border-[#452c5d]/50 hover:border-violet-500/30 transition-all duration-300"
                     style={{ animationDelay: `${index * 0.1}s` }}
                   >
                     <div
@@ -897,7 +897,7 @@ function Portfolio() {
                     >
                       <stat.icon className="text-white" size={24} />
                     </div>
-                    <div className="text-3xl font-bold text-gray-100 mb-1">
+                    <div className="text-2xl font-bold text-gray-100 mb-1">
                       {stat.value}+
                     </div>
                     <div className="text-sm text-gray-500">{stat.label}</div>
@@ -910,18 +910,18 @@ function Portfolio() {
 
       {/* Education Section */}
       <section id="education" className="py-24 lg:py-32 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950" />
-        <div className="absolute top-20 right-0 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-10 left-0 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0b0614] via-[#160b24] to-[#0b0614]" />
+        <div className="absolute top-20 right-0 w-96 h-96 bg-violet-500/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 left-0 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
+          <div className="text-left mb-16">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">
               <span className="text-gray-100">My </span>
               <span className="text-gradient">Education</span>
             </h2>
-            <div className="w-20 h-1 bg-gradient-to-r from-cyan-500 to-teal-600 mx-auto rounded-full animate-scale-up" />
-            <p className="mt-4 text-gray-400 max-w-2xl mx-auto">
+            <div className="w-20 h-1 bg-gradient-to-r from-violet-500 to-purple-600 rounded-full animate-scale-up" />
+            <p className="mt-4 text-gray-400 max-w-2xl">
               Academic background, degrees, training, and learning milestones.
             </p>
           </div>
@@ -931,28 +931,28 @@ function Portfolio() {
               {education.map((item, index) => (
                 <div
                   key={item.id}
-                  className="card-hover glass rounded-2xl p-6 border border-slate-700/50 hover:border-cyan-500/30 transition-all duration-300 animate-fade-in-up"
+                  className="card-hover glass rounded-2xl p-6 border border-[#452c5d]/50 hover:border-violet-500/30 transition-all duration-300 animate-fade-in-up"
                   style={{ animationDelay: `${index * 0.12}s` }}
                 >
                   <div className="flex items-start gap-4">
-                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500 to-teal-600 shadow-lg shadow-cyan-500/20">
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 shadow-lg shadow-violet-500/20">
                       <GraduationCap className="text-white" size={28} />
                     </div>
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2 mb-2">
-                        <span className="px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 text-sm font-medium">
+                        <span className="px-3 py-1 rounded-full bg-violet-500/10 text-violet-300 border border-violet-500/20 text-sm font-medium">
                           {item.period}
                         </span>
                         {item.result && (
-                          <span className="px-3 py-1 rounded-full bg-slate-800 text-gray-300 border border-slate-700/60 text-sm">
+                          <span className="px-3 py-1 rounded-full bg-[#211032] text-gray-300 border border-[#452c5d]/60 text-sm">
                             {item.result}
                           </span>
                         )}
                       </div>
-                      <h3 className="text-xl font-semibold text-gray-100 leading-snug">
+                      <h3 className="text-lg font-semibold text-gray-100 leading-snug">
                         {item.degree}
                       </h3>
-                      <p className="mt-2 text-cyan-400 font-medium">
+                      <p className="mt-2 text-violet-400 font-medium">
                         {item.institution}
                       </p>
                       {item.location && (
@@ -972,7 +972,7 @@ function Portfolio() {
               ))}
             </div>
           ) : (
-            <div className="rounded-2xl border border-slate-700/50 bg-slate-900 p-10 text-center text-gray-500">
+            <div className="rounded-2xl border border-[#452c5d]/50 bg-[#160b24] p-10 text-center text-gray-500">
               Education information will appear here after admin adds records.
             </div>
           )}
@@ -981,14 +981,14 @@ function Portfolio() {
 
       {/* Skills Section */}
       <section id="skills" className="py-24 lg:py-32 relative overflow-hidden">
-        <div className="absolute inset-0 bg-slate-900" />
+        <div className="absolute inset-0 bg-[#160b24]" />
 
         {/* Floating particles */}
         <div className="absolute inset-0 opacity-20">
           {[...Array(15)].map((_, i) => (
             <div
               key={i}
-              className="absolute w-2 h-2 bg-cyan-500 rounded-full animate-float"
+              className="absolute w-2 h-2 bg-violet-500 rounded-full animate-float"
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
@@ -1000,13 +1000,13 @@ function Portfolio() {
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
+          <div className="text-left mb-16">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">
               <span className="text-gray-100">Technical </span>
               <span className="text-gradient">Skills</span>
             </h2>
-            <div className="w-20 h-1 bg-gradient-to-r from-cyan-500 to-teal-600 mx-auto rounded-full animate-scale-up" />
-            <p className="text-gray-400 mt-6 max-w-2xl mx-auto">
+            <div className="w-20 h-1 bg-gradient-to-r from-violet-500 to-purple-600 rounded-full animate-scale-up" />
+            <p className="text-gray-400 mt-6 max-w-2xl">
               A comprehensive toolkit spanning frontend, backend, mobile
               development, and databases.
             </p>
@@ -1022,13 +1022,13 @@ function Portfolio() {
               return (
                 <div
                   key={cat.key}
-                  className="card-hover glass rounded-2xl p-6 border border-slate-700/50 hover:border-cyan-500/30 transition-all duration-300"
+                  className="card-hover glass rounded-2xl p-6 border border-[#452c5d]/50 hover:border-violet-500/30 transition-all duration-300"
                 >
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="p-3 bg-gradient-to-br from-cyan-500/20 to-teal-500/20 rounded-xl animate-pulse-soft">
-                      <Icon className="text-cyan-400" size={28} />
+                    <div className="p-3 bg-gradient-to-br from-violet-500/20 to-purple-500/20 rounded-xl animate-pulse-soft">
+                      <Icon className="text-violet-400" size={28} />
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-100">
+                    <h3 className="text-base font-semibold text-gray-100">
                       {cat.label}
                     </h3>
                   </div>
@@ -1037,13 +1037,13 @@ function Portfolio() {
                       <div key={skill.id}>
                         <div className="flex justify-between text-sm mb-1">
                           <span className="text-gray-300">{skill.name}</span>
-                          <span className="text-cyan-400 font-medium">
+                          <span className="text-violet-400 font-medium">
                             {skill.level}%
                           </span>
                         </div>
                         <div className="h-2 bg-slate-700/50 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-gradient-to-r from-cyan-500 to-teal-600 rounded-full transition-all duration-1000 neon-glow"
+                            className="h-full bg-gradient-to-r from-violet-500 to-purple-600 rounded-full transition-all duration-1000 neon-glow"
                             style={{
                               width: `${skill.level}%`,
                               transitionDelay: `${skillIndex * 0.1}s`,
@@ -1066,7 +1066,7 @@ function Portfolio() {
         id="projects"
         className="py-24 lg:py-32 relative overflow-hidden"
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#160b24] via-[#0b0614] to-[#160b24]" />
 
         {/* Background grid */}
         <div className="absolute inset-0 opacity-5">
@@ -1074,19 +1074,19 @@ function Portfolio() {
             className="absolute inset-0"
             style={{
               backgroundImage:
-                "linear-gradient(#06b6d4 1px, transparent 1px), linear-gradient(90deg, #06b6d4 1px, transparent 1px)",
+                "linear-gradient(#8b5cf6 1px, transparent 1px), linear-gradient(90deg, #8b5cf6 1px, transparent 1px)",
               backgroundSize: "60px 60px",
             }}
           />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
+          <div className="text-left mb-16">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">
               <span className="text-gray-100">Featured </span>
               <span className="text-gradient">Projects</span>
             </h2>
-            <div className="w-20 h-1 bg-gradient-to-r from-cyan-500 to-teal-600 mx-auto rounded-full animate-scale-up" />
+            <div className="w-20 h-1 bg-gradient-to-r from-violet-500 to-purple-600 rounded-full animate-scale-up" />
           </div>
 
           {/* Filter Buttons */}
@@ -1097,8 +1097,8 @@ function Portfolio() {
                 onClick={() => setFilter(f)}
                 className={`btn-secondary px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
                   filter === f
-                    ? "bg-gradient-to-r from-cyan-500 to-teal-600 text-slate-900 shadow-lg shadow-cyan-500/30"
-                    : "glass text-gray-400 border border-slate-700/50 hover:border-cyan-500/50 hover:text-cyan-400"
+                    ? "bg-gradient-to-r from-violet-500 to-purple-600 text-slate-900 shadow-lg shadow-violet-500/30"
+                    : "glass text-gray-400 border border-[#452c5d]/50 hover:border-violet-500/50 hover:text-violet-400"
                 }`}
               >
                 {f === "all"
@@ -1113,7 +1113,7 @@ function Portfolio() {
             {filteredProjects.map((project) => (
               <div
                 key={project.id}
-                className="card-hover group glass rounded-2xl overflow-hidden border border-slate-700/50 hover:border-cyan-500/30 transition-all duration-300"
+                className="card-hover group glass rounded-2xl overflow-hidden border border-[#452c5d]/50 hover:border-violet-500/30 transition-all duration-300"
               >
                 {/* Project Image */}
                 <button type="button" onClick={() => openProjectPage(project.id)} className="relative h-56 w-full overflow-hidden text-left">
@@ -1125,11 +1125,11 @@ function Portfolio() {
                     alt={project.title}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#160b24] via-transparent to-transparent" />
 
                   {/* Category Badge */}
                   <div className="absolute top-4 right-4">
-                    <span className="px-4 py-2 bg-slate-900  text-sm text-cyan-400 rounded-full border border-cyan-500/30 animate-float">
+                    <span className="px-4 py-2 bg-[#160b24]  text-sm text-violet-400 rounded-full border border-violet-500/30 animate-float">
                       {project.category}
                     </span>
                   </div>
@@ -1137,7 +1137,7 @@ function Portfolio() {
                   {/* Featured Badge */}
                   {project.is_featured && (
                     <div className="absolute top-4 left-4">
-                      <span className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-teal-600 text-slate-900 text-sm font-medium rounded-full flex items-center gap-1">
+                      <span className="px-4 py-2 bg-gradient-to-r from-violet-500 to-purple-600 text-slate-900 text-sm font-medium rounded-full flex items-center gap-1">
                         <Star size={14} className="animate-wiggle" />
                         Featured
                       </span>
@@ -1150,7 +1150,7 @@ function Portfolio() {
                   <button
                     type="button"
                     onClick={() => openProjectPage(project.id)}
-                    className="text-left text-xl font-semibold text-gray-100 mb-3 group-hover:text-cyan-400 transition-colors flex items-center gap-2"
+                    className="text-left text-lg font-semibold text-gray-100 mb-3 group-hover:text-violet-400 transition-colors flex items-center gap-2"
                   >
                     {project.title}
                     <ArrowRight
@@ -1167,7 +1167,7 @@ function Portfolio() {
                     {project.tech.map((t) => (
                       <span
                         key={t}
-                        className="px-3 py-1 bg-slate-800 border border-slate-700/50 text-xs text-gray-300 rounded-lg hover:border-cyan-500/50 hover:text-cyan-400 transition-all duration-300"
+                        className="px-3 py-1 bg-[#211032] border border-[#452c5d]/50 text-xs text-gray-300 rounded-lg hover:border-violet-500/50 hover:text-violet-400 transition-all duration-300"
                       >
                         {t}
                       </span>
@@ -1179,7 +1179,7 @@ function Portfolio() {
                     <button
                       type="button"
                       onClick={() => openProjectPage(project.id)}
-                      className="btn-primary flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-teal-600 text-slate-900 text-sm font-medium rounded-xl hover:shadow-lg hover:shadow-cyan-500/30 transition-all duration-300"
+                      className="btn-primary flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-500 to-purple-600 text-slate-900 text-sm font-medium rounded-xl hover:shadow-lg hover:shadow-violet-500/30 transition-all duration-300"
                     >
                       <ArrowRight size={16} />
                       View Details
@@ -1189,7 +1189,7 @@ function Portfolio() {
                         href={project.live_url}
                         target="_blank"
                         rel="noreferrer"
-                        className="btn-secondary flex items-center gap-2 px-5 py-2.5 border border-slate-600 text-gray-300 text-sm font-medium rounded-xl hover:border-cyan-500 hover:text-cyan-400 transition-all duration-300"
+                        className="btn-secondary flex items-center gap-2 px-5 py-2.5 border border-[#5a3b73] text-gray-300 text-sm font-medium rounded-xl hover:border-violet-500 hover:text-violet-400 transition-all duration-300"
                       >
                         <ExternalLink size={16} />
                         Live Demo
@@ -1200,7 +1200,7 @@ function Portfolio() {
                         href={project.github_url}
                         target="_blank"
                         rel="noreferrer"
-                        className="btn-secondary flex items-center gap-2 px-5 py-2.5 border border-slate-600 text-gray-300 text-sm font-medium rounded-xl hover:border-cyan-500 hover:text-cyan-400 transition-all duration-300"
+                        className="btn-secondary flex items-center gap-2 px-5 py-2.5 border border-[#5a3b73] text-gray-300 text-sm font-medium rounded-xl hover:border-violet-500 hover:text-violet-400 transition-all duration-300"
                       >
                         <Github size={16} />
                         Code
@@ -1219,26 +1219,26 @@ function Portfolio() {
         id="experience"
         className="py-24 lg:py-32 relative overflow-hidden"
       >
-        <div className="absolute inset-0 bg-slate-900" />
+        <div className="absolute inset-0 bg-[#160b24]" />
 
         {/* Decorative blobs */}
-        <div className="absolute top-1/3 left-10 w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl animate-morph" />
-        <div className="absolute bottom-1/4 right-10 w-80 h-80 bg-teal-500/5 rounded-full blur-3xl animate-morph animation-delay-2000" />
+        <div className="absolute top-1/3 left-10 w-64 h-64 bg-violet-500/5 rounded-full blur-3xl animate-morph" />
+        <div className="absolute bottom-1/4 right-10 w-80 h-80 bg-purple-500/5 rounded-full blur-3xl animate-morph animation-delay-2000" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
+          <div className="text-left mb-16">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">
               <span className="text-gray-100">Work </span>
               <span className="text-gradient">Experience</span>
             </h2>
-            <div className="w-20 h-1 bg-gradient-to-r from-cyan-500 to-teal-600 mx-auto rounded-full animate-scale-up" />
+            <div className="w-20 h-1 bg-gradient-to-r from-violet-500 to-purple-600 rounded-full animate-scale-up" />
           </div>
 
           {/* Timeline */}
           <div className="max-w-3xl mx-auto">
             <div className="relative">
               {/* Timeline line */}
-              <div className="absolute left-4 md:left-1/2 transform md:-translate-x-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-cyan-500 via-teal-500 to-teal-400 rounded-full shadow-lg shadow-cyan-500/20" />
+              <div className="absolute left-4 md:left-1/2 transform md:-translate-x-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-violet-500 via-purple-500 to-purple-400 rounded-full shadow-lg shadow-violet-500/20" />
 
               {experiences.map((exp, index) => (
                 <div
@@ -1252,24 +1252,24 @@ function Portfolio() {
 
                   {/* Timeline node */}
                   <div className="absolute left-4 md:left-1/2 transform -translate-x-1/2 z-10">
-                    <div className="w-5 h-5 bg-gradient-to-br from-cyan-400 to-teal-600 rounded-full border-4 border-slate-900 shadow-lg shadow-cyan-500/30 animate-pulse-soft" />
+                    <div className="w-5 h-5 bg-gradient-to-br from-violet-400 to-purple-600 rounded-full border-4 border-slate-900 shadow-lg shadow-violet-500/30 animate-pulse-soft" />
                   </div>
 
                   <div className="ml-12 md:ml-0 md:flex-1">
                     <div
-                      className={`card-hover glass rounded-2xl p-6 border border-slate-700/50 hover:border-cyan-500/30 transition-all duration-300 ${
+                      className={`card-hover glass rounded-2xl p-6 border border-[#452c5d]/50 hover:border-violet-500/30 transition-all duration-300 ${
                         index % 2 === 0 ? "md:mr-8" : "md:ml-8"
                       }`}
                     >
                       <div className="flex flex-wrap items-center gap-3 mb-3">
-                        <h3 className="text-lg font-semibold text-gray-100">
+                        <h3 className="text-base font-semibold text-gray-100">
                           {exp.title}
                         </h3>
-                        <span className="px-4 py-1.5 bg-gradient-to-r from-cyan-500/20 to-teal-500/20 text-cyan-400 text-sm rounded-full border border-cyan-500/30">
+                        <span className="px-4 py-1.5 bg-gradient-to-r from-violet-500/20 to-purple-500/20 text-violet-400 text-sm rounded-full border border-violet-500/30">
                           {exp.period}
                         </span>
                       </div>
-                      <p className="text-cyan-400/80 mb-4 text-lg font-medium">
+                      <p className="text-violet-400/80 mb-4 text-base font-medium">
                         {exp.company}
                       </p>
                       <p className="text-gray-400 leading-relaxed">
@@ -1289,22 +1289,22 @@ function Portfolio() {
         id="certificates"
         className="py-24 lg:py-32 relative overflow-hidden"
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#160b24] via-[#0b0614] to-[#160b24]" />
 
         {/* Background elements */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-          <div className="absolute top-20 right-10 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl animate-morph" />
-          <div className="absolute bottom-20 left-10 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl animate-morph animation-delay-2000" />
+          <div className="absolute top-20 right-10 w-72 h-72 bg-violet-500/10 rounded-full blur-3xl animate-morph" />
+          <div className="absolute bottom-20 left-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-morph animation-delay-2000" />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
+          <div className="text-left mb-16">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">
               <span className="text-gray-100">Professional </span>
               <span className="text-gradient">Certifications</span>
             </h2>
-            <div className="w-20 h-1 bg-gradient-to-r from-cyan-500 to-teal-600 mx-auto rounded-full animate-scale-up" />
-            <p className="text-gray-400 mt-6 max-w-2xl mx-auto">
+            <div className="w-20 h-1 bg-gradient-to-r from-violet-500 to-purple-600 rounded-full animate-scale-up" />
+            <p className="text-gray-400 mt-6 max-w-2xl">
               Industry-recognized certifications that validate my expertise and
               commitment to continuous learning.
             </p>
@@ -1315,7 +1315,7 @@ function Portfolio() {
             {certificates.map((certificate) => (
               <div
                 key={certificate.id}
-                className="card-hover group glass rounded-2xl overflow-hidden border border-slate-700/50 hover:border-cyan-500/30 transition-all duration-300"
+                className="card-hover group glass rounded-2xl overflow-hidden border border-[#452c5d]/50 hover:border-violet-500/30 transition-all duration-300"
               >
                 {/* Certificate Image */}
                 <div className="relative h-48 overflow-hidden">
@@ -1327,11 +1327,11 @@ function Portfolio() {
                     alt={certificate.title}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#160b24] via-transparent to-transparent" />
 
                   {/* Award Badge */}
                   <div className="absolute top-4 right-4">
-                    <div className="p-3 bg-gradient-to-br from-cyan-500 to-teal-600 rounded-xl shadow-lg">
+                    <div className="p-3 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl shadow-lg">
                       <Award className="text-white" size={24} />
                     </div>
                   </div>
@@ -1339,10 +1339,10 @@ function Portfolio() {
 
                 {/* Certificate Info */}
                 <div className="p-6">
-                  <h3 className="text-lg font-semibold text-gray-100 mb-2 group-hover:text-cyan-400 transition-colors">
+                  <h3 className="text-base font-semibold text-gray-100 mb-2 group-hover:text-violet-400 transition-colors">
                     {certificate.title}
                   </h3>
-                  <p className="text-cyan-400 text-sm font-medium mb-2">
+                  <p className="text-violet-400 text-sm font-medium mb-2">
                     {certificate.issuer}
                   </p>
                   <p className="text-gray-500 text-sm mb-4">
@@ -1358,7 +1358,7 @@ function Portfolio() {
                   {/* Credential Info */}
                   <div className="flex flex-wrap items-center gap-2">
                     {certificate.credential_id && (
-                      <span className="px-3 py-1 bg-slate-800 border border-slate-700/50 text-xs text-gray-400 rounded-lg">
+                      <span className="px-3 py-1 bg-[#211032] border border-[#452c5d]/50 text-xs text-gray-400 rounded-lg">
                         ID: {certificate.credential_id}
                       </span>
                     )}
@@ -1367,7 +1367,7 @@ function Portfolio() {
                         href={certificate.credential_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="px-3 py-1 bg-cyan-500/10 border border-cyan-500/30 text-xs text-cyan-400 rounded-lg hover:bg-cyan-500/20 transition-colors flex items-center gap-1"
+                        className="px-3 py-1 bg-violet-500/10 border border-violet-500/30 text-xs text-violet-400 rounded-lg hover:bg-violet-500/20 transition-colors flex items-center gap-1"
                       >
                         <ExternalLink size={12} />
                         Verify
@@ -1389,20 +1389,20 @@ function Portfolio() {
 
       {/* Contact Section */}
       <section id="contact" className="py-24 lg:py-32 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#160b24] via-[#0b0614] to-[#0b0614]" />
 
         {/* Background blobs */}
-        <div className="absolute top-1/2 left-1/4 w-80 h-80 bg-cyan-500/5 rounded-full blur-3xl animate-morph" />
-        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-teal-500/5 rounded-full blur-3xl animate-morph animation-delay-1000" />
+        <div className="absolute top-1/2 left-1/4 w-80 h-80 bg-violet-500/5 rounded-full blur-3xl animate-morph" />
+        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-purple-500/5 rounded-full blur-3xl animate-morph animation-delay-1000" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
+          <div className="text-left mb-16">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">
               <span className="text-gray-100">Get In </span>
               <span className="text-gradient">Touch</span>
             </h2>
-            <div className="w-20 h-1 bg-gradient-to-r from-cyan-500 to-teal-600 mx-auto rounded-full animate-scale-up" />
-            <p className="text-gray-400 mt-6 max-w-2xl mx-auto">
+            <div className="w-20 h-1 bg-gradient-to-r from-violet-500 to-purple-600 rounded-full animate-scale-up" />
+            <p className="text-gray-400 mt-6 max-w-2xl">
               Have a project in mind or want to collaborate? I'd love to hear
               from you.
             </p>
@@ -1417,11 +1417,11 @@ function Portfolio() {
                 { icon: Phone, label: "Phone", value: contact?.phone },
               ].map((item, index) => (
                 <div key={index} className="flex items-start gap-4">
-                  <div className="p-4 bg-gradient-to-br from-cyan-500/20 to-teal-500/20 rounded-xl animate-pulse-soft">
-                    <item.icon className="text-cyan-400" size={28} />
+                  <div className="p-4 bg-gradient-to-br from-violet-500/20 to-purple-500/20 rounded-xl animate-pulse-soft">
+                    <item.icon className="text-violet-400" size={28} />
                   </div>
-                  <div className="card-hover glass rounded-xl p-4 flex-1 border border-slate-700/50 hover:border-cyan-500/30 transition-all duration-300">
-                    <h3 className="text-lg font-semibold text-gray-100 mb-1">
+                  <div className="card-hover glass rounded-xl p-4 flex-1 border border-[#452c5d]/50 hover:border-violet-500/30 transition-all duration-300">
+                    <h3 className="text-base font-semibold text-gray-100 mb-1">
                       {item.label}
                     </h3>
                     <p className="text-gray-400">{item.value}</p>
@@ -1433,13 +1433,13 @@ function Portfolio() {
               <div className="flex gap-4 pt-4">
                 <a
                   href={contact?.github_url || "#"}
-                  className="icon-bounce p-4 glass rounded-xl text-gray-400 hover:text-cyan-400 hover:scale-110 transition-all duration-300 border border-slate-700/50 hover:border-cyan-500/50"
+                  className="icon-bounce p-4 glass rounded-xl text-gray-400 hover:text-violet-400 hover:scale-110 transition-all duration-300 border border-[#452c5d]/50 hover:border-violet-500/50"
                 >
                   <Github size={28} />
                 </a>
                 <a
                   href={contact?.linkedin_url || "#"}
-                  className="icon-bounce p-4 glass rounded-xl text-gray-400 hover:text-cyan-400 hover:scale-110 transition-all duration-300 border border-slate-700/50 hover:border-cyan-500/50"
+                  className="icon-bounce p-4 glass rounded-xl text-gray-400 hover:text-violet-400 hover:scale-110 transition-all duration-300 border border-[#452c5d]/50 hover:border-violet-500/50"
                 >
                   <Linkedin size={28} />
                 </a>
@@ -1449,7 +1449,7 @@ function Portfolio() {
             {/* Contact Form */}
             <form
               onSubmit={handleSubmit}
-              className="glass rounded-2xl p-8 border border-slate-700/50"
+              className="glass rounded-2xl p-8 border border-[#452c5d]/50"
             >
               <div className="space-y-6">
                 {[
@@ -1479,7 +1479,7 @@ function Portfolio() {
                           [field.key]: e.target.value,
                         })
                       }
-                      className="w-full px-5 py-4 bg-slate-800 border border-slate-700/50 rounded-xl text-gray-100 placeholder-gray-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300"
+                      className="w-full px-5 py-4 bg-[#211032] border border-[#452c5d]/50 rounded-xl text-gray-100 placeholder-gray-500 focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-all duration-300"
                       placeholder={field.placeholder}
                       required
                     />
@@ -1496,7 +1496,7 @@ function Portfolio() {
                       setFormData({ ...formData, message: e.target.value })
                     }
                     rows={5}
-                    className="w-full px-5 py-4 bg-slate-800 border border-slate-700/50 rounded-xl text-gray-100 placeholder-gray-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300 resize-none"
+                    className="w-full px-5 py-4 bg-[#211032] border border-[#452c5d]/50 rounded-xl text-gray-100 placeholder-gray-500 focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-all duration-300 resize-none"
                     placeholder="Tell me about your project..."
                     required
                   />
@@ -1505,7 +1505,7 @@ function Portfolio() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="btn-primary w-full py-4 bg-gradient-to-r from-cyan-500 to-teal-600 text-slate-900 font-semibold rounded-xl hover:shadow-lg hover:shadow-cyan-500/30 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed group"
+                  className="btn-primary w-full py-4 bg-gradient-to-r from-violet-500 to-purple-600 text-slate-900 font-semibold rounded-xl hover:shadow-lg hover:shadow-violet-500/30 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed group"
                 >
                   {isSubmitting ? (
                     <>
@@ -1549,8 +1549,8 @@ function Portfolio() {
       <LiveChatWidget />
 
       {/* Footer */}
-      <footer className="py-8 border-t border-slate-800 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 to-transparent" />
+      <footer className="py-8 border-t border-[#322044] relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0b0614] to-transparent" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-4">
@@ -1572,7 +1572,7 @@ function Portfolio() {
                 <a
                   key={i}
                   href={item.href || "#"}
-                  className="p-2 text-gray-500 hover:text-cyan-400 transition-all duration-300 hover:scale-110 animate-float"
+                  className="p-2 text-gray-500 hover:text-violet-400 transition-all duration-300 hover:scale-110 animate-float"
                   style={{ animationDelay: `${i * 0.3}s` }}
                 >
                   <item.icon size={20} />
@@ -1619,54 +1619,54 @@ function ResearchPage({
   useTactileUiFeedback("research");
 
   return (
-    <div className="portfolio-glass-theme min-h-screen bg-slate-950 text-gray-100">
+    <div className="portfolio-glass-theme min-h-screen bg-[#0b0614] text-gray-100">
       <nav className="fixed left-0 right-0 top-3 z-50 px-3 sm:top-4 sm:px-4">
-        <div className="mx-auto flex w-fit items-center gap-2 rounded-full border border-slate-700 bg-slate-900 px-2.5 py-1.5 shadow-2xl sm:px-3">
+        <div className="mx-auto flex w-fit items-center gap-2 rounded-full border border-[#452c5d] bg-[#160b24] px-2.5 py-1.5 shadow-2xl sm:px-3">
           <button
             onClick={onBack}
-            className="inline-flex h-9 items-center gap-2 rounded-full px-3 text-sm font-semibold text-gray-200 transition hover:bg-slate-800 hover:text-cyan-200"
+            className="inline-flex h-9 items-center gap-2 rounded-full px-3 text-sm font-semibold text-gray-200 transition hover:bg-[#211032] hover:text-violet-200"
           >
             <ArrowLeft size={17} /> Home
           </button>
           <div className="h-6 w-px bg-slate-700" />
-          <div className="px-3 text-sm font-bold text-cyan-200">Research</div>
+          <div className="px-3 text-sm font-bold text-violet-200">Research</div>
         </div>
       </nav>
 
       <main className="relative overflow-hidden px-4 pb-24 pt-28 sm:px-6 lg:px-8 lg:pt-32">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(34,211,238,0.12),transparent_32%),linear-gradient(180deg,#020617,#0f172a_50%,#020617)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(139,92,246,0.12),transparent_32%),linear-gradient(180deg,#0b0614,#160b24_50%,#0b0614)]" />
         <div className="relative z-10 mx-auto max-w-6xl">
-          <header className="mx-auto mb-12 max-w-3xl text-center">
-            <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-cyan-300/20 bg-slate-900 text-cyan-300">
+          <header className="mb-12 max-w-3xl text-left">
+            <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-violet-300/20 bg-[#160b24] text-violet-300">
               <BookOpen size={28} />
             </div>
-            <h1 className="text-4xl font-black text-white sm:text-5xl">Published Research</h1>
-            <p className="mt-4 text-base leading-7 text-gray-400 sm:text-lg">
+            <h1 className="text-3xl font-black text-white sm:text-4xl">Published Research</h1>
+            <p className="mt-4 text-base leading-7 text-gray-400 sm:text-base">
               Publications, peer-reviewed research, conference work, and scholarly contributions by {about?.name || "Fahimul Arefin"}.
             </p>
           </header>
 
           {research.length === 0 ? (
-            <div className="rounded-3xl border border-slate-800 bg-slate-900 p-10 text-center text-gray-400">
+            <div className="rounded-3xl border border-[#322044] bg-[#160b24] p-10 text-center text-gray-400">
               Published research will appear here after it is added from the admin dashboard.
             </div>
           ) : (
             <div className="space-y-6">
               {research.map((item) => (
-                <article key={item.id} className="overflow-hidden rounded-3xl border border-slate-800 bg-slate-900 shadow-xl">
+                <article key={item.id} className="overflow-hidden rounded-3xl border border-[#322044] bg-[#160b24] shadow-xl">
                   <div className={item.image_url ? "grid lg:grid-cols-[280px_1fr]" : ""}>
                     {item.image_url && (
-                      <div className="min-h-56 bg-slate-950">
+                      <div className="min-h-56 bg-[#0b0614]">
                         <img src={item.image_url} alt={item.title} className="h-full w-full object-cover" />
                       </div>
                     )}
                     <div className="p-6 sm:p-8">
-                      <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-wider text-cyan-300">
+                      <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-wider text-violet-300">
                         {item.journal && <span>{item.journal}</span>}
                         {item.journal && item.publication_date && <span className="text-slate-600">•</span>}
                         {item.publication_date && <span>{item.publication_date}</span>}
                       </div>
-                      <h2 className="mt-3 text-2xl font-black leading-tight text-white sm:text-3xl">{item.title}</h2>
+                      <h2 className="mt-3 text-xl font-black leading-tight text-white sm:text-2xl">{item.title}</h2>
                       {item.authors?.length > 0 && (
                         <p className="mt-3 text-sm leading-6 text-gray-400">{item.authors.join(', ')}</p>
                       )}
@@ -1676,19 +1676,19 @@ function ResearchPage({
                       {item.keywords?.length > 0 && (
                         <div className="mt-5 flex flex-wrap gap-2">
                           {item.keywords.map((keyword) => (
-                            <span key={keyword} className="rounded-full border border-slate-700 bg-slate-950 px-3 py-1 text-xs font-medium text-gray-300">{keyword}</span>
+                            <span key={keyword} className="rounded-full border border-[#452c5d] bg-[#0b0614] px-3 py-1 text-xs font-medium text-gray-300">{keyword}</span>
                           ))}
                         </div>
                       )}
                       {(item.paper_url || item.doi_url) && (
                         <div className="mt-6 flex flex-wrap gap-3">
                           {item.paper_url && (
-                            <a href={item.paper_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full bg-cyan-400 px-4 py-2 text-sm font-bold text-slate-950 transition hover:bg-cyan-300">
+                            <a href={item.paper_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full bg-violet-400 px-4 py-2 text-sm font-bold text-[#0b0614] transition hover:bg-violet-300">
                               View Publication <ExternalLink size={15} />
                             </a>
                           )}
                           {item.doi_url && (
-                            <a href={item.doi_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full border border-slate-700 bg-slate-950 px-4 py-2 text-sm font-bold text-gray-200 transition hover:border-cyan-300/40 hover:text-cyan-200">
+                            <a href={item.doi_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full border border-[#452c5d] bg-[#0b0614] px-4 py-2 text-sm font-bold text-gray-200 transition hover:border-violet-300/40 hover:text-violet-200">
                               DOI <ExternalLink size={15} />
                             </a>
                           )}
@@ -1785,14 +1785,14 @@ function ProjectDetailsPage({
 
   if (!project) {
     return (
-      <div className="min-h-screen bg-slate-950 text-gray-100 flex items-center justify-center px-4">
-        <div className="max-w-lg text-center glass rounded-3xl border border-slate-700/60 p-8">
-          <h1 className="text-3xl font-bold mb-4">Project not found</h1>
+      <div className="min-h-screen bg-[#0b0614] text-gray-100 flex items-center justify-center px-4">
+        <div className="max-w-lg text-center glass rounded-3xl border border-[#452c5d]/60 p-8">
+          <h1 className="text-2xl font-bold mb-4">Project not found</h1>
           <p className="text-gray-400 mb-6">This project page may have been removed or the link is incorrect.</p>
           <button
             type="button"
             onClick={onBack}
-            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-600 px-5 py-3 font-semibold text-slate-950"
+            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-violet-500 to-purple-600 px-5 py-3 font-semibold text-[#0b0614]"
           >
             <ArrowLeft size={18} /> Back to Projects
           </button>
@@ -1802,14 +1802,14 @@ function ProjectDetailsPage({
   }
 
   return (
-    <div className="portfolio-glass-theme min-h-screen bg-slate-950 text-gray-100 overflow-x-hidden">
+    <div className="portfolio-glass-theme min-h-screen bg-[#0b0614] text-gray-100 overflow-x-hidden">
       <div className="fixed left-0 right-0 top-3 z-50 px-3 sm:top-4 sm:px-4">
         <div className="mx-auto flex w-fit max-w-[calc(100vw-1.5rem)] items-center justify-center">
           <div className="glass-pill-nav flex h-12 items-center rounded-full px-2 py-1.5 shadow-2xl sm:h-14 sm:px-3">
             <button
               type="button"
               onClick={onBack}
-              className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-gray-200 transition-all hover:bg-slate-800 hover:text-cyan-100"
+              className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-gray-200 transition-all hover:bg-[#211032] hover:text-violet-100"
             >
               <ArrowLeft size={17} /> Back to Projects
             </button>
@@ -1819,22 +1819,22 @@ function ProjectDetailsPage({
 
       <main>
         <section className="relative overflow-hidden pb-16 pt-24 lg:pt-28">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(6,182,212,0.18),_transparent_35%),radial-gradient(circle_at_bottom_right,_rgba(20,184,166,0.14),_transparent_32%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(124,58,237,0.18),_transparent_35%),radial-gradient(circle_at_bottom_right,_rgba(107,33,168,0.14),_transparent_32%)]" />
           <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
               <div>
-                <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-4 py-2 text-sm font-semibold text-cyan-300">
+                <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-violet-500/30 bg-violet-500/10 px-4 py-2 text-sm font-semibold text-violet-300">
                   <Briefcase size={16} /> {project.category}
                 </div>
-                <h1 className="text-4xl font-black leading-tight text-gray-100 sm:text-5xl lg:text-6xl">
+                <h1 className="text-3xl font-black leading-tight text-gray-100 sm:text-4xl lg:text-5xl">
                   {project.title}
                 </h1>
-                <p className="mt-6 text-lg leading-relaxed text-gray-300">
+                <p className="mt-6 text-base leading-relaxed text-gray-300">
                   {project.description}
                 </p>
                 <div className="mt-6 flex flex-wrap gap-2">
                   {project.tech.map((tech) => (
-                    <span key={tech} className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-sm text-gray-300">
+                    <span key={tech} className="rounded-lg border border-[#452c5d] bg-[#160b24] px-3 py-1.5 text-sm text-gray-300">
                       {tech}
                     </span>
                   ))}
@@ -1845,7 +1845,7 @@ function ProjectDetailsPage({
                       href={project.live_url}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-600 px-5 py-3 font-semibold text-slate-950 hover:shadow-lg hover:shadow-cyan-500/25 transition-all"
+                      className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-violet-500 to-purple-600 px-5 py-3 font-semibold text-[#0b0614] hover:shadow-lg hover:shadow-violet-500/25 transition-all"
                     >
                       <ExternalLink size={18} /> Live Demo
                     </a>
@@ -1855,7 +1855,7 @@ function ProjectDetailsPage({
                       href={project.github_url}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-2 rounded-xl border border-slate-600 px-5 py-3 font-semibold text-gray-300 hover:border-cyan-500 hover:text-cyan-400 transition-all"
+                      className="inline-flex items-center gap-2 rounded-xl border border-[#5a3b73] px-5 py-3 font-semibold text-gray-300 hover:border-violet-500 hover:text-violet-400 transition-all"
                     >
                       <Github size={18} /> Source Code
                     </a>
@@ -1863,7 +1863,7 @@ function ProjectDetailsPage({
                 </div>
               </div>
 
-              <div className="glass overflow-hidden rounded-3xl border border-slate-700/60 shadow-2xl shadow-cyan-950/30">
+              <div className="glass overflow-hidden rounded-3xl border border-[#452c5d]/60 shadow-2xl shadow-violet-950/30">
                 <img
                   src={project.image_url || gallery[0] || "https://images.pexels.com/photos/230544/pexels-photo-230544.jpeg?auto=compress&cs=tinysrgb&w=1200"}
                   alt={project.title}
@@ -1876,8 +1876,8 @@ function ProjectDetailsPage({
 
         <section className="py-12">
           <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[0.85fr_0.15fr] lg:px-8">
-            <div className="glass rounded-3xl border border-slate-700/60 p-6 sm:p-8">
-              <h2 className="mb-6 text-2xl font-bold text-gray-100">Project Details</h2>
+            <div className="glass rounded-3xl border border-[#452c5d]/60 p-6 sm:p-8">
+              <h2 className="mb-6 text-xl font-bold text-gray-100">Project Details</h2>
               <div className="space-y-5 text-gray-300 leading-relaxed">
                 {(project.detailed_description || project.description)
                   .split(/\n\s*\n|\n/)
@@ -1889,12 +1889,12 @@ function ProjectDetailsPage({
               </div>
             </div>
 
-            <div className="glass rounded-3xl border border-slate-700/60 p-6">
-              <h3 className="mb-4 text-lg font-bold text-gray-100">Summary</h3>
+            <div className="glass rounded-3xl border border-[#452c5d]/60 p-6">
+              <h3 className="mb-4 text-base font-bold text-gray-100">Summary</h3>
               <div className="space-y-4 text-sm">
                 <div>
                   <p className="text-gray-500">Category</p>
-                  <p className="text-cyan-300">{project.category}</p>
+                  <p className="text-violet-300">{project.category}</p>
                 </div>
                 <div>
                   <p className="text-gray-500">Featured</p>
@@ -1914,7 +1914,7 @@ function ProjectDetailsPage({
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <div className="mb-8 flex items-center justify-between gap-4">
                 <div>
-                  <h2 className="text-3xl font-bold text-gray-100">Project Gallery</h2>
+                  <h2 className="text-2xl font-bold text-gray-100">Project Gallery</h2>
                   <p className="mt-2 text-gray-400">All screenshots and photos added from the admin dashboard.</p>
                 </div>
               </div>
@@ -1925,7 +1925,7 @@ function ProjectDetailsPage({
                     href={url}
                     target="_blank"
                     rel="noreferrer"
-                    className="group overflow-hidden rounded-2xl border border-slate-700/60 bg-slate-900 shadow-lg shadow-slate-950/40 transition-all hover:-translate-y-1 hover:border-cyan-500/50"
+                    className="group overflow-hidden rounded-2xl border border-[#452c5d]/60 bg-[#160b24] shadow-lg shadow-[#08030f]/40 transition-all hover:-translate-y-1 hover:border-violet-500/50"
                   >
                     <img src={url} alt={`${project.title} screenshot ${index + 1}`} className="h-64 w-full object-cover transition-transform duration-700 group-hover:scale-105" />
                   </a>
@@ -1938,8 +1938,8 @@ function ProjectDetailsPage({
         <section className="py-12">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-              <div className="glass rounded-3xl border border-slate-700/60 p-6 sm:p-8">
-                <h2 className="text-2xl font-bold text-gray-100">Comment on this project</h2>
+              <div className="glass rounded-3xl border border-[#452c5d]/60 p-6 sm:p-8">
+                <h2 className="text-xl font-bold text-gray-100">Comment on this project</h2>
                 <p className="mt-2 text-sm text-gray-400">Use a valid email address to post your comment. Your email stays private.</p>
 
                 <form onSubmit={submitProjectComment} className="mt-6 space-y-4">
@@ -1953,7 +1953,7 @@ function ProjectDetailsPage({
                         maxLength={80}
                         value={commentForm.name}
                         onChange={(e) => setCommentForm((current) => ({ ...current, name: e.target.value }))}
-                        className="w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-gray-100 outline-none transition-all focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20"
+                        className="w-full rounded-xl border border-[#452c5d] bg-[#160b24] px-4 py-3 text-gray-100 outline-none transition-all focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
                         placeholder="Your name"
                       />
                     </div>
@@ -1965,7 +1965,7 @@ function ProjectDetailsPage({
                         maxLength={160}
                         value={commentForm.email}
                         onChange={(e) => setCommentForm((current) => ({ ...current, email: e.target.value }))}
-                        className="w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-gray-100 outline-none transition-all focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20"
+                        className="w-full rounded-xl border border-[#452c5d] bg-[#160b24] px-4 py-3 text-gray-100 outline-none transition-all focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
                         placeholder="name@example.com"
                       />
                     </div>
@@ -1980,7 +1980,7 @@ function ProjectDetailsPage({
                       rows={5}
                       value={commentForm.comment}
                       onChange={(e) => setCommentForm((current) => ({ ...current, comment: e.target.value }))}
-                      className="w-full resize-none rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-gray-100 outline-none transition-all focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20"
+                      className="w-full resize-none rounded-xl border border-[#452c5d] bg-[#160b24] px-4 py-3 text-gray-100 outline-none transition-all focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
                       placeholder="Write your comment about this project..."
                     />
                     <p className="mt-1 text-right text-xs text-gray-500">{commentForm.comment.length}/1500</p>
@@ -1992,7 +1992,7 @@ function ProjectDetailsPage({
                   <button
                     type="submit"
                     disabled={commentSubmitting}
-                    className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-600 px-5 py-3 font-semibold text-slate-950 transition-all hover:shadow-lg hover:shadow-cyan-500/25 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-violet-500 to-purple-600 px-5 py-3 font-semibold text-[#0b0614] transition-all hover:shadow-lg hover:shadow-violet-500/25 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {commentSubmitting ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
                     {commentSubmitting ? 'Posting...' : 'Post Comment'}
@@ -2000,26 +2000,26 @@ function ProjectDetailsPage({
                 </form>
               </div>
 
-              <div className="glass rounded-3xl border border-slate-700/60 p-6 sm:p-8">
+              <div className="glass rounded-3xl border border-[#452c5d]/60 p-6 sm:p-8">
                 <div className="mb-6 flex items-center justify-between gap-4">
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-100">Project Comments</h2>
+                    <h2 className="text-xl font-bold text-gray-100">Project Comments</h2>
                     <p className="mt-1 text-sm text-gray-400">{comments.length} comment{comments.length === 1 ? '' : 's'}</p>
                   </div>
                 </div>
 
                 {commentsLoading ? (
                   <div className="flex items-center gap-3 text-gray-400">
-                    <Loader2 size={20} className="animate-spin text-cyan-400" /> Loading comments...
+                    <Loader2 size={20} className="animate-spin text-violet-400" /> Loading comments...
                   </div>
                 ) : comments.length === 0 ? (
-                  <div className="rounded-2xl border border-slate-700/60 bg-slate-900 p-6 text-center text-gray-400">
+                  <div className="rounded-2xl border border-[#452c5d]/60 bg-[#160b24] p-6 text-center text-gray-400">
                     No comments yet. Be the first to comment on this project.
                   </div>
                 ) : (
                   <div className="max-h-[560px] space-y-4 overflow-y-auto pr-1">
                     {comments.map((item) => (
-                      <article key={item.id} className="rounded-2xl border border-slate-700/60 bg-slate-900/75 p-4">
+                      <article key={item.id} className="rounded-2xl border border-[#452c5d]/60 bg-[#160b24]/75 p-4">
                         <div className="mb-3 flex items-start justify-between gap-3">
                           <div>
                             <h3 className="font-semibold text-gray-100">{item.name}</h3>
@@ -2039,18 +2039,18 @@ function ProjectDetailsPage({
         {relatedProjects.length > 0 && (
           <section className="py-16">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <h2 className="mb-8 text-3xl font-bold text-gray-100">More Projects</h2>
+              <h2 className="mb-8 text-2xl font-bold text-gray-100">More Projects</h2>
               <div className="grid gap-5 md:grid-cols-3">
                 {relatedProjects.map((item) => (
                   <button
                     key={item.id}
                     type="button"
                     onClick={() => onOpenProject(item.id)}
-                    className="group overflow-hidden rounded-2xl border border-slate-700/60 bg-slate-900 text-left transition-all hover:border-cyan-500/50"
+                    className="group overflow-hidden rounded-2xl border border-[#452c5d]/60 bg-[#160b24] text-left transition-all hover:border-violet-500/50"
                   >
                     <img src={item.image_url || "https://images.pexels.com/photos/230544/pexels-photo-230544.jpeg?auto=compress&cs=tinysrgb&w=800"} alt={item.title} className="h-40 w-full object-cover transition-transform duration-700 group-hover:scale-105" />
                     <div className="p-4">
-                      <h3 className="font-semibold text-gray-100 group-hover:text-cyan-400 transition-colors">{item.title}</h3>
+                      <h3 className="font-semibold text-gray-100 group-hover:text-violet-400 transition-colors">{item.title}</h3>
                       <p className="mt-2 line-clamp-2 text-sm text-gray-400">{item.description}</p>
                     </div>
                   </button>
@@ -2065,13 +2065,13 @@ function ProjectDetailsPage({
       <CustomerLiveCall />
       <LiveChatWidget />
 
-      <footer className="border-t border-slate-800 py-8">
+      <footer className="border-t border-[#322044] py-8">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 text-sm text-gray-500 sm:px-6 md:flex-row lg:px-8">
           <p>Made with <Heart size={14} className="inline text-red-500" /> by {about?.name || "Portfolio"}</p>
           <div className="flex items-center gap-4">
-            {contact?.github_url && <a href={contact.github_url} className="hover:text-cyan-400"><Github size={20} /></a>}
-            {contact?.linkedin_url && <a href={contact.linkedin_url} className="hover:text-cyan-400"><Linkedin size={20} /></a>}
-            {contact?.email && <a href={`mailto:${contact.email}`} className="hover:text-cyan-400"><Mail size={20} /></a>}
+            {contact?.github_url && <a href={contact.github_url} className="hover:text-violet-400"><Github size={20} /></a>}
+            {contact?.linkedin_url && <a href={contact.linkedin_url} className="hover:text-violet-400"><Linkedin size={20} /></a>}
+            {contact?.email && <a href={`mailto:${contact.email}`} className="hover:text-violet-400"><Mail size={20} /></a>}
           </div>
         </div>
       </footer>

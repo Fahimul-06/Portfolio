@@ -103,7 +103,7 @@ export function MessagesManager() {
     <div className="space-y-6">
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
+        <div className="bg-[#160b24] border border-[#322044] rounded-xl p-5">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 bg-amber-500/10 rounded-lg">
               <Inbox size={20} className="text-amber-500" />
@@ -112,16 +112,16 @@ export function MessagesManager() {
           </div>
           <p className="text-2xl font-bold text-gray-100">{messages.length}</p>
         </div>
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
+        <div className="bg-[#160b24] border border-[#322044] rounded-xl p-5">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-cyan-500/10 rounded-lg">
-              <Mail size={20} className="text-cyan-400" />
+            <div className="p-2 bg-violet-500/10 rounded-lg">
+              <Mail size={20} className="text-violet-400" />
             </div>
             <span className="text-sm text-gray-400">Unread</span>
           </div>
           <p className="text-2xl font-bold text-gray-100">{unreadCount}</p>
         </div>
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 col-span-2 md:col-span-1">
+        <div className="bg-[#160b24] border border-[#322044] rounded-xl p-5 col-span-2 md:col-span-1">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 bg-emerald-500/10 rounded-lg">
               <CheckCircle2 size={20} className="text-emerald-400" />
@@ -135,7 +135,7 @@ export function MessagesManager() {
       </div>
 
       {messages.length === 0 ? (
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-12 text-center">
+        <div className="bg-[#160b24] border border-[#322044] rounded-xl p-12 text-center">
           <Inbox size={48} className="text-slate-700 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-300">No messages yet</h3>
           <p className="text-gray-500 mt-1">
@@ -143,11 +143,11 @@ export function MessagesManager() {
           </p>
         </div>
       ) : (
-        <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+        <div className="bg-[#160b24] border border-[#322044] rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-slate-800">
+                <tr className="border-b border-[#322044]">
                   <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-6 py-4">
                     Status
                   </th>
@@ -172,8 +172,8 @@ export function MessagesManager() {
                 {messages.map((msg) => (
                   <tr
                     key={msg.id}
-                    className={`group transition-colors hover:bg-slate-800/50 cursor-pointer ${
-                      !msg.is_read ? 'bg-slate-800/30' : ''
+                    className={`group transition-colors hover:bg-[#211032]/50 cursor-pointer ${
+                      !msg.is_read ? 'bg-[#211032]/30' : ''
                     }`}
                     onClick={() => {
                       setSelectedMessage(msg);
@@ -184,7 +184,7 @@ export function MessagesManager() {
                       {msg.is_read ? (
                         <MailOpen size={18} className="text-gray-500" />
                       ) : (
-                        <Mail size={18} className="text-cyan-400" />
+                        <Mail size={18} className="text-violet-400" />
                       )}
                     </td>
                     <td className="px-6 py-4">
@@ -194,7 +194,7 @@ export function MessagesManager() {
                           {msg.name}
                         </span>
                         {!msg.is_read && (
-                          <span className="w-2 h-2 bg-cyan-400 rounded-full" />
+                          <span className="w-2 h-2 bg-violet-400 rounded-full" />
                         )}
                       </div>
                     </td>
@@ -244,10 +244,10 @@ export function MessagesManager() {
           onClick={() => setSelectedMessage(null)}
         >
           <div
-            className="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full shadow-2xl animate-scale-in"
+            className="bg-[#160b24] border border-[#452c5d] rounded-2xl max-w-lg w-full shadow-2xl animate-scale-in"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[#322044]">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-amber-500/10 rounded-lg">
                   <Mail size={20} className="text-amber-500" />
@@ -261,7 +261,7 @@ export function MessagesManager() {
               </div>
               <button
                 onClick={() => setSelectedMessage(null)}
-                className="p-2 text-gray-500 hover:text-gray-300 hover:bg-slate-800 rounded-lg transition-colors"
+                className="p-2 text-gray-500 hover:text-gray-300 hover:bg-[#211032] rounded-lg transition-colors"
               >
                 <X size={18} />
               </button>
@@ -279,14 +279,14 @@ export function MessagesManager() {
                 )}
               </div>
 
-              <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
+              <div className="bg-[#211032]/50 rounded-xl p-4 border border-[#452c5d]/50">
                 <p className="text-gray-300 whitespace-pre-wrap leading-relaxed">
                   {selectedMessage.message}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center justify-between px-6 py-4 border-t border-slate-800">
+            <div className="flex items-center justify-between px-6 py-4 border-t border-[#322044]">
               <a
                 href={`mailto:${selectedMessage.email}`}
                 className="flex items-center gap-2 px-4 py-2 bg-amber-500/10 text-amber-400 rounded-lg hover:bg-amber-500/20 transition-colors text-sm font-medium"

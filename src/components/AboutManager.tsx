@@ -100,8 +100,8 @@ export function AboutManager() {
         </div>
       )}
 
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-6">
-        <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
+      <div className="bg-[#160b24] border border-[#322044] rounded-xl p-6 space-y-6">
+        <div className="flex items-center gap-3 pb-4 border-b border-[#322044]">
           <User className="text-amber-500" size={24} />
           <h2 className="text-lg font-semibold text-gray-100">Personal Information</h2>
         </div>
@@ -113,7 +113,7 @@ export function AboutManager() {
               type="text"
               value={about.name}
               onChange={(e) => setAbout({ ...about, name: e.target.value })}
-              className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+              className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
             />
           </div>
 
@@ -123,7 +123,7 @@ export function AboutManager() {
               type="text"
               value={about.title}
               onChange={(e) => setAbout({ ...about, title: e.target.value })}
-              className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+              className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
             />
           </div>
         </div>
@@ -134,7 +134,7 @@ export function AboutManager() {
             type="text"
             value={about.tagline}
             onChange={(e) => setAbout({ ...about, tagline: e.target.value })}
-            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+            className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
             placeholder="Passionate about building digital experiences"
           />
         </div>
@@ -146,13 +146,13 @@ export function AboutManager() {
             onChange={(e) => setAbout({ ...about, bio: e.target.value })}
             rows={8}
             placeholder={"Write your bio paragraph-wise. Use a blank line between paragraphs."}
-            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors resize-y"
+            className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors resize-y"
           />
         </div>
       </div>
 
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-6">
-        <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
+      <div className="bg-[#160b24] border border-[#322044] rounded-xl p-6 space-y-6">
+        <div className="flex items-center gap-3 pb-4 border-b border-[#322044]">
           <Award className="text-amber-500" size={24} />
           <h2 className="text-lg font-semibold text-gray-100">Statistics</h2>
         </div>
@@ -164,7 +164,7 @@ export function AboutManager() {
               type="number"
               value={about.years_experience}
               onChange={(e) => setAbout({ ...about, years_experience: parseInt(e.target.value) || 0 })}
-              className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+              className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
             />
           </div>
 
@@ -174,14 +174,14 @@ export function AboutManager() {
               type="number"
               value={about.projects_completed}
               onChange={(e) => setAbout({ ...about, projects_completed: parseInt(e.target.value) || 0 })}
-              className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+              className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
             />
           </div>
         </div>
       </div>
 
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-6">
-        <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
+      <div className="bg-[#160b24] border border-[#322044] rounded-xl p-6 space-y-6">
+        <div className="flex items-center gap-3 pb-4 border-b border-[#322044]">
           <Image className="text-amber-500" size={24} />
           <h2 className="text-lg font-semibold text-gray-100">Media Uploads</h2>
         </div>
@@ -200,8 +200,8 @@ export function AboutManager() {
         </div>
       </div>
 
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-6">
-        <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
+      <div className="bg-[#160b24] border border-[#322044] rounded-xl p-6 space-y-6">
+        <div className="flex items-center gap-3 pb-4 border-b border-[#322044]">
           <Palette className="text-amber-500" size={24} />
           <h2 className="text-lg font-semibold text-gray-100">Branding</h2>
         </div>
@@ -225,14 +225,14 @@ export function AboutManager() {
             type="url"
             value={about.logo_url || ''}
             onChange={(e) => setAbout({ ...about, logo_url: e.target.value })}
-            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+            className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
             placeholder="https://..."
           />
         </div>
       </div>
 
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-6">
-        <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
+      <div className="bg-[#160b24] border border-[#322044] rounded-xl p-6 space-y-6">
+        <div className="flex items-center gap-3 pb-4 border-b border-[#322044]">
           <LinkIcon className="text-amber-500" size={24} />
           <h2 className="text-lg font-semibold text-gray-100">External Profile Link (Optional)</h2>
         </div>
@@ -247,14 +247,14 @@ export function AboutManager() {
             type="url"
             value={about.profile_image_url}
             onChange={(e) => setAbout({ ...about, profile_image_url: e.target.value })}
-            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
+            className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors"
             placeholder="https://..."
           />
         </div>
       </div>
 
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-6">
-        <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
+      <div className="bg-[#160b24] border border-[#322044] rounded-xl p-6 space-y-6">
+        <div className="flex items-center gap-3 pb-4 border-b border-[#322044]">
           <Home className="text-amber-500" size={24} />
           <div>
             <h2 className="text-lg font-semibold text-gray-100">Home Section</h2>
@@ -278,7 +278,7 @@ export function AboutManager() {
               })
             }
             rows={5}
-            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors resize-y"
+            className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors resize-y"
             placeholder={"Software Developer\nFull Stack Developer\nMERN Stack Developer"}
           />
           <p className="text-xs text-gray-500 mt-2">
@@ -292,7 +292,7 @@ export function AboutManager() {
             value={about.home_short_description || ''}
             onChange={(e) => setAbout({ ...about, home_short_description: e.target.value })}
             rows={4}
-            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors resize-y"
+            className="w-full px-4 py-3 bg-[#211032] border border-[#452c5d] rounded-lg text-gray-100 focus:outline-none focus:border-amber-500 transition-colors resize-y"
             placeholder="Write a short introduction for the homepage."
           />
         </div>

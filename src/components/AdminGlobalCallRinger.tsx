@@ -272,7 +272,7 @@ export function AdminGlobalCallRinger({ onOpenCalls, activeSection }: AdminGloba
   if (!latestCall || activeSection === 'calls') return null;
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 z-[9999] mx-auto max-w-xl rounded-2xl border border-amber-400/50 bg-slate-950/95 p-4 shadow-2xl shadow-amber-500/20 backdrop-blur md:left-auto md:right-6 md:max-w-md">
+    <div className="fixed bottom-4 left-4 right-4 z-[9999] mx-auto max-w-xl rounded-2xl border border-amber-400/50 bg-[#0b0614]/95 p-4 shadow-2xl shadow-amber-500/20 backdrop-blur md:left-auto md:right-6 md:max-w-md">
       <div className="flex items-start gap-3">
         <div className="rounded-xl bg-amber-400/20 p-3 text-amber-300">
           <BellRing className="animate-pulse" size={26} />
@@ -285,14 +285,14 @@ export function AdminGlobalCallRinger({ onOpenCalls, activeSection }: AdminGloba
             {soundReady ? 'Auto loud ring and incoming-page open are active.' : 'Tap anywhere once if your phone blocks auto sound.'}
           </p>
         </div>
-        <button type="button" onClick={dismiss} className="rounded-lg p-2 text-gray-400 hover:bg-slate-800 hover:text-gray-100" aria-label="Dismiss call alert">
+        <button type="button" onClick={dismiss} className="rounded-lg p-2 text-gray-400 hover:bg-[#211032] hover:text-gray-100" aria-label="Dismiss call alert">
           <X size={18} />
         </button>
       </div>
       <button
         type="button"
         onClick={openCalls}
-        className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-300 to-orange-500 px-4 py-3 font-bold text-slate-950 hover:shadow-lg hover:shadow-amber-500/30"
+        className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-300 to-orange-500 px-4 py-3 font-bold text-[#0b0614] hover:shadow-lg hover:shadow-amber-500/30"
       >
         <PhoneCall size={18} />
         Open Live Calls to Accept
