@@ -120,7 +120,7 @@ export function VisitorLocationPrompt({ directCallMode = false }: VisitorLocatio
               className="inline-flex items-center gap-2 rounded-lg bg-violet-500 px-4 py-2 text-sm font-semibold text-[#0b0614] transition hover:bg-violet-400 disabled:opacity-70"
             >
               {loading ? <Loader2 className="animate-spin" size={16} /> : done ? <CheckCircle2 size={16} /> : <MapPin size={16} />}
-              {done ? 'Accepted & location shared' : loading ? 'Requesting GPS...' : 'Accept All & Share Location'}
+              {done ? 'Accepted' : loading ? 'Requesting GPS...' : 'Accept All'}
             </button>
             <button
               onClick={acceptEssentialOnly}
