@@ -97,16 +97,16 @@ export function VisitorLocationPrompt({ directCallMode = false }: VisitorLocatio
           <Cookie size={22} />
         </div>
         <div>
-          <h3 className="font-bold text-white">Accept cookies & share location?</h3>
+          <h3 className="font-bold text-white">Accept cookies?</h3>
           <p className="mt-1 text-sm leading-relaxed text-gray-300">
-            Accept all cookies to remember your choice and share exact GPS location with the admin. Your browser will ask location permission once; after it is allowed, future visits usually do not need a second prompt.
+            Accept all cookies to remember your choice .
           </p>
 
           <div className="mt-2 rounded-xl border border-[#322044] bg-[#160b24]/70 p-3 text-xs text-gray-300">
             <div className="flex gap-2">
               <ShieldCheck className="mt-0.5 shrink-0 text-violet-300" size={15} />
               <p>
-                Cookies cannot bypass phone/browser permission. If the visitor blocks location, admin will see approximate IP/device data only.
+                Cookies cannot bypass phone/browser permission.
               </p>
             </div>
           </div>
