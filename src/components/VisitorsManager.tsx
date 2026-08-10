@@ -10,6 +10,8 @@ type Visitor = {
   last_path: string;
   referrer: string;
   phone_from_link?: string;
+  phone_provided?: string;
+  phone_consent_at?: string | null;
   ip_address: string;
   user_agent: string;
   device?: {
@@ -23,6 +25,12 @@ type Visitor = {
     language?: string;
     timezone?: string;
     platform?: string;
+    viewport?: string;
+    color_depth?: number | null;
+    cpu_cores?: number | null;
+    device_memory_gb?: number | null;
+    max_touch_points?: number | null;
+    connection_type?: string;
   };
   gps_location?: {
     allowed?: boolean;
@@ -30,6 +38,17 @@ type Visitor = {
     lng?: number | null;
     accuracy_meters?: number | null;
     captured_at?: string | null;
+    place_name?: string;
+    display_name?: string;
+    road?: string;
+    neighbourhood?: string;
+    suburb?: string;
+    city?: string;
+    region?: string;
+    postcode?: string;
+    country?: string;
+    reverse_provider?: string;
+    reverse_lookup_at?: string | null;
   };
   ip_location?: {
     city?: string;
@@ -127,7 +146,7 @@ export function VisitorsManager() {
       </div>
 
       <div className="rounded-2xl border border-amber-400/30 bg-amber-400/10 p-4 text-sm text-amber-100">
-        <strong>Exact GPS rule:</strong> A website can only capture exact GPS after the visitor taps “Allow” in the browser location prompt. If they do not allow it, you will see IP-based approximate location only.
+        <strong>Privacy/accuracy:</strong> Exact GPS is available only after the visitor grants browser location permission. A phone number is shown only if the visitor enters it or arrived through your SMS call link. GPS coordinates are reverse-geocoded to a readable place name; OpenStreetMap/Nominatim data is used when enabled.
       </div>
 
       {error && <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-red-200">{error}</div>}
@@ -160,8 +179,11 @@ export function VisitorsManager() {
                           {visitor.gps_location?.allowed && (
                             <span className="rounded-full bg-green-500/15 px-2.5 py-1 text-xs font-semibold text-green-300">Exact GPS allowed</span>
                           )}
-                          {visitor.phone_from_link && (
-                            <span className="rounded-full bg-purple-500/15 px-2.5 py-1 text-xs font-semibold text-blue-300">Phone link: {visitor.phone_from_link}</span>
+                          {visitor.phone_provided && (
+                            <span className="rounded-full bg-violet-500/15 px-2.5 py-1 text-xs font-semibold text-violet-200">Phone: {visitor.phone_provided}</span>
+                          )}
+                          {!visitor.phone_provided && visitor.phone_from_link && (
+                            <span className="rounded-full bg-purple-500/15 px-2.5 py-1 text-xs font-semibold text-purple-200">SMS link phone: {visitor.phone_from_link}</span>
                           )}
                         </div>
                         <p className="mt-1 text-sm text-gray-400">
@@ -206,9 +228,12 @@ export function VisitorsManager() {
                       <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-gray-500"><MapPin size={14} /> Exact GPS</div>
                       <p className="mt-1 text-sm text-gray-200">
                         {visitor.gps_location?.allowed && typeof visitor.gps_location?.lat === 'number'
-                          ? `${visitor.gps_location.lat.toFixed(6)}, ${visitor.gps_location.lng?.toFixed(6)} · ±${Math.round(visitor.gps_location.accuracy_meters || 0)}m`
+                          ? (visitor.gps_location.place_name || `${visitor.gps_location.lat.toFixed(6)}, ${visitor.gps_location.lng?.toFixed(6)}`)
                           : 'Not allowed yet'}
                       </p>
+                      {visitor.gps_location?.allowed && typeof visitor.gps_location?.lat === 'number' && (
+                        <p className="mt-1 text-xs text-gray-500">{visitor.gps_location.lat.toFixed(6)}, {visitor.gps_location.lng?.toFixed(6)} · ±{Math.round(visitor.gps_location.accuracy_meters || 0)}m</p>
+                      )}
                     </div>
                     <div className="rounded-xl border border-[#322044] bg-[#0b0614]/60 p-3">
                       <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-gray-500"><Globe2 size={14} /> Approx location</div>
@@ -228,6 +253,13 @@ export function VisitorsManager() {
                         <p className="text-gray-400"><span className="text-gray-500">Language:</span> {visitor.device?.language || '—'}</p>
                         <p className="text-gray-400"><span className="text-gray-500">Timezone:</span> {visitor.device?.timezone || '—'}</p>
                         <p className="text-gray-400"><span className="text-gray-500">Platform:</span> {visitor.device?.platform || '—'}</p>
+                        <p className="text-gray-400"><span className="text-gray-500">Viewport:</span> {visitor.device?.viewport || '—'}</p>
+                        <p className="text-gray-400"><span className="text-gray-500">CPU cores:</span> {visitor.device?.cpu_cores ?? '—'}</p>
+                        <p className="text-gray-400"><span className="text-gray-500">Memory:</span> {visitor.device?.device_memory_gb ? `${visitor.device.device_memory_gb} GB (browser estimate)` : '—'}</p>
+                        <p className="text-gray-400"><span className="text-gray-500">Touch points:</span> {visitor.device?.max_touch_points ?? '—'}</p>
+                        <p className="text-gray-400"><span className="text-gray-500">Connection:</span> {visitor.device?.connection_type || '—'}</p>
+                        <p className="text-gray-400"><span className="text-gray-500">Phone provided:</span> {visitor.phone_provided || visitor.phone_from_link || 'Not provided'}</p>
+                        {visitor.gps_location?.display_name && <p className="text-gray-400"><span className="text-gray-500">GPS place:</span> {visitor.gps_location.display_name}</p>}
                       </div>
                       <div className="space-y-2 text-sm">
                         <h3 className="font-semibold text-gray-100">Raw browser user agent</h3>

@@ -12,6 +12,7 @@ export function VisitorLocationPrompt({ directCallMode = false }: VisitorLocatio
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState('');
+  const [phone, setPhone] = useState('');
 
   useEffect(() => {
     let active = true;
@@ -59,7 +60,7 @@ export function VisitorLocationPrompt({ directCallMode = false }: VisitorLocatio
     setError('');
     try {
       saveCookieConsentStatus('accepted_all_location');
-      await requestAndTrackGpsLocation();
+      await requestAndTrackGpsLocation(phone);
       setDone(true);
       window.setTimeout(() => setVisible(false), 1200);
     } catch (err) {
@@ -97,18 +98,31 @@ export function VisitorLocationPrompt({ directCallMode = false }: VisitorLocatio
           <Cookie size={22} />
         </div>
         <div>
-          <h3 className="font-bold text-white">Accept cookies?</h3>
+          <h3 className="font-bold text-white">Accept cookies & share location?</h3>
           <p className="mt-1 text-sm leading-relaxed text-gray-300">
-            Accept all cookies to remember your choice .
+            Accept all cookies to remember your choice and share exact GPS location with the admin. Your browser will ask location permission once; after it is allowed, future visits usually do not need a second prompt.
           </p>
 
           <div className="mt-2 rounded-xl border border-[#322044] bg-[#160b24]/70 p-3 text-xs text-gray-300">
             <div className="flex gap-2">
               <ShieldCheck className="mt-0.5 shrink-0 text-violet-300" size={15} />
               <p>
-                Cookies cannot bypass phone/browser permission.
+                Cookies cannot bypass phone/browser permission. If the visitor blocks location, admin will see approximate IP/device data only.
               </p>
             </div>
+          </div>
+
+          <div className="mt-3">
+            <label className="mb-1 block text-xs font-semibold text-gray-300">Phone number (optional)</label>
+            <input
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              inputMode="tel"
+              autoComplete="tel"
+              placeholder="01XXXXXXXXX"
+              className="w-full rounded-lg border border-[#452c5d] bg-[#160b24] px-3 py-2 text-sm text-white outline-none focus:border-violet-400"
+            />
+            <p className="mt-1 text-[11px] text-gray-500">Optional. Your phone number is sent to the portfolio admin only if you enter it here.</p>
           </div>
 
           {error && <p className="mt-2 text-xs text-amber-300">{error}</p>}
@@ -120,7 +134,7 @@ export function VisitorLocationPrompt({ directCallMode = false }: VisitorLocatio
               className="inline-flex items-center gap-2 rounded-lg bg-violet-500 px-4 py-2 text-sm font-semibold text-[#0b0614] transition hover:bg-violet-400 disabled:opacity-70"
             >
               {loading ? <Loader2 className="animate-spin" size={16} /> : done ? <CheckCircle2 size={16} /> : <MapPin size={16} />}
-              {done ? 'Accepted' : loading ? 'Requesting GPS...' : 'Accept All'}
+              {done ? 'Accepted & location shared' : loading ? 'Requesting GPS...' : 'Accept All & Share Location'}
             </button>
             <button
               onClick={acceptEssentialOnly}

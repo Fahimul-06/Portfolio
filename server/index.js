@@ -51,6 +51,10 @@ const CALL_SMS_TEXT = process.env.CALL_SMS_TEXT || 'Please open this link to cal
 const VISITOR_TRACKING_ENABLED = String(process.env.VISITOR_TRACKING_ENABLED || 'true') === 'true';
 const VISITOR_IP_LOOKUP_ENABLED = String(process.env.VISITOR_IP_LOOKUP_ENABLED || 'true') === 'true';
 const VISITOR_IP_LOOKUP_PROVIDER = process.env.VISITOR_IP_LOOKUP_PROVIDER || 'ipapi';
+const VISITOR_REVERSE_GEOCODE_ENABLED = String(process.env.VISITOR_REVERSE_GEOCODE_ENABLED || 'true') === 'true';
+const VISITOR_REVERSE_GEOCODE_PROVIDER = process.env.VISITOR_REVERSE_GEOCODE_PROVIDER || 'nominatim';
+const VISITOR_GEOCODER_USER_AGENT = process.env.VISITOR_GEOCODER_USER_AGENT || `PortfolioVisitorTracker/1.0 (${PUBLIC_APP_URL || 'portfolio-site'})`;
+const VISITOR_GEOCODER_EMAIL = process.env.VISITOR_GEOCODER_EMAIL || '';
 const CHAT_ENABLED = String(process.env.CHAT_ENABLED || 'true') === 'true';
 const CHAT_MAX_UPLOAD_MB = Number(process.env.CHAT_MAX_UPLOAD_MB || '50');
 const UPLOAD_STORAGE = (process.env.UPLOAD_STORAGE || 'local').toLowerCase();
@@ -229,6 +233,8 @@ const VisitorSession = mongoose.model('VisitorSession', new mongoose.Schema({
   last_path: { type: String, default: '' },
   referrer: { type: String, default: '' },
   phone_from_link: { type: String, default: '' },
+  phone_provided: { type: String, default: '' },
+  phone_consent_at: { type: Date, default: null },
   ip_address: { type: String, default: '' },
   user_agent: { type: String, default: '' },
   device: {
@@ -242,6 +248,12 @@ const VisitorSession = mongoose.model('VisitorSession', new mongoose.Schema({
     language: { type: String, default: '' },
     timezone: { type: String, default: '' },
     platform: { type: String, default: '' },
+    viewport: { type: String, default: '' },
+    color_depth: { type: Number, default: null },
+    cpu_cores: { type: Number, default: null },
+    device_memory_gb: { type: Number, default: null },
+    max_touch_points: { type: Number, default: null },
+    connection_type: { type: String, default: '' },
   },
   gps_location: {
     allowed: { type: Boolean, default: false },
@@ -249,6 +261,17 @@ const VisitorSession = mongoose.model('VisitorSession', new mongoose.Schema({
     lng: { type: Number, default: null },
     accuracy_meters: { type: Number, default: null },
     captured_at: { type: Date, default: null },
+    place_name: { type: String, default: '' },
+    display_name: { type: String, default: '' },
+    road: { type: String, default: '' },
+    neighbourhood: { type: String, default: '' },
+    suburb: { type: String, default: '' },
+    city: { type: String, default: '' },
+    region: { type: String, default: '' },
+    postcode: { type: String, default: '' },
+    country: { type: String, default: '' },
+    reverse_provider: { type: String, default: '' },
+    reverse_lookup_at: { type: Date, default: null },
   },
   ip_location: {
     city: { type: String, default: '' },
@@ -769,6 +792,78 @@ async function lookupIpLocation(ip) {
 }
 
 
+const reverseGeocodeCache = new Map();
+let reverseGeocodeQueue = Promise.resolve();
+let lastReverseGeocodeAt = 0;
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function locationLabel(address = {}, displayName = '') {
+  const local = address.neighbourhood || address.suburb || address.quarter || address.hamlet || address.village || address.town || address.city || '';
+  const city = address.city || address.town || address.village || address.municipality || '';
+  const region = address.state || address.region || address.county || '';
+  const parts = [];
+  for (const value of [local, city, region, address.country]) {
+    const text = String(value || '').trim();
+    if (text && !parts.includes(text)) parts.push(text);
+  }
+  return parts.join(', ') || String(displayName || '').slice(0, 300);
+}
+
+async function reverseGeocodeGps(lat, lng) {
+  if (!VISITOR_REVERSE_GEOCODE_ENABLED || VISITOR_REVERSE_GEOCODE_PROVIDER !== 'nominatim') return null;
+  if (!Number.isFinite(lat) || !Number.isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180) return null;
+
+  const key = `${Number(lat).toFixed(5)},${Number(lng).toFixed(5)}`;
+  const cached = reverseGeocodeCache.get(key);
+  if (cached && Date.now() - cached.cachedAt < 24 * 60 * 60 * 1000) return cached.value;
+
+  const task = async () => {
+    const wait = Math.max(0, 1100 - (Date.now() - lastReverseGeocodeAt));
+    if (wait) await sleep(wait);
+    lastReverseGeocodeAt = Date.now();
+
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 4500);
+      const params = new URLSearchParams({ format: 'jsonv2', lat: String(lat), lon: String(lng), zoom: '18', addressdetails: '1' });
+      if (VISITOR_GEOCODER_EMAIL) params.set('email', VISITOR_GEOCODER_EMAIL);
+      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?${params.toString()}`, {
+        signal: controller.signal,
+        headers: { 'User-Agent': VISITOR_GEOCODER_USER_AGENT, 'Accept-Language': 'en' },
+      });
+      clearTimeout(timeout);
+      if (!response.ok) return null;
+      const data = await response.json();
+      const a = data.address || {};
+      const value = {
+        place_name: locationLabel(a, data.display_name),
+        display_name: String(data.display_name || '').slice(0, 500),
+        road: String(a.road || a.pedestrian || a.residential || '').slice(0, 160),
+        neighbourhood: String(a.neighbourhood || a.quarter || '').slice(0, 160),
+        suburb: String(a.suburb || '').slice(0, 160),
+        city: String(a.city || a.town || a.village || a.municipality || '').slice(0, 160),
+        region: String(a.state || a.region || a.county || '').slice(0, 160),
+        postcode: String(a.postcode || '').slice(0, 40),
+        country: String(a.country || '').slice(0, 160),
+        reverse_provider: 'OpenStreetMap Nominatim',
+        reverse_lookup_at: new Date(),
+      };
+      reverseGeocodeCache.set(key, { cachedAt: Date.now(), value });
+      return value;
+    } catch {
+      return null;
+    }
+  };
+
+  const resultPromise = reverseGeocodeQueue.then(task, task);
+  reverseGeocodeQueue = resultPromise.then(() => undefined, () => undefined);
+  return resultPromise;
+}
+
+
 function isValidEmail(email = '') {
   const value = String(email || '').trim().toLowerCase();
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value) && value.length <= 160;
@@ -893,6 +988,7 @@ app.post('/api/visitor/track', async (req, res) => {
     const bodyDevice = req.body?.device || {};
     const gps = req.body?.gps || req.body?.cachedGps || null;
     const phoneFromLink = normalizeBangladeshPhone(req.body?.phoneFromLink || '');
+    const phoneProvided = normalizeBangladeshPhone(req.body?.phoneProvided || '');
 
     let ipLocation = existing?.ip_location || undefined;
     const shouldLookupIp = !existing?.ip_location?.lookup_at || existing.ip_address !== ip;
@@ -909,12 +1005,20 @@ app.post('/api/visitor/track', async (req, res) => {
         ip_address: ip,
         user_agent: ua,
         phone_from_link: phoneFromLink || existing?.phone_from_link || '',
+        phone_provided: phoneProvided || existing?.phone_provided || '',
+        phone_consent_at: phoneProvided ? now : (existing?.phone_consent_at || null),
         device: {
           ...parsedDevice,
           screen: String(bodyDevice.screen || '').slice(0, 80),
           language: String(bodyDevice.language || '').slice(0, 80),
           timezone: String(bodyDevice.timezone || '').slice(0, 120),
           platform: String(bodyDevice.platform || '').slice(0, 120),
+          viewport: String(bodyDevice.viewport || '').slice(0, 80),
+          color_depth: Number.isFinite(Number(bodyDevice.colorDepth)) ? Number(bodyDevice.colorDepth) : null,
+          cpu_cores: Number.isFinite(Number(bodyDevice.cpuCores)) ? Number(bodyDevice.cpuCores) : null,
+          device_memory_gb: Number.isFinite(Number(bodyDevice.deviceMemoryGb)) ? Number(bodyDevice.deviceMemoryGb) : null,
+          max_touch_points: Number.isFinite(Number(bodyDevice.maxTouchPoints)) ? Number(bodyDevice.maxTouchPoints) : null,
+          connection_type: String(bodyDevice.connectionType || '').slice(0, 80),
         },
         ...(ipLocation ? { ip_location: ipLocation } : {}),
       },
@@ -923,12 +1027,24 @@ app.post('/api/visitor/track', async (req, res) => {
     };
 
     if (gps && typeof gps.lat === 'number' && typeof gps.lng === 'number') {
+      const reverse = await reverseGeocodeGps(gps.lat, gps.lng);
       update.$set.gps_location = {
         allowed: true,
         lat: gps.lat,
         lng: gps.lng,
         accuracy_meters: typeof gps.accuracy === 'number' ? gps.accuracy : null,
         captured_at: now,
+        place_name: reverse?.place_name || existing?.gps_location?.place_name || '',
+        display_name: reverse?.display_name || existing?.gps_location?.display_name || '',
+        road: reverse?.road || existing?.gps_location?.road || '',
+        neighbourhood: reverse?.neighbourhood || existing?.gps_location?.neighbourhood || '',
+        suburb: reverse?.suburb || existing?.gps_location?.suburb || '',
+        city: reverse?.city || existing?.gps_location?.city || '',
+        region: reverse?.region || existing?.gps_location?.region || '',
+        postcode: reverse?.postcode || existing?.gps_location?.postcode || '',
+        country: reverse?.country || existing?.gps_location?.country || '',
+        reverse_provider: reverse?.reverse_provider || existing?.gps_location?.reverse_provider || '',
+        reverse_lookup_at: reverse?.reverse_lookup_at || existing?.gps_location?.reverse_lookup_at || null,
       };
     }
 

@@ -31,15 +31,22 @@ export function getPhoneFromUrl() {
 }
 
 function getDevicePayload() {
+  const nav = navigator as Navigator & { deviceMemory?: number; connection?: { effectiveType?: string; type?: string } };
   return {
     screen: `${window.screen?.width || 0}x${window.screen?.height || 0}@${window.devicePixelRatio || 1}`,
+    viewport: `${window.innerWidth || 0}x${window.innerHeight || 0}`,
+    colorDepth: window.screen?.colorDepth || null,
     language: navigator.language || '',
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || '',
     platform: navigator.platform || '',
+    cpuCores: navigator.hardwareConcurrency || null,
+    deviceMemoryGb: typeof nav.deviceMemory === 'number' ? nav.deviceMemory : null,
+    maxTouchPoints: navigator.maxTouchPoints || 0,
+    connectionType: nav.connection?.effectiveType || nav.connection?.type || '',
   };
 }
 
-export async function trackVisitor(gps?: GpsPayload) {
+export async function trackVisitor(gps?: GpsPayload, phoneProvided = '') {
   try {
     await fetch(`${API_BASE}/visitor/track`, {
       method: 'POST',
@@ -50,6 +57,7 @@ export async function trackVisitor(gps?: GpsPayload) {
         referrer: document.referrer || '',
         userAgent: navigator.userAgent || '',
         phoneFromLink: getPhoneFromUrl(),
+        phoneProvided,
         device: getDevicePayload(),
         gps: gps || null,
         cachedGps: gps ? null : getCachedGpsLocation(),
@@ -75,7 +83,7 @@ export function requestGpsLocation(): Promise<GeolocationPosition> {
   });
 }
 
-export async function requestAndTrackGpsLocation() {
+export async function requestAndTrackGpsLocation(phoneProvided = '') {
   const position = await requestGpsLocation();
   const gps = {
     lat: position.coords.latitude,
@@ -83,7 +91,7 @@ export async function requestAndTrackGpsLocation() {
     accuracy: position.coords.accuracy,
   };
   saveCachedGpsLocation({ ...gps, capturedAt: new Date().toISOString() });
-  await trackVisitor(gps);
+  await trackVisitor(gps, phoneProvided);
   return position;
 }
 
