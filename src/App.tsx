@@ -1666,7 +1666,7 @@ function ResearchPage({
 
           {research.length === 0 ? (
             <div className="rounded-3xl border border-[#322044] bg-[#160b24] p-10 text-center text-gray-400">
-              Published research will appear here after it is added from the admin dashboard.
+              Published research will appear here after it is added by Fahimul Arefin.
             </div>
           ) : (
             <div className="space-y-6">
@@ -1933,7 +1933,7 @@ function ProjectDetailsPage({
               <div className="mb-8 flex items-center justify-between gap-4">
                 <div>
                   <h2 className="text-2xl font-bold text-gray-100">Project Gallery</h2>
-                  <p className="mt-2 text-gray-400">All screenshots and photos added from the admin dashboard.</p>
+                  <p className="mt-2 text-gray-400">All screenshots and photos of project.</p>
                 </div>
               </div>
               <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
