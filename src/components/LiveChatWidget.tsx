@@ -203,7 +203,7 @@ export function LiveChatWidget() {
           {!started ? (
             <div className="flex flex-1 flex-col justify-center gap-4 p-5">
               <div className="rounded-2xl border border-violet-400/20 bg-violet-400/10 p-4 text-sm text-violet-100">
-                Start a realtime chat with the admin. You can also attach a photo, video, PDF, or document after chat starts.
+                Start Live chat with me for your instant solutions.
               </div>
               <input value={visitorName} onChange={(e) => setVisitorName(e.target.value)} placeholder="Your name" className="rounded-xl border border-[#452c5d] bg-[#160b24] px-4 py-3 text-white outline-none focus:border-violet-400" />
               <input value={visitorEmail} onChange={(e) => setVisitorEmail(e.target.value)} placeholder="Email or phone optional" className="rounded-xl border border-[#452c5d] bg-[#160b24] px-4 py-3 text-white outline-none focus:border-violet-400" />
